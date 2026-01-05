@@ -88,7 +88,7 @@ export function BottomNav() {
 
         {/* Center Logo Button */}
         <Link
-          href="/home"
+          href="/"
           className="flex flex-col items-center -mt-6 min-w-[70px]"
         >
           <div className="w-16 h-16 rounded-full border-4 border-primary bg-white flex items-center justify-center shadow-lg overflow-hidden">

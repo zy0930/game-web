@@ -43,7 +43,7 @@ export function LoginForm() {
   async function onSubmit(data: LoginFormData) {
     const result = await login(data);
     if (result.success) {
-      router.push("/home");
+      router.push("/");
     } else {
       form.setError("root", { message: result.error });
     }

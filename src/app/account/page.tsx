@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
+import { KycVerificationModal } from "@/components/account/kyc-verification-modal";
 
 // Mock user data
 const userData = {
@@ -34,6 +35,7 @@ const userData = {
 
 export default function AccountPage() {
   const [imgError, setImgError] = useState(false);
+  const [isKycModalOpen, setIsKycModalOpen] = useState(false);
   const { t } = useI18n();
 
   const quickActions = [
@@ -80,12 +82,12 @@ export default function AccountPage() {
   ];
 
   const menuItems = [
-    { icon: User, labelKey: "account.profile", href: "/account/profile" },
-    { icon: Landmark, labelKey: "account.bankAccount", href: "/account/bank" },
-    { icon: ShieldCheck, labelKey: "account.kyc", href: "/account/kyc" },
-    { icon: KeyRound, labelKey: "account.resetPin", href: "/account/reset-pin" },
-    { icon: Users, labelKey: "account.myContact", href: "/account/contact" },
-    { icon: Mail, labelKey: "account.inbox", href: "/account/inbox" },
+    { icon: User, labelKey: "account.profile", href: "/account/profile", isLink: true },
+    { icon: Landmark, labelKey: "account.bankAccount", href: "/account/bank", isLink: true },
+    { icon: ShieldCheck, labelKey: "account.kyc", onClick: () => setIsKycModalOpen(true), isLink: false },
+    { icon: KeyRound, labelKey: "account.resetPin", href: "/account/reset-pin", isLink: true },
+    { icon: Users, labelKey: "account.myContact", href: "/account/contact", isLink: true },
+    { icon: Mail, labelKey: "account.inbox", href: "/account/inbox", isLink: true },
   ];
 
   const statusConfig = {
@@ -133,12 +135,15 @@ export default function AccountPage() {
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <span className={cn(
-                "px-2 py-0.5 rounded-full text-xs font-medium",
-                statusConfig[userData.status as keyof typeof statusConfig].className
-              )}>
+              <button
+                onClick={() => setIsKycModalOpen(true)}
+                className={cn(
+                  "px-2 py-0.5 rounded-full text-xs font-medium transition-opacity hover:opacity-80",
+                  statusConfig[userData.status as keyof typeof statusConfig].className
+                )}
+              >
                 {t(statusConfig[userData.status as keyof typeof statusConfig].labelKey)}
-              </span>
+              </button>
             </div>
             <p className="text-zinc-400 text-sm">UID: {userData.uid}</p>
           </div>
@@ -224,27 +229,47 @@ export default function AccountPage() {
       {/* Menu Items */}
       <div className="mx-4 mt-4 mb-4 flex-1">
         <div className="bg-white rounded-xl overflow-hidden">
-          {menuItems.map((item, index) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center justify-between px-4 py-3.5 hover:bg-zinc-50 transition-colors",
-                index !== menuItems.length - 1 && "border-b border-zinc-100"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <item.icon className="w-5 h-5 text-zinc-400" />
-                <span className="text-sm text-zinc-700">{t(item.labelKey)}</span>
-              </div>
-              <ChevronRight className="w-5 h-5 text-zinc-400" />
-            </Link>
-          ))}
+          {menuItems.map((item, index) => {
+            const content = (
+              <>
+                <div className="flex items-center gap-3">
+                  <item.icon className="w-5 h-5 text-zinc-400" />
+                  <span className="text-sm text-zinc-700">{t(item.labelKey)}</span>
+                </div>
+                <ChevronRight className="w-5 h-5 text-zinc-400" />
+              </>
+            );
+
+            const className = cn(
+              "flex items-center justify-between px-4 py-3.5 hover:bg-zinc-50 transition-colors w-full",
+              index !== menuItems.length - 1 && "border-b border-zinc-100"
+            );
+
+            return item.isLink ? (
+              <Link key={item.href} href={item.href!} className={className}>
+                {content}
+              </Link>
+            ) : (
+              <button
+                key={item.labelKey}
+                onClick={item.onClick}
+                className={className}
+              >
+                {content}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Bottom Navigation */}
       <BottomNav />
+
+      {/* KYC Verification Modal */}
+      <KycVerificationModal
+        isOpen={isKycModalOpen}
+        onClose={() => setIsKycModalOpen(false)}
+      />
     </div>
   );
 }

@@ -50,7 +50,7 @@ export function Header({
         {/* Left Section */}
         <div className="flex items-center gap-2">
           {variant === "logo" ? (
-            <Link href="/home" className="flex items-center">
+            <Link href="/" className="flex items-center">
               {!imgError ? (
                 <Image
                   src="/logo-header.png"

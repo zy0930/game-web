@@ -1,0 +1,215 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import {
+  ChevronLeft,
+  Headphones,
+  Menu,
+  CreditCard,
+  Phone,
+  Wallet,
+  Lock,
+  ChevronDown,
+  EyeOff,
+  Eye,
+} from "lucide-react";
+
+export default function ForgotPasswordPage() {
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [sendTo, setSendTo] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      uid: "",
+      phoneNumber: "",
+      otpCode: "",
+      newPassword: "",
+    },
+  });
+
+  const onSubmit = async (data: {
+    uid: string;
+    phoneNumber: string;
+    otpCode?: string;
+    newPassword: string;
+  }) => {
+    setIsLoading(true);
+
+    // TODO: Implement forgot password API call
+    console.log("Reset password", data);
+
+    setIsLoading(false);
+
+    // After successful password reset
+    // router.push("/");
+  };
+
+  const handleRequestOTP = () => {
+    // TODO: Implement OTP request
+    console.log("Request OTP");
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-zinc-50">
+      {/* Header */}
+      <header className="bg-zinc-800 px-4 py-3 flex items-center justify-between">
+        <button
+          onClick={() => router.back()}
+          className="text-white hover:text-zinc-300 transition-colors"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+        <h1 className="text-white font-medium text-lg">Forgot Password</h1>
+        <div className="flex items-center gap-3">
+          <button className="text-primary hover:text-primary/80 transition-colors">
+            <Headphones className="w-6 h-6" />
+          </button>
+          <button className="text-white hover:text-zinc-300 transition-colors">
+            <Menu className="w-6 h-6" />
+          </button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-auto">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-3">
+          {/* UID */}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+              <CreditCard className="w-5 h-5" />
+            </div>
+            <input
+              {...register("uid", { required: "UID is required" })}
+              type="text"
+              placeholder="UID"
+              className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
+            />
+            {errors.uid && (
+              <p className="text-xs text-red-500 mt-1">{errors.uid.message}</p>
+            )}
+          </div>
+
+          {/* Phone Number */}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+              <Phone className="w-5 h-5" />
+            </div>
+            <input
+              {...register("phoneNumber", {
+                required: "Phone number is required",
+              })}
+              type="tel"
+              placeholder="Phone Number"
+              className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
+            />
+            {errors.phoneNumber && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.phoneNumber.message}
+              </p>
+            )}
+          </div>
+
+          {/* Send to Dropdown */}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <select
+              value={sendTo}
+              onChange={(e) => setSendTo(e.target.value)}
+              className="w-full pl-10 pr-10 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white appearance-none text-zinc-500"
+            >
+              <option value="">Send to</option>
+              <option value="sms">SMS</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
+              <ChevronDown className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* OTP Code */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+                <Wallet className="w-5 h-5" />
+              </div>
+              <input
+                {...register("otpCode")}
+                type="text"
+                placeholder="OTP Code"
+                className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleRequestOTP}
+              className="px-6 py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap"
+            >
+              Request OTP
+            </button>
+          </div>
+
+          {/* New Password */}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+              <Lock className="w-5 h-5" />
+            </div>
+            <input
+              {...register("newPassword", {
+                required: "New password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              type={showPassword ? "text" : "password"}
+              placeholder="New Password"
+              className="w-full pl-10 pr-12 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+            {errors.newPassword && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.newPassword.message}
+              </p>
+            )}
+          </div>
+
+          {/* Error Message */}
+          {errors.root && (
+            <p className="text-sm text-red-500 text-center">
+              {errors.root.message}
+            </p>
+          )}
+
+          {/* Confirm Button */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-3.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "PROCESSING..." : "CONFIRM"}
+          </button>
+        </form>
+      </main>
+    </div>
+  );
+}

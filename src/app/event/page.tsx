@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { Header, BottomNav } from "@/components/layout";
 import { Button } from "@/components/ui/button";
+import { EventDetailsModal } from "@/components/event";
 import { cn } from "@/lib/utils";
 
 const categories = [
@@ -22,6 +23,7 @@ interface Event {
   title: string;
   description: string;
   category: string[];
+  htmlContent: string;
 }
 
 const events: Event[] = [
@@ -31,6 +33,24 @@ const events: Event[] = [
     title: "Top Up Free MYR 5",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     category: ["all", "slots", "live", "sports", "lottery"],
+    htmlContent: `
+      <h2>Top Up Free MYR 5</h2>
+      <ul>
+        <li><strong>FREE MYR 5</strong>.</li>
+        <li>Minimum Deposit MYR 30 or USDT 30 and above.</li>
+        <li>One Promotion Required.</li>
+        <li>Minimum Withdrawal MYR 100.</li>
+        <li>ONLY ONE USER/MOBILE NUMBER/ NAME / BANK claimable per (1)day.</li>
+        <li>Transfer credit function disable after claimed this promotion and successfully achieve the target Turnover.</li>
+      </ul>
+      <ol>
+        <li>This promotion is only available for AONE Global Gaming members.</li>
+        <li>Promotion is subject to availability. Applicable to all aforementioned providers only.</li>
+        <li>All customer offers are limited to one per person. Meaning one per family, household address, IP address, email address, telephone number, credit or debit card and/or e-payment account, and shared computer (e.g. school, public library or workplace).</li>
+        <li>Bonuses are valid for thirty (30) days upon issuance unless stated otherwise. Any unused bonus funds will be removed from the member's account if prerequisites are not fulfilled within the given time frame.</li>
+        <li>Any bets resulting in void, tie, cancelled, or made on opposite or the same outcome will not be counted towards wagering requirement.</li>
+      </ol>
+    `,
   },
   {
     id: "2",
@@ -38,6 +58,22 @@ const events: Event[] = [
     title: "150% Welcome Bonus",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     category: ["all", "slots", "app-slots"],
+    htmlContent: `
+      <h2>150% Welcome Bonus</h2>
+      <p>Get up to 150% bonus on your first deposit! New members only.</p>
+      <ul>
+        <li>Minimum deposit: MYR 30</li>
+        <li>Maximum bonus: MYR 500</li>
+        <li>Wagering requirement: 30x</li>
+        <li>Valid for slots and app slots only</li>
+      </ul>
+      <p><strong>Terms and Conditions:</strong></p>
+      <ol>
+        <li>Available for new members only</li>
+        <li>Bonus must be claimed within 24 hours of registration</li>
+        <li>One-time offer per member</li>
+      </ol>
+    `,
   },
   {
     id: "3",
@@ -45,11 +81,29 @@ const events: Event[] = [
     title: "100% Sport Welcome Bonus",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
     category: ["all", "sports"],
+    htmlContent: `
+      <h2>100% Sport Welcome Bonus</h2>
+      <p>Double your first sports deposit with our 100% welcome bonus!</p>
+      <ul>
+        <li>Minimum deposit: MYR 50</li>
+        <li>Maximum bonus: MYR 1000</li>
+        <li>Wagering requirement: 15x</li>
+        <li>Valid for sports betting only</li>
+      </ul>
+      <p><strong>Eligible Sports:</strong></p>
+      <ul>
+        <li>Football</li>
+        <li>Basketball</li>
+        <li>Tennis</li>
+        <li>Esports</li>
+      </ul>
+    `,
   },
 ];
 
 export default function EventPage() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const filteredEvents = events.filter((event) =>
@@ -57,7 +111,7 @@ export default function EventPage() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="relative min-h-screen flex flex-col bg-white">
       {/* Header */}
       <Header variant="logo" />
 
@@ -118,6 +172,7 @@ export default function EventPage() {
                 <Button
                   variant="secondary"
                   className="flex-1 bg-zinc-700 hover:bg-zinc-800 text-white rounded-full"
+                  onClick={() => setSelectedEvent(event)}
                 >
                   INFO
                 </Button>
@@ -132,6 +187,13 @@ export default function EventPage() {
 
       {/* Bottom Navigation */}
       <BottomNav />
+
+      {/* Event Details Modal */}
+      <EventDetailsModal
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        event={selectedEvent}
+      />
     </div>
   );
 }

@@ -92,7 +92,7 @@ export default function DepositPage() {
   return (
     <div className="min-h-screen flex flex-col bg-zinc-100">
       {/* Header */}
-      <Header variant="subpage" title={t("wallet.title")} backHref="/home" />
+      <Header variant="subpage" title={t("wallet.title")} backHref="/" />
 
       {/* Wallet Balance Section */}
       <div className="bg-zinc-800 px-4 pt-4 pb-8">
