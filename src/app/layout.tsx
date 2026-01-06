@@ -4,6 +4,7 @@ import "./globals.css";
 import { QueryProvider } from "@/providers/query-provider";
 import { I18nProvider } from "@/providers/i18n-provider";
 import { AuthProvider } from "@/providers/auth-provider";
+import { LoginModalProvider } from "@/providers/login-modal-provider";
 import { MobileContainer } from "@/components/layout";
 
 const geistSans = Geist({
@@ -127,7 +128,9 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <I18nProvider>
-              <MobileContainer>{children}</MobileContainer>
+              <LoginModalProvider>
+                <MobileContainer>{children}</MobileContainer>
+              </LoginModalProvider>
             </I18nProvider>
           </AuthProvider>
         </QueryProvider>

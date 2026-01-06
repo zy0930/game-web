@@ -11,33 +11,34 @@ interface AppDownloadBannerProps {
 
 export function AppDownloadBanner({ className }: AppDownloadBannerProps) {
   const [isVisible, setIsVisible] = useState(true);
+  const [imgError, setImgError] = useState(false);
 
   if (!isVisible) return null;
 
   return (
     <div
       className={cn(
-        "bg-emerald-500 px-3 py-2 flex items-center justify-between gap-2",
+        "bg-primary px-3 py-2 flex items-center justify-between gap-2",
         className
       )}
     >
       {/* Left: Logo and Text */}
       <div className="flex items-center gap-2 flex-1 min-w-0">
         <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0 overflow-hidden">
-          <Image
-            src="/logo-icon.png"
-            alt="A1"
-            width={24}
-            height={24}
-            className="object-contain"
-            onError={(e) => {
-              // Fallback to text if image fails
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-              target.parentElement!.innerHTML =
-                '<span class="text-xs font-bold text-white">A<span class="text-primary">1</span></span>';
-            }}
-          />
+          {imgError ? (
+            <span className="text-xs font-bold text-white">
+              A<span className="text-primary">1</span>
+            </span>
+          ) : (
+            <Image
+              src="/logo-icon.png"
+              alt="A1"
+              width={24}
+              height={24}
+              className="object-contain"
+              onError={() => setImgError(true)}
+            />
+          )}
         </div>
         <div className="flex flex-col min-w-0">
           <span className="text-sm font-semibold text-white truncate">

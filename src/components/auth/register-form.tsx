@@ -3,10 +3,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLoginModal } from "@/providers/login-modal-provider";
 import {
   Card,
   CardContent,
@@ -28,6 +28,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export function RegisterForm() {
   const { register, isLoading } = useAuth();
+  const { openLoginModal } = useLoginModal();
 
   const form = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -146,12 +147,13 @@ export function RegisterForm() {
         <CardFooter className="flex justify-center">
           <p className="text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link
-              href="/login"
+            <button
+              type="button"
+              onClick={openLoginModal}
               className="text-primary hover:underline font-medium"
             >
               Sign in
-            </Link>
+            </button>
           </p>
         </CardFooter>
       </Card>
