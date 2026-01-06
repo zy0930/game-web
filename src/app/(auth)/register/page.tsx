@@ -15,52 +15,67 @@ import {
   Lock,
   User,
   Phone,
+  Mail,
   Wallet,
   ChevronDown,
   FolderOpen,
   Camera,
+  Loader2,
 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
-import { useAuth } from "@/providers/auth-provider";
 import { LoginModal } from "@/components/auth/login-modal";
+import { useRegister } from "@/hooks/use-register";
+import { authApi } from "@/lib/api";
+
+interface RegisterFormData {
+  referralCode: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  otpCode: string;
+}
 
 export default function RegisterPage() {
   const router = useRouter();
   const { t } = useI18n();
-  const { register: registerUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [sendTo, setSendTo] = useState("");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [sendToId, setSendToId] = useState("");
+  const [isValidatingUpline, setIsValidatingUpline] = useState(false);
+
+  // API hooks
+  const registerMutation = useRegister();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm({
+  } = useForm<RegisterFormData>({
     defaultValues: {
       referralCode: "",
-      uid: "",
+      username: "",
       password: "",
       confirmPassword: "",
       fullName: "",
-      phoneNumber: "",
+      phone: "",
+      email: "",
       otpCode: "",
     },
   });
 
-  const onSubmit = async (data: {
-    referralCode?: string;
-    uid: string;
-    password: string;
-    confirmPassword: string;
-    fullName: string;
-    phoneNumber: string;
-    otpCode?: string;
-  }) => {
+  // Placeholder for OTP request - disabled for now
+  const handleRequestOTP = () => {
+    // TODO: Implement when API is available
+    console.log("OTP request - API not available yet");
+  };
+
+  const onSubmit = async (data: RegisterFormData) => {
     if (!agreeTerms) {
       setError("root", { message: "Please agree to the Terms & Conditions" });
       return;
@@ -71,28 +86,52 @@ export default function RegisterPage() {
       return;
     }
 
-    setIsLoading(true);
+    try {
+      // If referral code is provided, validate it first
+      if (data.referralCode && data.referralCode.trim() !== "") {
+        setIsValidatingUpline(true);
 
-    const result = await registerUser({
-      name: data.fullName,
-      email: data.uid,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
-    });
+        try {
+          const uplineResult = await authApi.getUpline(data.referralCode);
 
-    setIsLoading(false);
+          if (uplineResult.Code !== 0) {
+            setError("referralCode", {
+              message: uplineResult.Message || "Invalid referral code"
+            });
+            setIsValidatingUpline(false);
+            return;
+          }
+        } catch {
+          setError("referralCode", { message: "Failed to validate referral code" });
+          setIsValidatingUpline(false);
+          return;
+        }
 
-    if (result.success) {
-      router.push("/");
-    } else {
-      setError("root", { message: result.error || "Registration failed" });
+        setIsValidatingUpline(false);
+      }
+
+      // Proceed with registration
+      const result = await registerMutation.mutateAsync({
+        Username: data.username,
+        Password: data.password,
+        Email: data.email,
+        Phone: data.phone,
+        FullName: data.fullName,
+        Upline: data.referralCode || undefined,
+      });
+
+      if (result.Code === 0) {
+        // Registration successful - redirect to login
+        router.push("/login");
+      } else {
+        setError("root", { message: result.Message || "Registration failed" });
+      }
+    } catch {
+      setError("root", { message: "Registration failed. Please try again." });
     }
   };
 
-  const handleRequestOTP = () => {
-    // TODO: Implement OTP request
-    console.log("Request OTP");
-  };
+  const isSubmitting = isValidatingUpline || registerMutation.isPending;
 
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50">
@@ -137,10 +176,6 @@ export default function RegisterPage() {
               <p className="text-primary text-sm font-medium">never stops</p>
             </div>
           </div>
-          {/* Decorative elements - you can add actual images here */}
-          <div className="absolute left-0 bottom-0 w-32 h-32 opacity-20">
-            {/* Placeholder for decorative image */}
-          </div>
         </div>
 
         {/* Form */}
@@ -157,7 +192,7 @@ export default function RegisterPage() {
                 placeholder="Referral Code"
                 className="w-full pl-10 pr-20 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2 items-center">
                 <button
                   type="button"
                   className="text-zinc-400 hover:text-zinc-600"
@@ -176,21 +211,48 @@ export default function RegisterPage() {
               <span className="font-medium">Note:</span> If no referral code,
               system will auto assign a default referral code
             </p>
+            {errors.referralCode && (
+              <p className="text-xs text-red-500 mt-1 ml-1">
+                {errors.referralCode.message}
+              </p>
+            )}
           </div>
 
-          {/* UID */}
+          {/* Username */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
               <CreditCard className="w-5 h-5" />
             </div>
             <input
-              {...register("uid", { required: "UID is required" })}
+              {...register("username", { required: "Username is required" })}
               type="text"
-              placeholder="UID"
+              placeholder="Username"
               className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
             />
-            {errors.uid && (
-              <p className="text-xs text-red-500 mt-1">{errors.uid.message}</p>
+            {errors.username && (
+              <p className="text-xs text-red-500 mt-1">{errors.username.message}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+              <Mail className="w-5 h-5" />
+            </div>
+            <input
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address"
+                }
+              })}
+              type="email"
+              placeholder="Email"
+              className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
+            />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
             )}
           </div>
 
@@ -284,31 +346,32 @@ export default function RegisterPage() {
               <Phone className="w-5 h-5" />
             </div>
             <input
-              {...register("phoneNumber", {
+              {...register("phone", {
                 required: "Phone number is required",
               })}
               type="tel"
               placeholder="Phone Number"
               className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
             />
-            {errors.phoneNumber && (
+            {errors.phone && (
               <p className="text-xs text-red-500 mt-1">
-                {errors.phoneNumber.message}
+                {errors.phone.message}
               </p>
             )}
           </div>
 
-          {/* Send to Dropdown */}
+          {/* Send to Dropdown - DISABLED (API not available) */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
               <Wallet className="w-5 h-5" />
             </div>
             <select
-              value={sendTo}
-              onChange={(e) => setSendTo(e.target.value)}
-              className="w-full pl-10 pr-10 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white appearance-none text-zinc-500"
+              value={sendToId}
+              onChange={(e) => setSendToId(e.target.value)}
+              disabled={true}
+              className="w-full pl-10 pr-10 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white appearance-none text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-100"
             >
-              <option value="">Send to</option>
+              <option value="">Send to (Coming Soon)</option>
               <option value="sms">SMS</option>
               <option value="whatsapp">WhatsApp</option>
             </select>
@@ -317,7 +380,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* OTP Code */}
+          {/* OTP Code - DISABLED (API not available) */}
           <div className="flex gap-2">
             <div className="relative flex-1">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
@@ -326,14 +389,16 @@ export default function RegisterPage() {
               <input
                 {...register("otpCode")}
                 type="text"
-                placeholder="OTP Code"
-                className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
+                placeholder="OTP Code (Coming Soon)"
+                disabled={true}
+                className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-100"
               />
             </div>
             <button
               type="button"
               onClick={handleRequestOTP}
-              className="px-6 py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap"
+              disabled={true}
+              className="px-6 py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed min-w-[130px]"
             >
               Request OTP
             </button>
@@ -365,10 +430,17 @@ export default function RegisterPage() {
           {/* Register Button */}
           <button
             type="submit"
-            disabled={isLoading}
-            className="w-full py-3.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isSubmitting}
+            className="w-full py-3.5 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isLoading ? t("auth.creatingAccount") : t("auth.register").toUpperCase()}
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                {isValidatingUpline ? "Validating..." : t("auth.creatingAccount")}
+              </>
+            ) : (
+              t("auth.register").toUpperCase()
+            )}
           </button>
 
           {/* Login Link */}

@@ -26,7 +26,16 @@
     "rejected": "Rejected",
     "progress": "Progress",
     "failed": "Failed",
-    "errorLoading": "Failed to load data. Please try again."
+    "errorLoading": "Failed to load data. Please try again.",
+    "loginRequired": "Please login to access this page",
+    "copied": "Copied!",
+    "copyLink": "Copy Link"
+  },
+  "referral": {
+    "title": "Referral",
+    "code": "Referral Code",
+    "link": "Referral Link",
+    "shareQr": "Share QR Code to"
   },
   "nav": {
     "home": "Home",

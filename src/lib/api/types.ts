@@ -181,6 +181,16 @@ export interface GameRecordsResponse extends PaginatedResponse<GameRecord> {}
 // Register Types
 // ===========================================
 
+export interface GetUplineRequest {
+  Id: string;
+}
+
+export interface GetUplineResponse {
+  Code: number;
+  Message: string;
+  ReferralCode: string;
+}
+
 export interface RegisterRequest {
   Username: string;
   Password: string;
@@ -193,14 +203,4 @@ export interface RegisterRequest {
 export interface RegisterResponse {
   Code: number;
   Message: string;
-}
-
-export interface GetUplineRequest {
-  Id: string;
-}
-
-export interface GetUplineResponse {
-  Code: number;
-  Message: string;
-  ReferralCode: string;
 }

@@ -25,7 +25,17 @@
     "verified": "已验证",
     "rejected": "已拒绝",
     "progress": "进行中",
-    "failed": "失败"
+    "failed": "失败",
+    "errorLoading": "加载数据失败，请重试。",
+    "loginRequired": "请登录以访问此页面",
+    "copied": "已复制!",
+    "copyLink": "复制链接"
+  },
+  "referral": {
+    "title": "推荐",
+    "code": "推荐码",
+    "link": "推荐链接",
+    "shareQr": "分享二维码至"
   },
   "nav": {
     "home": "首页",

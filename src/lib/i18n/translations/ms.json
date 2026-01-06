@@ -25,7 +25,17 @@
     "verified": "Disahkan",
     "rejected": "Ditolak",
     "progress": "Dalam Proses",
-    "failed": "Gagal"
+    "failed": "Gagal",
+    "errorLoading": "Gagal memuatkan data. Sila cuba lagi.",
+    "loginRequired": "Sila log masuk untuk mengakses halaman ini",
+    "copied": "Disalin!",
+    "copyLink": "Salin Pautan"
+  },
+  "referral": {
+    "title": "Rujukan",
+    "code": "Kod Rujukan",
+    "link": "Pautan Rujukan",
+    "shareQr": "Kongsi Kod QR ke"
   },
   "nav": {
     "home": "Utama",

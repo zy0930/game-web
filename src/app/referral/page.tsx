@@ -3,16 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Header, BottomNav } from "@/components/layout";
-import { Copy, Check } from "lucide-react";
-
-// Mock user data
-const userData = {
-  avatar: "/avatar.png",
-  username: "design111",
-  uid: "12345ye123",
-  referralCode: "1234678",
-  referralLink: "https://www.aonedl.com/?R=273B84",
-};
+import { Copy, Check, Loader2 } from "lucide-react";
+import { useAuth } from "@/providers/auth-provider";
+import { useQrCode } from "@/hooks/use-user";
+import { useI18n } from "@/providers/i18n-provider";
 
 const shareOptions = [
   {
@@ -54,22 +48,46 @@ export default function ReferralPage() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const { t } = useI18n();
+  const { user, isAuthenticated } = useAuth();
+
+  // Fetch QR code from API
+  const { data: qrData, isLoading: isQrLoading, error: qrError } = useQrCode();
+
+  // Generate referral link from user ID (fallback if not provided by API)
+  const referralCode = user?.id || "N/A";
+  const referralLink = `https://www.aonedl.com/?R=${referralCode}`;
 
   const handleCopyCode = async () => {
-    await navigator.clipboard.writeText(userData.referralCode);
+    await navigator.clipboard.writeText(referralCode);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
   const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(userData.referralLink);
+    await navigator.clipboard.writeText(referralLink);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
   const handleShare = (getShareUrl: (link: string) => string) => {
-    window.open(getShareUrl(userData.referralLink), "_blank");
+    window.open(getShareUrl(referralLink), "_blank");
   };
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col bg-white">
+        <Header variant="logo" />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center px-4">
+            <p className="text-zinc-600 mb-4">{t("common.loginRequired")}</p>
+          </div>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
@@ -82,10 +100,10 @@ export default function ReferralPage() {
           {/* Avatar with border ring - overlapping card top */}
           <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-gradient-to-b from-primary/30 to-primary/10 p-1 shadow-sm">
             <div className="w-full h-full rounded-full overflow-hidden bg-white">
-              {!imgError ? (
+              {!imgError && user?.avatar ? (
                 <Image
-                  src={userData.avatar}
-                  alt={userData.username}
+                  src={user.avatar}
+                  alt={user.name || "User"}
                   width={88}
                   height={88}
                   className="object-cover w-full h-full"
@@ -93,7 +111,7 @@ export default function ReferralPage() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-zinc-100 text-zinc-500 text-2xl font-bold">
-                  {userData.username.charAt(0).toUpperCase()}
+                  {(user?.name || "U").charAt(0).toUpperCase()}
                 </div>
               )}
             </div>
@@ -101,19 +119,19 @@ export default function ReferralPage() {
 
           {/* Username */}
           <h2 className="text-lg font-semibold text-zinc-800 mb-1">
-            {userData.username}
+            {user?.name || "User"}
           </h2>
 
           {/* UID */}
           <p className="text-sm text-zinc-500 mb-1">
-            UID: {userData.uid}
+            UID: {user?.id || "N/A"}
           </p>
 
           {/* Referral Code */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-zinc-500">Referral Code:</span>
+            <span className="text-sm text-zinc-500">{t("referral.code")}:</span>
             <span className="text-sm font-semibold text-primary">
-              {userData.referralCode}
+              {referralCode}
             </span>
             <button
               onClick={handleCopyCode}
@@ -129,42 +147,41 @@ export default function ReferralPage() {
 
           {/* QR Code */}
           <div className="mt-6 p-4 bg-white rounded-lg">
-            <div className="w-40 h-40 bg-zinc-100 flex items-center justify-center">
-              {/* Placeholder QR Code - In production, use a QR library */}
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <rect x="10" y="10" width="25" height="25" fill="#000"/>
-                <rect x="65" y="10" width="25" height="25" fill="#000"/>
-                <rect x="10" y="65" width="25" height="25" fill="#000"/>
-                <rect x="15" y="15" width="15" height="15" fill="#fff"/>
-                <rect x="70" y="15" width="15" height="15" fill="#fff"/>
-                <rect x="15" y="70" width="15" height="15" fill="#fff"/>
-                <rect x="18" y="18" width="9" height="9" fill="#000"/>
-                <rect x="73" y="18" width="9" height="9" fill="#000"/>
-                <rect x="18" y="73" width="9" height="9" fill="#000"/>
-                <rect x="40" y="10" width="5" height="5" fill="#000"/>
-                <rect x="50" y="10" width="5" height="5" fill="#000"/>
-                <rect x="40" y="20" width="5" height="5" fill="#000"/>
-                <rect x="45" y="25" width="5" height="5" fill="#000"/>
-                <rect x="55" y="20" width="5" height="5" fill="#000"/>
-                <rect x="10" y="40" width="5" height="5" fill="#000"/>
-                <rect x="20" y="45" width="5" height="5" fill="#000"/>
-                <rect x="10" y="50" width="5" height="5" fill="#000"/>
-                <rect x="25" y="40" width="5" height="5" fill="#000"/>
-                <rect x="40" y="40" width="20" height="20" fill="#000"/>
-                <rect x="45" y="45" width="10" height="10" fill="#fff"/>
-                <rect x="48" y="48" width="4" height="4" fill="#000"/>
-                <rect x="65" y="40" width="5" height="5" fill="#000"/>
-                <rect x="75" y="45" width="5" height="5" fill="#000"/>
-                <rect x="85" y="40" width="5" height="5" fill="#000"/>
-                <rect x="70" y="55" width="5" height="5" fill="#000"/>
-                <rect x="40" y="65" width="5" height="5" fill="#000"/>
-                <rect x="50" y="70" width="5" height="5" fill="#000"/>
-                <rect x="45" y="80" width="5" height="5" fill="#000"/>
-                <rect x="55" y="85" width="5" height="5" fill="#000"/>
-                <rect x="65" y="65" width="25" height="25" fill="#000"/>
-                <rect x="70" y="70" width="15" height="15" fill="#fff"/>
-                <rect x="73" y="73" width="9" height="9" fill="#000"/>
-              </svg>
+            <div className="w-40 h-40 bg-zinc-100 flex items-center justify-center overflow-hidden">
+              {isQrLoading ? (
+                <Loader2 className="w-8 h-8 text-zinc-400 animate-spin" />
+              ) : qrError ? (
+                <div className="text-center text-zinc-400 text-xs p-2">
+                  <p>{t("common.errorLoading")}</p>
+                </div>
+              ) : qrData?.QrCode ? (
+                <Image
+                  src={`data:image/png;base64,${qrData.QrCode}`}
+                  alt="QR Code"
+                  width={160}
+                  height={160}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                // Fallback placeholder QR code
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <rect x="10" y="10" width="25" height="25" fill="#000"/>
+                  <rect x="65" y="10" width="25" height="25" fill="#000"/>
+                  <rect x="10" y="65" width="25" height="25" fill="#000"/>
+                  <rect x="15" y="15" width="15" height="15" fill="#fff"/>
+                  <rect x="70" y="15" width="15" height="15" fill="#fff"/>
+                  <rect x="15" y="70" width="15" height="15" fill="#fff"/>
+                  <rect x="18" y="18" width="9" height="9" fill="#000"/>
+                  <rect x="73" y="18" width="9" height="9" fill="#000"/>
+                  <rect x="18" y="73" width="9" height="9" fill="#000"/>
+                  <rect x="40" y="40" width="20" height="20" fill="#000"/>
+                  <rect x="45" y="45" width="10" height="10" fill="#fff"/>
+                  <rect x="48" y="48" width="4" height="4" fill="#000"/>
+                  <rect x="65" y="65" width="25" height="25" fill="#000"/>
+                  <rect x="70" y="70" width="15" height="15" fill="#fff"/>
+                  <rect x="73" y="73" width="9" height="9" fill="#000"/>
+                </svg>
+              )}
             </div>
           </div>
         </div>
@@ -175,7 +192,7 @@ export default function ReferralPage() {
         <div className="flex items-center gap-2 border border-zinc-200 rounded-xl overflow-hidden">
           <input
             type="text"
-            value={userData.referralLink}
+            value={referralLink}
             readOnly
             className="flex-1 px-4 py-3 text-sm text-zinc-600 bg-white outline-none"
           />
@@ -183,7 +200,7 @@ export default function ReferralPage() {
             onClick={handleCopyLink}
             className="px-6 py-3 bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
           >
-            {copiedLink ? "Copied!" : "Copy Link"}
+            {copiedLink ? t("common.copied") : t("common.copyLink")}
           </button>
         </div>
       </div>
@@ -191,7 +208,7 @@ export default function ReferralPage() {
       {/* Share Section */}
       <div className="mx-4 mt-8 flex-1">
         <h3 className="text-center text-sm font-medium text-zinc-700 mb-4">
-          Share QR Code to:
+          {t("referral.shareQr")}:
         </h3>
         <div className="flex justify-center gap-8">
           {shareOptions.map((option) => (
