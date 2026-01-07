@@ -189,6 +189,20 @@
     "lottery": "LOTTERY",
     "fishing": "FISHING"
   },
+  "profile": {
+    "changeUsername": "Change Username",
+    "changePassword": "Change Password",
+    "changeAvatar": "Change Avatar",
+    "phoneNumber": "Phone Number",
+    "sendTo": "Send to",
+    "sendToSms": "SMS",
+    "sendToEmail": "Email",
+    "otpCode": "OTP Code",
+    "requestOtp": "Request OTP",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password"
+  },
   "sidebar": {
     "referral": "REFERRAL",
     "deposit": "DEPOSIT",

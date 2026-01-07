@@ -189,6 +189,20 @@
     "lottery": "LOTERI",
     "fishing": "MEMANCING"
   },
+  "profile": {
+    "changeUsername": "Tukar Nama Pengguna",
+    "changePassword": "Tukar Kata Laluan",
+    "changeAvatar": "Tukar Avatar",
+    "phoneNumber": "Nombor Telefon",
+    "sendTo": "Hantar ke",
+    "sendToSms": "SMS",
+    "sendToEmail": "E-mel",
+    "otpCode": "Kod OTP",
+    "requestOtp": "Minta OTP",
+    "oldPassword": "Kata Laluan Lama",
+    "newPassword": "Kata Laluan Baru",
+    "confirmNewPassword": "Sahkan Kata Laluan Baru"
+  },
   "sidebar": {
     "referral": "RUJUKAN",
     "deposit": "DEPOSIT",
