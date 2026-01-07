@@ -12,7 +12,8 @@ import {
 } from "@/components/home";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
-import { useDiscover } from "@/hooks/use-discover";
+import { useDiscover, useLaunchGame } from "@/hooks/use-discover";
+import { ApiError } from "@/lib/api";
 import type { Game } from "@/lib/api/types";
 
 // Mock user data (TODO: Replace with user profile API when available)
@@ -67,11 +68,36 @@ function transformGame(game: Game) {
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState("slots");
+  const [launchingGameId, setLaunchingGameId] = useState<string | null>(null);
   const { t, locale } = useI18n();
   const { isAuthenticated, user } = useAuth();
 
   // Fetch discover data from API
   const { data: discoverData, isLoading, error } = useDiscover();
+  const launchGameMutation = useLaunchGame();
+
+  const handleLaunchGame = async (game: ReturnType<typeof transformGame>) => {
+    try {
+      setLaunchingGameId(game.id);
+      const result = await launchGameMutation.mutateAsync(game.id);
+
+      if (result.LaunchType !== "Browser" && result.Url) {
+        // Launch in current tab for Webview/App types
+        window.location.href = result.Url;
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof ApiError
+          ? err.code === 401
+            ? "Please sign in to play this game."
+            : err.message || "Failed to launch game."
+          : "Failed to launch game. Please try again.";
+
+      alert(errorMessage);
+    } finally {
+      setLaunchingGameId(null);
+    }
+  };
 
   // Transform banners from API
   const banners = (() => {
@@ -213,7 +239,12 @@ export default function HomePage() {
               {t("common.errorLoading")}
             </div>
           ) : currentProviders.length > 0 ? (
-            <GameProviderGrid providers={currentProviders} columns={4} />
+            <GameProviderGrid
+              providers={currentProviders}
+              columns={4}
+              onSelect={handleLaunchGame}
+              loadingId={launchingGameId}
+            />
           ) : (
             <div className="text-center py-8 text-zinc-500 text-sm">
               {t("common.noData")}

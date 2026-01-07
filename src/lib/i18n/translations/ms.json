@@ -131,7 +131,11 @@
     "overview": "Gambaran Keseluruhan",
     "registered": "Berdaftar",
     "activePlayer": "Pemain Aktif",
-    "turnover": "Pusing Ganti"
+    "turnover": "Pusing Ganti",
+    "noBankAccounts": "Anda belum menambah sebarang akaun bank.",
+    "addBankAccount": "Tambah Akaun Bank",
+    "primaryAccount": "Akaun Utama",
+    "noBankData": "Butiran akaun bank belum tersedia."
   },
   "inbox": {
     "title": "Peti Masuk",

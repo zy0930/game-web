@@ -142,6 +142,15 @@ export interface HaveBankAccountResponse {
   Code: number;
   Message: string;
   Have: boolean;
+  Accounts?: BankAccount[];
+}
+
+export interface BankAccount {
+  Id: string;
+  BankName: string;
+  AccountName: string;
+  AccountNo: string;
+  IsPrimary: boolean;
 }
 
 // ===========================================

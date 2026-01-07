@@ -42,7 +42,7 @@ export function useAboutUs() {
 /**
  * Hook to check if user has bank account
  */
-export function useHaveBankAccount() {
+export function useHaveBankAccount(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: userKeys.haveBankAccount(),
     queryFn: async () => {
@@ -50,5 +50,6 @@ export function useHaveBankAccount() {
       return response;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: options?.enabled ?? true,
   });
 }

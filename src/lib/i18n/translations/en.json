@@ -131,7 +131,11 @@
     "overview": "Overview",
     "registered": "Registered",
     "activePlayer": "Active Player",
-    "turnover": "Turnover"
+    "turnover": "Turnover",
+    "noBankAccounts": "You have not added any bank accounts yet.",
+    "addBankAccount": "Add Bank Account",
+    "primaryAccount": "Primary Account",
+    "noBankData": "Bank account details are not available yet."
   },
   "inbox": {
     "title": "Inbox",

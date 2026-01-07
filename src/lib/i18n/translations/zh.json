@@ -131,7 +131,11 @@
     "overview": "概览",
     "registered": "已注册",
     "activePlayer": "活跃玩家",
-    "turnover": "流水"
+    "turnover": "流水",
+    "noBankAccounts": "您还没有添加任何银行账户。",
+    "addBankAccount": "添加银行账户",
+    "primaryAccount": "主要账户",
+    "noBankData": "银行账户详情暂不可用。"
   },
   "inbox": {
     "title": "收件箱",
