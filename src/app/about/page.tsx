@@ -16,7 +16,7 @@ export default function AboutPage() {
       <Header variant="subpage" title={t("about.title")} backHref="/account" />
 
       {/* Hero Banner */}
-      <div className="relative h-[280px] bg-zinc-900">
+      <div className="relative h-[280px] bg-dark">
         {/* Background Image */}
         <Image
           src="/about-bg.jpg"

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Building2 } from "lucide-react";
 import { Header } from "@/components/layout";
 import { useI18n } from "@/providers/i18n-provider";
@@ -8,6 +9,7 @@ import { useHaveBankAccount } from "@/hooks/use-user";
 import type { BankAccount } from "@/lib/api/types";
 
 export default function BankAccountsPage() {
+  const router = useRouter();
   const { t } = useI18n();
   const { isAuthenticated } = useAuth();
   const { data, isLoading, error } = useHaveBankAccount({
@@ -100,6 +102,7 @@ export default function BankAccountsPage() {
       <div className="p-4 border-t border-zinc-100 bg-white">
         <button
           type="button"
+          onClick={() => router.push("/account/bank/add")}
           className="w-full py-3.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition-colors"
         >
           {t("account.addBankAccount")}

@@ -111,13 +111,14 @@ export default function RegisterPage() {
       }
 
       // Proceed with registration
+      // Note: If no referral code, pass empty string - system will auto-assign default
       const result = await registerMutation.mutateAsync({
         Username: data.username,
         Password: data.password,
         Email: data.email,
         Phone: data.phone,
         FullName: data.fullName,
-        Upline: data.referralCode || undefined,
+        Upline: data.referralCode || "",
       });
 
       if (result.Code === 0) {
@@ -134,16 +135,16 @@ export default function RegisterPage() {
   const isSubmitting = isValidatingUpline || registerMutation.isPending;
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50">
+    <div className="min-h-screen flex flex-col bg-zinc-50 relative">
       {/* Header */}
-      <header className="bg-zinc-800 px-4 py-3 flex items-center justify-between">
+      <header className="bg-dark px-4 py-3 flex items-center justify-between">
         <button
           onClick={() => router.back()}
           className="text-white hover:text-zinc-300 transition-colors"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-white font-medium text-lg">
+        <h1 className="text-white font-bold text-base absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
           {t("auth.register")}
         </h1>
         <div className="flex items-center gap-3">

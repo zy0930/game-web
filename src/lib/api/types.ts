@@ -206,10 +206,234 @@ export interface RegisterRequest {
   Email: string;
   Phone: string;
   FullName: string;
-  Upline?: string;
+  Upline: string; // Required - pass empty string "" if no referral code (system auto-assigns default)
 }
 
 export interface RegisterResponse {
+  Code: number;
+  Message: string;
+}
+
+// ===========================================
+// Login Types
+// ===========================================
+
+export interface LoginRequest {
+  username: string;
+  password: string;
+  fcm_token?: string;
+  fcm_platform?: "Android" | "IOS" | "Web";
+  fcm_deviceid?: string;
+}
+
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+export interface LoginErrorResponse {
+  error: "invalid_grant" | "reset_required" | string;
+  error_description: string;
+}
+
+// ===========================================
+// Withdrawal Types
+// ===========================================
+
+export interface WithdrawAccount {
+  Id: string;
+  BankName: string;
+  AccountNumber: string;
+}
+
+export interface WithdrawAccountsResponse {
+  Code: number;
+  Message: string;
+  Rows: WithdrawAccount[];
+}
+
+export interface SubmitWithdrawRequest {
+  BankAccountId: string;
+  Amount: number;
+  Pin: string;
+}
+
+export interface SubmitWithdrawResponse {
+  Code: number;
+  Message: string;
+}
+
+// ===========================================
+// Bank Account Types
+// ===========================================
+
+export interface GetTacResponse {
+  Code: number;
+  Message: string;
+  ExpiresIn: number;
+}
+
+export interface AddBankAccountRequest {
+  BankName: string;
+  AccountNumber: string;
+  Tac: string;
+}
+
+export interface AddBankAccountResponse {
+  Code: number;
+  Message: string;
+}
+
+// ===========================================
+// Carousel/Announcement Types
+// ===========================================
+
+export interface CarouselItem {
+  Id: string;
+  Title: string;
+  ImageUrl: string;
+  Description: string;
+}
+
+export interface CarouselsResponse {
+  Items: CarouselItem[];
+}
+
+export interface AnnouncementResponse {
+  HasAnnouncement: boolean;
+  Title: string;
+  Content: string;
+  ImageEn: string;
+  ImageCn: string;
+}
+
+// ===========================================
+// Contact Types
+// ===========================================
+
+export interface Contact {
+  Id: string;
+  Name: string;
+  Phone: string;
+  Status: string;
+}
+
+export interface ContactsResponse {
+  Code: number;
+  Message: string;
+  Data: Contact[];
+}
+
+export interface ContactRequest {
+  Id: string;
+  Name: string;
+  Phone: string;
+}
+
+export interface ContactRequestsResponse {
+  Code: number;
+  Message: string;
+  Data: ContactRequest[];
+}
+
+export interface SearchContactResponse {
+  Code: number;
+  Message: string;
+  Data: ContactRequest[];
+}
+
+// ===========================================
+// Transfer Types
+// ===========================================
+
+export interface TransferInfoResponse {
+  Code: number;
+  Message: string;
+  Name: string;
+  Phone: string;
+  MaximumTransfer: number;
+}
+
+export interface PostTransferRequest {
+  Id: string;
+  Amount: string;
+  Pin: string;
+}
+
+export interface PostTransferResponse {
+  Code: number;
+  Message: string;
+}
+
+// ===========================================
+// Rewards Types
+// ===========================================
+
+export interface Reward {
+  Id: string;
+  Name: string;
+  Description: string;
+  Image: string;
+}
+
+export interface RewardsResponse {
+  Code: number;
+  Message: string;
+  Data: Reward[];
+}
+
+export interface ClaimRewardRequest {
+  Id: string;
+  ReceiverName: string;
+  ReceiverPhone: string;
+  ReceiverAddress: string;
+}
+
+export interface ClaimRewardResponse {
+  Code: number;
+  Message: string;
+}
+
+// ===========================================
+// Turnover Report Types
+// ===========================================
+
+export interface TurnoverGameSelection {
+  Text: string;
+  Game: string;
+}
+
+export interface TurnoverGameSelectionsResponse {
+  Code: number;
+  Message: string;
+  Rows: TurnoverGameSelection[];
+}
+
+export interface TurnoverRecord {
+  GameName: string;
+  Amount: number;
+  WinAmount: number;
+  CreatedDate: string;
+}
+
+export interface TurnoverReportResponse {
+  Code: number;
+  Message: string;
+  PageNumber: number;
+  TotalAmount: number;
+  Rows: TurnoverRecord[];
+}
+
+// ===========================================
+// Redeem Code Types
+// ===========================================
+
+export interface RedeemCodeRequest {
+  RedeemCode: string;
+}
+
+export interface RedeemCodeResponse {
   Code: number;
   Message: string;
 }

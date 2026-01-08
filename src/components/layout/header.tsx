@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, Headphones, Menu } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Sidebar } from "./sidebar";
 
 interface HeaderProps {
@@ -43,7 +43,7 @@ export function Header({
     <>
       <header
         className={cn(
-          "bg-zinc-800 px-4 py-3 flex items-center justify-between relative",
+          "bg-dark px-5 py-3 flex items-center justify-between relative",
           className
         )}
       >
@@ -53,7 +53,7 @@ export function Header({
             <Link href="/" className="flex items-center">
               {!imgError ? (
                 <Image
-                  src="/logo-header.png"
+                  src="/aone/Aone Logo_White.webp"
                   alt="AON1E"
                   width={80}
                   height={32}
@@ -87,17 +87,31 @@ export function Header({
         <div className="flex items-center gap-3">
           <button
             onClick={onSupportClick}
-            className="text-primary hover:text-primary/80 transition-colors"
+            className="text-primary hover:text-primary/80 transition-colors cursor-pointer"
             aria-label="Support"
           >
-            <Headphones className="w-6 h-6" />
+            <Image
+              src="/aone/Header_Icon_Customer Service.webp"
+              alt="AON1E support"
+              width={24}
+              height={24}
+              className="h-7 w-auto object-contain"
+              onError={() => setImgError(true)}
+            />
           </button>
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-white hover:text-zinc-300 transition-colors"
+            className="text-white hover:text-zinc-300 transition-colors cursor-pointer"
             aria-label="Menu"
           >
-            <Menu className="w-6 h-6" />
+            <Image
+              src="/aone/Header_Icon_Menu.webp"
+              alt="AON1E menu"
+              width={24}
+              height={24}
+              className="h-7 w-auto object-contain"
+              onError={() => setImgError(true)}
+            />
           </button>
         </div>
       </header>

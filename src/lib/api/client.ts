@@ -154,4 +154,45 @@ export const apiClient = {
 
     return data;
   },
+
+  /**
+   * POST request with form-urlencoded body (for login)
+   */
+  async postForm<T>(
+    endpoint: string,
+    body: Record<string, string>,
+    options?: {
+      authenticated?: boolean;
+    }
+  ): Promise<T> {
+    const url = buildUrl(endpoint);
+
+    const formBody = new URLSearchParams();
+    Object.entries(body).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formBody.append(key, value);
+      }
+    });
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: buildHeaders({
+        authenticated: options?.authenticated,
+        contentType: "application/x-www-form-urlencoded",
+      }),
+      body: formBody.toString(),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Login errors have different format
+      if (data.error) {
+        throw new ApiError(response.status, data.error_description || data.error, response.status);
+      }
+      throw new ApiError(response.status, `Request failed: ${response.statusText}`, response.status);
+    }
+
+    return data;
+  },
 };

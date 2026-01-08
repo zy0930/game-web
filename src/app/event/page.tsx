@@ -167,7 +167,7 @@ export default function EventPage() {
                 <div className="flex gap-3">
                   <Button
                     variant="secondary"
-                    className="flex-1 bg-zinc-700 hover:bg-zinc-800 text-white rounded-full"
+                    className="flex-1 bg-dark hover:bg-dark/90 text-white rounded-full"
                     onClick={() => setSelectedEvent(event)}
                   >
                     INFO

@@ -34,7 +34,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
   };
 
   return (
-    <div className={cn("bg-zinc-800 rounded-2xl p-4", className)}>
+    <div className={cn("bg-dark rounded-2xl p-4", className)}>
       {/* Top Row - Welcome + Avatar */}
       <div className="flex items-center gap-3 mb-4">
         {/* Avatar */}

@@ -280,7 +280,7 @@ export default function InboxPage() {
           {/* Modal Content */}
           <div className="relative w-full max-w-[400px] bg-white rounded-2xl max-h-[70vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="bg-zinc-800 rounded-t-2xl px-4 py-4 flex items-center justify-between">
+            <div className="bg-dark rounded-t-2xl px-4 py-4 flex items-center justify-between">
               <Image
                 src="/logo.png"
                 alt="AONE"

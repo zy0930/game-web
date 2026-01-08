@@ -218,5 +218,18 @@
     "spinWheel": "转盘",
     "copyright": "版权所有 © 2025 AONE.",
     "allRightsReserved": "保留所有权利。"
+  },
+  "bank": {
+    "bankName": "银行名称",
+    "selectBank": "选择银行",
+    "accountNumber": "账户号码",
+    "enterAccountNumber": "输入您的账户号码",
+    "tacCode": "验证码",
+    "enterTac": "输入验证码",
+    "requestTac": "获取验证码",
+    "tacSent": "验证码已发送至您注册的手机号码",
+    "tacRequestFailed": "获取验证码失败，请重试。",
+    "addBankNote": "请确保您的银行账户名与您的注册全名一致。不接受第三方银行账户。",
+    "addFailed": "添加银行账户失败，请重试。"
   }
 }

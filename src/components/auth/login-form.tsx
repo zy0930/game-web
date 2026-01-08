@@ -34,9 +34,8 @@ export function LoginForm() {
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      // DEV ONLY: Pre-filled dummy credentials
-      email: "admin@test.com",
-      password: "password123",
+      email: "",
+      password: "",
     },
   });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Volume2 } from "lucide-react";
 import { BottomNav, Header, AppDownloadBanner } from "@/components/layout";
 import {
@@ -143,7 +144,9 @@ export default function HomePage() {
     const result: Record<string, ReturnType<typeof transformGame>[]> = {};
 
     // Only include active games (Status = "A")
-    const activeGames = discoverData.Games.filter((game) => game.Status === "A");
+    const activeGames = discoverData.Games.filter(
+      (game) => game.Status === "A"
+    );
 
     activeGames.forEach((game) => {
       if (!game.GameCategory) return; // Skip games without a category
@@ -187,7 +190,7 @@ export default function HomePage() {
       <Header variant="logo" />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto pb-2">
+      <main className="flex-1 overflow-auto pb-7">
         {/* Banner Slider - Full width, no padding, no dots, no border radius */}
         <BannerSlider
           banners={banners}
@@ -197,17 +200,23 @@ export default function HomePage() {
         />
 
         {/* Announcement Bar - Full width, no border radius */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-zinc-100">
-          <Volume2 className="w-4 h-4 text-primary flex-shrink-0" />
+        <div className="flex items-center gap-2 py-0.5 px-3 bg-[#D4F1F0]">
+          <Image
+            src="/aone/Icon_Annoucment.webp"
+            alt="AON1E sound"
+            width={24}
+            height={24}
+            className="h-7 w-auto object-contain"
+          />
           <div className="overflow-hidden flex-1">
-            <p className="text-xs text-zinc-600 whitespace-nowrap animate-marquee">
+            <p className="text-[11px] font-medium text-dark whitespace-nowrap animate-marquee">
               {runningMessage}
             </p>
           </div>
         </div>
 
         {/* Welcome Card / Guest Login */}
-        <div className="px-2 mt-3">
+        <div className="px-4 mt-4">
           {isAuthenticated ? (
             <WelcomeCard user={authenticatedUserData} />
           ) : (
@@ -216,7 +225,7 @@ export default function HomePage() {
         </div>
 
         {/* Game Categories */}
-        <div className="px-2 mt-4">
+        <div className="px-4 mt-4">
           <GameCategories
             activeCategory={activeCategory}
             onCategoryChange={setActiveCategory}
@@ -224,9 +233,9 @@ export default function HomePage() {
         </div>
 
         {/* Game Providers Grid */}
-        <div className="px-2 mt-3">
+        <div className="px-4 mt-4">
           {isLoading ? (
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-1">
               {[...Array(8)].map((_, i) => (
                 <div
                   key={i}

@@ -9,6 +9,7 @@ import {
   ReactNode,
 } from "react";
 import type { User, LoginCredentials, RegisterCredentials, AuthState } from "@/types/auth";
+import { authApi } from "@/lib/api";
 
 const AUTH_STORAGE_KEY = "aone-auth";
 
@@ -49,20 +50,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
+      // Use the real /token API endpoint
+      const response = await authApi.login(credentials.phone, credentials.password);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Login failed");
-      }
+      // Create user object from login response
+      // Note: The /token endpoint only returns the token, not user info
+      // User info would need to come from a separate profile endpoint
+      const user: User = {
+        id: credentials.phone, // Use phone as ID until profile API is available
+        name: credentials.phone,
+        phone: credentials.phone,
+      };
 
-      const data = await response.json();
-      setUser(data.user);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user: data.user, token: data.token }));
+      setUser(user);
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+        user,
+        token: response.access_token,
+        expiresIn: response.expires_in,
+      }));
       return { success: true };
     } catch (error) {
       return { success: false, error: (error as Error).message };
@@ -75,20 +80,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
+      // Use the real /api/mapiuser/Register API endpoint
+      // Note: If no referral code, pass empty string - system will auto-assign default
+      await authApi.register({
+        Username: credentials.username,
+        Password: credentials.password,
+        Email: credentials.email || "",
+        Phone: credentials.phone,
+        FullName: credentials.fullName || credentials.username,
+        Upline: credentials.referralCode || "",
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Registration failed");
-      }
+      // After successful registration, log the user in
+      const loginResponse = await authApi.login(credentials.phone, credentials.password);
 
-      const data = await response.json();
-      setUser(data.user);
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user: data.user, token: data.token }));
+      const user: User = {
+        id: credentials.phone,
+        name: credentials.username,
+        phone: credentials.phone,
+      };
+
+      setUser(user);
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+        user,
+        token: loginResponse.access_token,
+        expiresIn: loginResponse.expires_in,
+      }));
       return { success: true };
     } catch (error) {
       return { success: false, error: (error as Error).message };

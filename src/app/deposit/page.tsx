@@ -95,7 +95,7 @@ export default function DepositPage() {
       <Header variant="subpage" title={t("wallet.title")} backHref="/" />
 
       {/* Wallet Balance Section */}
-      <div className="bg-zinc-800 px-4 pt-4 pb-8">
+      <div className="bg-dark px-4 pt-4 pb-8">
         {/* Title with refresh */}
         <div className="flex items-center gap-2 mb-4">
           <h2 className="text-white font-medium">{t("wallet.balance")}</h2>

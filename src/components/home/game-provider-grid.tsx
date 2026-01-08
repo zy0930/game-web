@@ -65,7 +65,12 @@ export function GameProviderGrid({
 
       {/* Hot Badge */}
       {provider.isHot && (
-        <span className="absolute top-1 right-1 px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded">
+        <span
+          className="absolute top-0 right-0 text-center px-1.5 py-px text-white text-[9px] font-medium rounded-l-full"
+          style={{
+            background: "linear-gradient(180deg, #F9D85A 0%, #FA6625 100%)",
+          }}
+        >
           Hot
         </span>
       )}
@@ -99,14 +104,17 @@ export function GameProviderGrid({
   );
 
   return (
-    <div className={cn("grid gap-2", gridColsClass[columns], className)}>
+    <div className={cn("grid gap-1", gridColsClass[columns], className)}>
       {providers.map((provider) =>
         onSelect ? (
           <button
             key={provider.id}
             type="button"
             onClick={() => onSelect(provider)}
-            className="relative aspect-square rounded-xl overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
+            className={cn(
+              "relative aspect-8/10 overflow-hidden group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50",
+              provider.isHot ? "rounded-l-lg rounded-b-lg" : "rounded-lg"
+            )}
             disabled={loadingId === provider.id}
           >
             {renderCardContent(provider)}
@@ -115,7 +123,10 @@ export function GameProviderGrid({
           <Link
             key={provider.id}
             href={provider.href || "#"}
-            className="relative aspect-square rounded-xl overflow-hidden group"
+            className={cn(
+              "relative aspect-square overflow-hidden group",
+              provider.isHot ? "rounded-l-xl" : "rounded-xl"
+            )}
           >
             {renderCardContent(provider)}
           </Link>

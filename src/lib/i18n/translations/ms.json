@@ -218,5 +218,18 @@
     "spinWheel": "RODA PUSING",
     "copyright": "Hak Cipta © 2025 AONE.",
     "allRightsReserved": "Hak Cipta Terpelihara."
+  },
+  "bank": {
+    "bankName": "Nama Bank",
+    "selectBank": "Pilih bank",
+    "accountNumber": "Nombor Akaun",
+    "enterAccountNumber": "Masukkan nombor akaun anda",
+    "tacCode": "Kod TAC",
+    "enterTac": "Masukkan TAC",
+    "requestTac": "Minta TAC",
+    "tacSent": "TAC telah dihantar ke nombor telefon berdaftar anda",
+    "tacRequestFailed": "Gagal meminta TAC. Sila cuba lagi.",
+    "addBankNote": "Sila pastikan nama akaun bank anda sepadan dengan nama penuh berdaftar anda. Akaun bank pihak ketiga tidak diterima.",
+    "addFailed": "Gagal menambah akaun bank. Sila cuba lagi."
   }
 }

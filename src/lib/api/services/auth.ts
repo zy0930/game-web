@@ -1,11 +1,37 @@
 import { apiClient } from "../client";
+import { API_CONFIG } from "../config";
 import type {
   GetUplineResponse,
   RegisterRequest,
   RegisterResponse,
+  LoginResponse,
 } from "../types";
 
 export const authApi = {
+  /**
+   * Login user and get access token
+   * POST /token (form-urlencoded)
+   */
+  async login(
+    username: string,
+    password: string,
+    options?: {
+      fcmToken?: string;
+      deviceId?: string;
+    }
+  ): Promise<LoginResponse> {
+    return apiClient.postForm<LoginResponse>("/token", {
+      username,
+      password,
+      grant_type: "password",
+      fcm_token: options?.fcmToken || "",
+      fcm_platform: API_CONFIG.platform,
+      fcm_deviceid: options?.deviceId || "",
+    }, {
+      authenticated: false,
+    });
+  },
+
   /**
    * Get upline/referral info by referral code
    * POST /api/mapiuser/Register_GetUpline

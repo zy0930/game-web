@@ -14,16 +14,16 @@ export function GuestWelcomeCard({ className }: GuestWelcomeCardProps) {
   const { openLoginModal } = useLoginModal();
 
   return (
-    <div className={cn("flex gap-3", className)}>
+    <div className={cn("flex gap-2", className)}>
       <button
         onClick={openLoginModal}
-        className="flex-1 py-3 text-center font-semibold text-zinc-700 bg-white border-2 border-zinc-200 rounded-lg hover:bg-zinc-50 transition-colors"
+        className="uppercase flex-1 py-3 text-center text-base font-bold text-white bg-dark rounded-lg cursor-pointer"
       >
         {t("auth.login")}
       </button>
       <Link
         href="/register"
-        className="flex-1 py-3 text-center font-semibold text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
+        className="uppercase flex-1 py-3 text-center text-base font-bold text-white bg-primary rounded-lg cursor-pointer"
       >
         {t("auth.register")}
       </Link>

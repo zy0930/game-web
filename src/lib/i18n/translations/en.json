@@ -218,5 +218,18 @@
     "spinWheel": "SPIN WHEEL",
     "copyright": "Copyright © 2025 AONE.",
     "allRightsReserved": "All Rights Reserved."
+  },
+  "bank": {
+    "bankName": "Bank Name",
+    "selectBank": "Select a bank",
+    "accountNumber": "Account Number",
+    "enterAccountNumber": "Enter your account number",
+    "tacCode": "TAC Code",
+    "enterTac": "Enter TAC",
+    "requestTac": "Request TAC",
+    "tacSent": "TAC has been sent to your registered phone number",
+    "tacRequestFailed": "Failed to request TAC. Please try again.",
+    "addBankNote": "Please ensure your bank account name matches your registered full name. Third-party bank accounts are not accepted.",
+    "addFailed": "Failed to add bank account. Please try again."
   }
 }

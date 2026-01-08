@@ -106,7 +106,7 @@ export default function AccountPage() {
       <Header variant="logo" />
 
       {/* Profile Section */}
-      <div className="bg-zinc-800 px-4 py-5">
+      <div className="bg-dark px-4 py-5">
         <div className="flex items-center gap-4">
           {/* Avatar */}
           <div className="w-16 h-16 rounded-full overflow-hidden bg-zinc-600 flex-shrink-0">
