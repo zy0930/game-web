@@ -71,6 +71,7 @@ export default function ChangeAvatarPage() {
                       alt={avatar.alt}
                       width={120}
                       height={120}
+                      unoptimized
                       className="w-full h-full object-cover"
                       onError={() => handleImageError(avatar.id)}
                     />

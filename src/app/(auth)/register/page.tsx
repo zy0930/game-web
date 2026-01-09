@@ -173,6 +173,7 @@ export default function RegisterPage() {
           width={32}
           height={32}
           className="h-46 w-full object-fill"
+          unoptimized
         />
 
         {/* Form */}

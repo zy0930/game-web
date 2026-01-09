@@ -62,7 +62,6 @@ function transformGame(game: Game) {
     id: game.Id,
     name: game.Name,
     image: game.Image || "/placeholder-game.png",
-    href: `/games/${game.Id}`,
     isHot: game.IsHot,
   };
 }
@@ -77,7 +76,7 @@ export default function HomePage() {
   const { data: discoverData, isLoading, error } = useDiscover();
   const launchGameMutation = useLaunchGame();
 
-  const handleLaunchGame = async (game: ReturnType<typeof transformGame>) => {
+  const handleLaunchGame = async (game: { id: string; name: string }) => {
     try {
       setLaunchingGameId(game.id);
       const result = await launchGameMutation.mutateAsync(game.id);
@@ -200,13 +199,14 @@ export default function HomePage() {
         />
 
         {/* Announcement Bar - Full width, no border radius */}
-        <div className="flex items-center gap-2 py-0.5 px-3 bg-[#D4F1F0]">
+        <div className="flex items-center gap-2 py-1.5 px-3 bg-[#D4F1F0] border border-primary">
           <Image
-            src="/aone/Icon_Annoucment.webp"
+            src="/images/marquee/sound_icon.png"
             alt="AON1E sound"
             width={24}
             height={24}
-            className="h-7 w-auto object-contain"
+            unoptimized
+            className="h-4 w-auto object-contain"
           />
           <div className="overflow-hidden flex-1">
             <p className="text-[11px] font-roboto-medium text-dark whitespace-nowrap animate-marquee">
@@ -226,10 +226,13 @@ export default function HomePage() {
 
         {/* Game Categories */}
         <div className="px-4 mt-4">
-          <GameCategories
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
-          />
+          {discoverData?.GameCategories && (
+            <GameCategories
+              categories={discoverData.GameCategories}
+              activeCategory={activeCategory}
+              onCategoryChange={setActiveCategory}
+            />
+          )}
         </div>
 
         {/* Game Providers Grid */}

@@ -24,7 +24,7 @@ export function AppDownloadBanner({ className }: AppDownloadBannerProps) {
     >
       {/* Left: Logo and Text */}
       <div className="flex items-center gap-3">
-        <div className="shrink-0 overflow-hidden w-10 h-10">
+        <div className="shrink-0 overflow-hidden w-auto h-10">
           {imgError ? (
             <div className="w-full h-full rounded-lg bg-dark flex items-center justify-center">
               <span className="text-xs font-roboto-bold text-white">
@@ -33,12 +33,13 @@ export function AppDownloadBanner({ className }: AppDownloadBannerProps) {
             </div>
           ) : (
             <Image
-              src="/aone/DownloadNow_Aone Logo.png"
+              src="/images/app_icon.png"
               alt="Aone App"
-              width={40}
-              height={40}
-              className="object-contain"
+              width={50}
+              height={50}
+              className="object-contain w-full h-full"
               onError={() => setImgError(true)}
+              unoptimized
             />
           )}
         </div>
@@ -59,7 +60,7 @@ export function AppDownloadBanner({ className }: AppDownloadBannerProps) {
             // TODO: Link to app store
             window.open("#download", "_blank");
           }}
-          className="bg-white py-1.5 px-2.5 rounded-md font-roboto-bold text-xs text-primary transition-opacity hover:opacity-90"
+          className="bg-white py-1.5 px-2.5 rounded-md font-roboto-bold text-xs text-primary shadow-xl"
         >
           DOWNLOAD NOW
         </button>

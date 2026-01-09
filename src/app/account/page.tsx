@@ -116,6 +116,7 @@ export default function AccountPage() {
               <Image
                 src={userData.avatar}
                 alt={userData.username}
+                unoptimized
                 width={64}
                 height={64}
                 className="object-cover w-full h-full"

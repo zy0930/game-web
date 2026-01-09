@@ -3,77 +3,92 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
-
-interface GameCategory {
-  id: string;
-  labelKey: string;
-  imageName: string; // Maps to Categorie_{imageName}_Active/Default.webp
-}
+import type { GameCategory } from "@/lib/api/types";
 
 interface GameCategoriesProps {
-  categories?: GameCategory[];
+  categories: GameCategory[];
   activeCategory: string;
   onCategoryChange: (categoryId: string) => void;
   className?: string;
 }
 
-const defaultCategories: GameCategory[] = [
-  { id: "slots", labelKey: "games.slots", imageName: "Slot" },
-  { id: "appSlot", labelKey: "games.appSlot", imageName: "AppSlot" },
-  { id: "live", labelKey: "games.live", imageName: "Live" },
-  { id: "sports", labelKey: "games.sports", imageName: "Sports" },
-  { id: "lottery", labelKey: "games.lottery", imageName: "Lottery" },
-  { id: "fishing", labelKey: "games.fishing", imageName: "Fishing" },
-];
+/**
+ * Get the correct category image based on locale and active state
+ * @param category - The game category from API
+ * @param locale - Current locale (en, zh, ms)
+ * @param isActive - Whether the category is currently selected
+ * @returns The image URL to use
+ */
+function getCategoryImage(
+  category: GameCategory,
+  locale: string,
+  isActive: boolean
+): string | null {
+  // Map i18n locale to API image field prefixes
+  // en -> default (DayImage)
+  // zh -> Cn (CnDayImage)
+  // ms -> My (MyDayImage)
+
+  if (isActive) {
+    // Selected/Active state
+    switch (locale) {
+      case "zh":
+        return category.CnDayImageSelected || category.DayImageSelected;
+      case "ms":
+        return category.MyDayImageSelected || category.DayImageSelected;
+      default: // "en" or any other
+        return category.DayImageSelected;
+    }
+  } else {
+    // Default/Inactive state
+    switch (locale) {
+      case "zh":
+        return category.CnDayImage || category.DayImage;
+      case "ms":
+        return category.MyDayImage || category.DayImage;
+      default: // "en" or any other
+        return category.DayImage;
+    }
+  }
+}
 
 export function GameCategories({
-  categories = defaultCategories,
+  categories,
   activeCategory,
   onCategoryChange,
   className,
 }: GameCategoriesProps) {
-  const { t } = useI18n();
+  const { locale } = useI18n();
+
+  if (!categories || categories.length === 0) {
+    return null;
+  }
 
   return (
-    <div className={cn("flex gap-1 overflow-x-auto scrollbar-hide", className)}>
+    <div className={cn("flex overflow-x-auto scrollbar-hide", className)}>
       {categories.map((category) => {
-        const isActive = activeCategory === category.id;
-        const imageState = isActive ? "Active" : "Default";
-        const imagePath = `/aone/Category/Categorie_${category.imageName}_${imageState}.png`;
+        const isActive = activeCategory === category.Name.toLowerCase();
+        const imageSrc = getCategoryImage(category, locale, isActive);
 
         return (
           <button
-            key={category.id}
-            onClick={() => onCategoryChange(category.id)}
-            className={cn(
-              "flex flex-col items-center flex-1 min-w-0 px-3 py-2 rounded-lg transition-all",
-              isActive
-                ? "bg-primary text-white border border-primary"
-                : "text-zinc-600 border border-transparent"
-            )}
-            style={
-              !isActive
-                ? {
-                    background: "linear-gradient(180deg, #FFFFFF 0%, #F2F4F9 100%) padding-box, linear-gradient(180deg, #F2F2F2 0%, #FFFFFF 100%) border-box",
-                  }
-                : undefined
-            }
+            key={category.Id}
+            onClick={() => onCategoryChange(category.Name.toLowerCase())}
+            className="flex flex-col items-center flex-1 min-w-0 transition-all"
           >
-            <span className="mb-1 w-8 h-8 relative flex items-center">
+            {imageSrc && (
               <Image
-                src={imagePath}
-                alt={t(category.labelKey)}
-                width={32}
-                height={32}
-                className="object-contain"
+                src={imageSrc}
+                alt={category.Name}
+                width={100}
+                height={100}
+                className="object-contain w-full h-full"
+                unoptimized
               />
-            </span>
-            <span className="text-xs font-roboto-bold whitespace-nowrap">{t(category.labelKey)}</span>
+            )}
           </button>
         );
       })}
     </div>
   );
 }
-
-export { defaultCategories };

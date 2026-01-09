@@ -18,10 +18,13 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
-  name: string;
-  email: string;
+  username: string;
   password: string;
   confirmPassword: string;
+  email?: string;
+  phone: string;
+  fullName?: string;
+  referralCode?: string;
 }
 
 export interface AuthResponse {

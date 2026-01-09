@@ -41,7 +41,14 @@ export function RegisterForm() {
   });
 
   async function onSubmit(data: RegisterFormData) {
-    const result = await register(data);
+    // Transform form data to match RegisterCredentials
+    const result = await register({
+      username: data.name,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      phone: "", // This legacy form doesn't have phone field
+    });
     if (!result.success) {
       form.setError("root", { message: result.error });
     }

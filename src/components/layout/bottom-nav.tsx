@@ -35,7 +35,7 @@ export function BottomNav() {
   const renderNavItem = (item: NavItem) => {
     const isActive = pathname === item.href;
     const imageState = isActive ? "Active" : "Default";
-    const imagePath = `/aone/FooterMenu/Footer_Icon_${item.imageName}_${imageState}.webp`;
+    const imagePath = `/images/footer/${item.imageName}_icon_${imageState}.png`;
 
     return (
       <ProtectedLink
@@ -51,6 +51,7 @@ export function BottomNav() {
           alt={t(labelTranslations[item.labelKey] || item.labelKey)}
           width={30}
           height={30}
+          unoptimized
           className="w-[30px] h-[30px] object-contain"
         />
         <span>{t(labelTranslations[item.labelKey] || item.labelKey)}</span>
@@ -70,10 +71,11 @@ export function BottomNav() {
           className="flex flex-col items-center justify-end -mt-10"
         >
           <Image
-            src="/aone/FooterMenu/Footer_A1 Home.webp"
+            src="/images/footer/home_icon.png"
             alt="Home"
             height={80}
             width={80}
+            unoptimized
             className="w-full h-full"
           />
         </Link>

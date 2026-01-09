@@ -29,6 +29,7 @@ export function AddFriendBanner({
           alt="Add Friend"
           width={24}
           height={24}
+          unoptimized
           className="w-6 h-6 object-contain"
         />
         <span className="text-white font-roboto-medium">Add New Friend</span>

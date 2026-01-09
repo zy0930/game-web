@@ -43,6 +43,7 @@ export function EventDetailsModal({
             src={event.image}
             alt={event.title}
             fill
+            unoptimized
             className="object-cover"
             onError={(e) => {
               e.currentTarget.style.display = "none";

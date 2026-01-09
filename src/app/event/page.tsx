@@ -147,6 +147,7 @@ export default function EventPage() {
                 <Image
                   src={event.image}
                   alt={event.title}
+                  unoptimized
                   fill
                   className="object-cover"
                   onError={(e) => {

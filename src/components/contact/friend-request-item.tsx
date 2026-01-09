@@ -40,6 +40,7 @@ export function FriendRequestItem({
               alt={username}
               width={48}
               height={48}
+              unoptimized
               className="w-full h-full object-cover"
               onError={() => setImgError(true)}
             />

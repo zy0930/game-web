@@ -53,12 +53,13 @@ export function Header({
             <Link href="/" className="flex items-center">
               {!imgError ? (
                 <Image
-                  src="/aone/Aone Logo_White.webp"
+                  src="/images/title_white.png"
                   alt="AON1E"
                   width={80}
                   height={32}
                   className="h-8 w-auto object-contain"
                   onError={() => setImgError(true)}
+                  unoptimized
                 />
               ) : (
                 <span className="text-xl font-roboto-bold text-white">
@@ -91,12 +92,13 @@ export function Header({
             aria-label="Support"
           >
             <Image
-              src="/aone/Header_Icon_Customer Service.webp"
+              src="/images/header/customer_service_icon.png"
               alt="AON1E support"
               width={24}
               height={24}
               className="h-7 w-auto object-contain"
               onError={() => setImgError(true)}
+              unoptimized
             />
           </button>
           <button
@@ -105,12 +107,13 @@ export function Header({
             aria-label="Menu"
           >
             <Image
-              src="/aone/Header_Icon_Menu.webp"
+              src="/images/header/menu_icon.png"
               alt="AON1E menu"
               width={24}
               height={24}
               className="h-7 w-auto object-contain"
               onError={() => setImgError(true)}
+              unoptimized
             />
           </button>
         </div>

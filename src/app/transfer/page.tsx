@@ -62,6 +62,7 @@ export default function TransferPage() {
                 alt={contact.alias}
                 width={96}
                 height={96}
+                unoptimized
                 className="w-full h-full object-cover"
                 onError={() => setImgError(true)}
               />

@@ -223,6 +223,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   alt="AON1E"
                   width={140}
                   height={48}
+                  unoptimized
                   className="h-12 w-auto object-contain"
                   onError={() => setImgError(true)}
                 />

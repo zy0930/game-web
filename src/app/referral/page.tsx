@@ -93,6 +93,7 @@ export default function ReferralPage() {
                   alt={user.name || "User"}
                   width={88}
                   height={88}
+                  unoptimized
                   className="object-cover w-full h-full"
                   onError={() => setImgError(true)}
                 />
@@ -147,6 +148,7 @@ export default function ReferralPage() {
                   alt="QR Code"
                   width={160}
                   height={160}
+                  unoptimized
                   className="w-full h-full object-contain"
                 />
               ) : (

@@ -51,15 +51,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       // Use the real /token API endpoint
-      const response = await authApi.login(credentials.phone, credentials.password);
+      const response = await authApi.login(credentials.email, credentials.password);
 
       // Create user object from login response
       // Note: The /token endpoint only returns the token, not user info
       // User info would need to come from a separate profile endpoint
       const user: User = {
-        id: credentials.phone, // Use phone as ID until profile API is available
-        name: credentials.phone,
-        phone: credentials.phone,
+        id: credentials.email, // Use email as ID until profile API is available
+        email: credentials.email,
+        name: credentials.email,
+        createdAt: new Date(),
       };
 
       setUser(user);
@@ -92,12 +93,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
 
       // After successful registration, log the user in
-      const loginResponse = await authApi.login(credentials.phone, credentials.password);
+      const loginResponse = await authApi.login(credentials.username, credentials.password);
 
       const user: User = {
-        id: credentials.phone,
+        id: credentials.username,
+        email: credentials.email || "",
         name: credentials.username,
-        phone: credentials.phone,
+        createdAt: new Date(),
       };
 
       setUser(user);

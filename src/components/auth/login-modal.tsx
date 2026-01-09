@@ -71,6 +71,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             alt="AON1E"
             width={120}
             height={48}
+            unoptimized
             className="h-10 w-auto object-contain"
             onError={() => setImgError(true)}
           />
@@ -87,6 +88,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   alt="AON1E username"
                   width={24}
                   height={24}
+                  unoptimized
                   className="h-5 w-auto object-contain"
                 />
               </div>
@@ -116,6 +118,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   alt="AON1E password"
                   width={24}
                   height={24}
+                  unoptimized
                   className="h-5 w-auto object-contain"
                 />
               </div>

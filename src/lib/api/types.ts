@@ -39,6 +39,12 @@ export interface GameCategory {
   Name: string;
   DayImage: string | null;
   DayImageSelected: string | null;
+  DarkImage: string | null;
+  DarkImageSelected: string | null;
+  CnDayImage: string | null;
+  CnDayImageSelected: string | null;
+  MyDayImage: string | null;
+  MyDayImageSelected: string | null;
 }
 
 export interface Game {

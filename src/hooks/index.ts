@@ -3,4 +3,4 @@ export { useDiscover, useLaunchGame, useQuitGame, discoverKeys } from "./use-dis
 export { useEvents, useClaimPromo, eventsKeys } from "./use-events";
 export { useTransactions, useInfiniteTransactions, transactionsKeys } from "./use-transactions";
 export { useQrCode, useAboutUs, useHaveBankAccount, userKeys } from "./use-user";
-export { useGetUpline, useRegister, registerKeys } from "./use-register";
+export { useRegister, registerKeys } from "./use-register";

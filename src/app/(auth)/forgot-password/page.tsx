@@ -76,11 +76,12 @@ export default function ForgotPasswordPage() {
             aria-label="Support"
           >
             <Image
-              src="/aone/Header_Icon_Customer Service.webp"
+              src="/images/header/customer_service_icon.png"
               alt="AON1E support"
               width={24}
               height={24}
               className="h-7 w-auto object-contain"
+              unoptimized
             />
           </button>
           <button
@@ -89,11 +90,12 @@ export default function ForgotPasswordPage() {
             aria-label="Menu"
           >
             <Image
-              src="/aone/Header_Icon_Menu.webp"
+              src="/images/header/menu_icon.png"
               alt="AON1E menu"
               width={24}
               height={24}
               className="h-7 w-auto object-contain"
+              unoptimized
             />
           </button>
         </div>
@@ -112,6 +114,7 @@ export default function ForgotPasswordPage() {
                   width={24}
                   height={24}
                   className="h-6 w-auto object-contain"
+                  unoptimized
                 />
               </div>
               <input
@@ -135,6 +138,7 @@ export default function ForgotPasswordPage() {
                   alt="AON1E phone"
                   width={24}
                   height={24}
+                  unoptimized
                   className="h-6 w-auto object-contain"
                 />
               </div>
@@ -162,6 +166,7 @@ export default function ForgotPasswordPage() {
                 alt="AON1E otp"
                 width={24}
                 height={24}
+                unoptimized
                 className="h-6 w-auto object-contain"
               />
             </div>
@@ -188,6 +193,7 @@ export default function ForgotPasswordPage() {
                   alt="AON1E otp"
                   width={24}
                   height={24}
+                  unoptimized
                   className="h-6 w-auto object-contain"
                 />
               </div>
@@ -216,6 +222,7 @@ export default function ForgotPasswordPage() {
                   alt="AON1E password"
                   width={24}
                   height={24}
+                  unoptimized
                   className="h-6 w-auto object-contain"
                 />
               </div>
