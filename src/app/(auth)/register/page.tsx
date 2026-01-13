@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -11,22 +11,14 @@ import {
   EyeOff,
   Headphones,
   Menu,
-  Users,
-  CreditCard,
-  Lock,
-  User,
-  Phone,
-  Mail,
-  Wallet,
   ChevronDown,
-  FolderOpen,
-  Camera,
   Loader2,
 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
 import { LoginModal } from "@/components/auth/login-modal";
 import { useRegister } from "@/hooks/use-register";
 import { authApi } from "@/lib/api";
+import { Header } from "@/components/layout";
 
 interface RegisterFormData {
   referralCode: string;
@@ -35,9 +27,12 @@ interface RegisterFormData {
   confirmPassword: string;
   fullName: string;
   phone: string;
-  email: string;
   otpCode: string;
 }
+
+type SendToOption = "SMS" | "WhatsApp";
+
+const DEFAULT_REFERRAL_CODE = "196B48";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -46,8 +41,11 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [sendToId, setSendToId] = useState("");
+  const [sendTo, setSendTo] = useState<SendToOption | "">("");
   const [isValidatingUpline, setIsValidatingUpline] = useState(false);
+  const [isRequestingOtp, setIsRequestingOtp] = useState(false);
+  const [otpCountdown, setOtpCountdown] = useState(0);
+  const [otpSent, setOtpSent] = useState(false);
 
   // API hooks
   const registerMutation = useRegister();
@@ -57,6 +55,8 @@ export default function RegisterPage() {
     handleSubmit,
     formState: { errors },
     setError,
+    watch,
+    clearErrors,
   } = useForm<RegisterFormData>({
     defaultValues: {
       referralCode: "",
@@ -65,16 +65,58 @@ export default function RegisterPage() {
       confirmPassword: "",
       fullName: "",
       phone: "",
-      email: "",
       otpCode: "",
     },
   });
 
-  // Placeholder for OTP request - disabled for now
-  const handleRequestOTP = () => {
-    // TODO: Implement when API is available
-    console.log("OTP request - API not available yet");
-  };
+  const phoneValue = watch("phone");
+
+  // OTP countdown timer
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (otpCountdown > 0) {
+      timer = setTimeout(() => setOtpCountdown(otpCountdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [otpCountdown]);
+
+  // Handle OTP request
+  const handleRequestOTP = useCallback(async () => {
+    // Validate phone number
+    if (!phoneValue || phoneValue.trim().length < 10) {
+      setError("phone", { message: "Please enter a valid phone number" });
+      return;
+    }
+
+    // Validate send to option
+    if (!sendTo) {
+      setError("root", {
+        message: "Please select how to receive OTP (SMS or WhatsApp)",
+      });
+      return;
+    }
+
+    clearErrors("root");
+    setIsRequestingOtp(true);
+
+    try {
+      const result = await authApi.registerGetTac({
+        Phone: phoneValue.trim(),
+        Option: sendTo,
+      });
+
+      if (result.Code === 0) {
+        setOtpSent(true);
+        setOtpCountdown(result.ExpiresIn || 300);
+      } else {
+        setError("root", { message: result.Message || "Failed to send OTP" });
+      }
+    } catch {
+      setError("root", { message: "Failed to send OTP. Please try again." });
+    } finally {
+      setIsRequestingOtp(false);
+    }
+  }, [phoneValue, sendTo, setError, clearErrors]);
 
   const onSubmit = async (data: RegisterFormData) => {
     if (!agreeTerms) {
@@ -87,45 +129,59 @@ export default function RegisterPage() {
       return;
     }
 
+    // Validate OTP was requested and code is entered
+    if (!otpSent) {
+      setError("root", { message: "Please request and enter OTP code" });
+      return;
+    }
+
+    if (!data.otpCode || data.otpCode.trim().length < 4) {
+      setError("otpCode", { message: "Please enter a valid OTP code" });
+      return;
+    }
+
     try {
       let uplineValue = data.referralCode?.trim() || "";
 
-      // If NO referral code provided, call GetUpline API to generate one using username
-      if (!uplineValue) {
+      // If referral code is provided, verify it
+      if (uplineValue) {
         setIsValidatingUpline(true);
 
         try {
-          const uplineResult = await authApi.getUpline(data.username);
+          const uplineResult = await authApi.getUpline(uplineValue);
 
           if (uplineResult.Code !== 0) {
-            setError("root", {
-              message: uplineResult.Message || "Failed to generate referral code",
+            setError("referralCode", {
+              message: uplineResult.Message || "Invalid referral code",
             });
             setIsValidatingUpline(false);
             return;
           }
 
-          // Use the generated ReferralCode from the response
+          // Use the validated ReferralCode from the response
           uplineValue = uplineResult.ReferralCode;
         } catch {
-          setError("root", {
-            message: "Failed to generate referral code. Please try again.",
+          setError("referralCode", {
+            message: "Failed to verify referral code. Please try again.",
           });
           setIsValidatingUpline(false);
           return;
         }
 
         setIsValidatingUpline(false);
+      } else {
+        // No referral code provided, use default
+        uplineValue = DEFAULT_REFERRAL_CODE;
       }
 
       // Proceed with registration using the upline value
       const result = await registerMutation.mutateAsync({
-        Username: data.username,
+        Name: data.fullName,
         Password: data.password,
-        Email: data.email,
         Phone: data.phone,
-        FullName: data.fullName,
-        Upline: uplineValue,
+        Tac: data.otpCode,
+        UplineReferralCode: uplineValue,
+        Username: data.username,
       });
 
       if (result.Code === 0) {
@@ -140,29 +196,16 @@ export default function RegisterPage() {
   };
 
   const isSubmitting = isValidatingUpline || registerMutation.isPending;
+  const canRequestOtp =
+    phoneValue &&
+    phoneValue.trim().length >= 10 &&
+    sendTo &&
+    otpCountdown === 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 relative">
+    <div className="min-h-screen flex flex-col relative">
       {/* Header */}
-      <header className="bg-dark px-4 py-3 flex items-center justify-between">
-        <button
-          onClick={() => router.back()}
-          className="text-white hover:text-zinc-300 transition-colors"
-        >
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-white font-roboto-bold text-base absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2">
-          {t("auth.register")}
-        </h1>
-        <div className="flex items-center gap-3">
-          <button className="text-primary hover:text-primary/80 transition-colors">
-            <Headphones className="w-6 h-6" />
-          </button>
-          <button className="text-white hover:text-zinc-300 transition-colors">
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
-      </header>
+      <Header variant="subpage" title={t("auth.register")} backHref="/account" />
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
@@ -172,7 +215,7 @@ export default function RegisterPage() {
           alt="register banner"
           width={32}
           height={32}
-          className="h-46 w-full object-fill"
+          className="h-auto w-full object-fill"
           unoptimized
         />
 
@@ -182,7 +225,14 @@ export default function RegisterPage() {
           <div>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Users className="w-5 h-5" />
+                <Image
+                  src="/images/icon/referral_icon.png"
+                  alt="AON1E referral"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-5 w-auto object-contain"
+                />
               </div>
               <input
                 {...register("referralCode")}
@@ -195,31 +245,58 @@ export default function RegisterPage() {
                   type="button"
                   className="text-zinc-400 hover:text-zinc-600"
                 >
-                  <FolderOpen className="w-5 h-5" />
+                  <Image
+                    src="/images/icon/folder_icon.png"
+                    alt="AON1E folder"
+                    width={24}
+                    height={24}
+                    unoptimized
+                    className="h-5 w-auto object-contain"
+                  />
                 </button>
                 <button
                   type="button"
                   className="text-zinc-400 hover:text-zinc-600"
                 >
-                  <Camera className="w-5 h-5" />
+                  <Image
+                    src="/images/icon/camera_icon.png"
+                    alt="AON1E camera"
+                    width={24}
+                    height={24}
+                    unoptimized
+                    className="h-5 w-auto object-contain"
+                  />
                 </button>
               </div>
             </div>
-            <p className="text-xs text-zinc-500 mt-1 ml-1">
-              <span className="font-roboto-medium">Note:</span> If no referral code,
-              one will be automatically generated for you
-            </p>
+            {errors.referralCode ? (
+              <p className="text-xs text-red-500 mt-1 ml-1">
+                {errors.referralCode.message}
+              </p>
+            ) : (
+              <p className="text-xs text-zinc-500 mt-1 ml-1">
+                <span className="font-roboto-medium">Note:</span> If no referral
+                code, system will auto assign a default referral code
+              </p>
+            )}
           </div>
 
           {/* Username */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-              <CreditCard className="w-5 h-5" />
+              <Image
+                src="/images/icon/uuid_icon.png"
+                alt="AON1E uuid"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
+              />
             </div>
             <input
               {...register("username", { required: "Username is required" })}
               type="text"
-              placeholder="Username"
+              placeholder="UID"
               className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
             />
             {errors.username && (
@@ -229,34 +306,17 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Email */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Mail className="w-5 h-5" />
-            </div>
-            <input
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
-                },
-              })}
-              type="email"
-              placeholder="Email"
-              className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-            />
-            {errors.email && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
           {/* Password */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Lock className="w-5 h-5" />
+              <Image
+                src="/images/icon/lock_icon.png"
+                alt="AON1E lock"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
+              />
             </div>
             <input
               {...register("password", {
@@ -291,7 +351,14 @@ export default function RegisterPage() {
           {/* Confirm Password */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Lock className="w-5 h-5" />
+              <Image
+                src="/images/icon/lock_icon.png"
+                alt="AON1E lock"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
+              />
             </div>
             <input
               {...register("confirmPassword", {
@@ -322,7 +389,14 @@ export default function RegisterPage() {
           {/* Full Name */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-              <User className="w-5 h-5" />
+              <Image
+                src="/images/icon/user_icon.png"
+                alt="AON1E lock"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
+              />
             </div>
             <input
               {...register("fullName", { required: "Full name is required" })}
@@ -340,11 +414,22 @@ export default function RegisterPage() {
           {/* Phone Number */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Phone className="w-5 h-5" />
+              <Image
+                src="/images/icon/phone_icon.png"
+                alt="AON1E phone"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
+              />
             </div>
             <input
               {...register("phone", {
                 required: "Phone number is required",
+                minLength: {
+                  value: 10,
+                  message: "Phone number must be at least 10 digits",
+                },
               })}
               type="tel"
               placeholder="Phone Number"
@@ -357,49 +442,85 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Send to Dropdown - DISABLED (API not available) */}
+          {/* Send to Dropdown */}
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Wallet className="w-5 h-5" />
+              <Image
+                src="/images/icon/otp_icon.png"
+                alt="AON1E phone"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
+              />
             </div>
             <select
-              value={sendToId}
-              onChange={(e) => setSendToId(e.target.value)}
-              disabled={true}
-              className="w-full pl-10 pr-10 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white appearance-none text-zinc-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-100"
+              value={sendTo}
+              onChange={(e) => setSendTo(e.target.value as SendToOption | "")}
+              className={`w-full pl-10 pr-10 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white appearance-none ${
+                !sendTo ? "text-zinc-500" : "text-zinc-900"
+              }`}
             >
-              <option value="">Send to (Coming Soon)</option>
-              <option value="sms">SMS</option>
-              <option value="whatsapp">WhatsApp</option>
+              <option value="">Send to</option>
+              <option value="SMS">SMS</option>
+              <option value="WhatsApp">WhatsApp</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
               <ChevronDown className="w-5 h-5" />
             </div>
           </div>
 
-          {/* OTP Code - DISABLED (API not available) */}
+          {/* OTP Code */}
           <div className="flex gap-2">
             <div className="relative flex-1">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Wallet className="w-5 h-5" />
+                <Image
+                  src="/images/icon/otp_icon.png"
+                  alt="AON1E phone"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-5 w-auto object-contain"
+                />
               </div>
               <input
-                {...register("otpCode")}
+                {...register("otpCode", {
+                  required: otpSent ? "OTP code is required" : false,
+                })}
                 type="text"
-                placeholder="OTP Code (Coming Soon)"
-                disabled={true}
-                className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-zinc-100"
+                placeholder="OTP Code"
+                maxLength={6}
+                className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
               />
+              {errors.otpCode && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.otpCode.message}
+                </p>
+              )}
             </div>
             <button
               type="button"
               onClick={handleRequestOTP}
-              disabled={true}
-              className="px-6 py-3.5 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed min-w-[130px]"
+              disabled={!canRequestOtp || isRequestingOtp}
+              className="px-4 py-3.5 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed min-w-[130px] flex items-center justify-center"
             >
-              Request OTP
+              {isRequestingOtp ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : otpCountdown > 0 ? (
+                `Resend (${otpCountdown}s)`
+              ) : otpSent ? (
+                "Resend OTP"
+              ) : (
+                "Request OTP"
+              )}
             </button>
           </div>
+          {otpSent && otpCountdown > 0 && (
+            <p className="text-xs text-green-600 ml-1">
+              OTP sent! Please check your{" "}
+              {sendTo === "WhatsApp" ? "WhatsApp" : "SMS"}.
+            </p>
+          )}
 
           {/* Terms & Conditions */}
           <label className="flex items-start gap-2 cursor-pointer">
@@ -434,7 +555,7 @@ export default function RegisterPage() {
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
                 {isValidatingUpline
-                  ? "Generating referral..."
+                  ? "Verifying referral code..."
                   : t("auth.creatingAccount")}
               </>
             ) : (

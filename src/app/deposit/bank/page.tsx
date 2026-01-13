@@ -81,7 +81,7 @@ export default function BankTransferPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-100">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title="Bank Transfer" backHref="/deposit" />
 

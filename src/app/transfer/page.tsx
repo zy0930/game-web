@@ -47,7 +47,7 @@ export default function TransferPage() {
   const formattedAmount = amount ? parseFloat(amount).toFixed(2) : "0.00";
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title="Transfer" backHref={`/account/contact`} />
 

@@ -59,7 +59,7 @@ export default function ChangePasswordPage() {
   const selectedSendToOption = sendToOptions.find((opt) => opt.value === sendTo);
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-100">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header
         variant="subpage"

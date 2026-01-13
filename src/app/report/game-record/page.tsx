@@ -33,7 +33,7 @@ export default function GameRecordPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title="Game Record" backHref="/report" />
 

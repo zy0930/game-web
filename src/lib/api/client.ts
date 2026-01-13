@@ -20,18 +20,25 @@ export class ApiError extends Error {
 }
 
 // Get stored auth token for external API
-// Returns null if token doesn't exist or is a mock token
+// Returns null if token doesn't exist or is invalid
 export function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
 
+  // First, check for direct "token" key in localStorage
+  const directToken = localStorage.getItem("token");
+  if (directToken && directToken.length > 50) {
+    return directToken.trim();
+  }
+
+  // Fallback: check for token in aone-auth JSON object
   const authData = localStorage.getItem(AUTH_STORAGE_KEY);
   if (authData) {
     try {
       const parsed = JSON.parse(authData);
       const token = parsed.token || null;
-      // Only return token if it looks like a real JWT (not mock)
-      if (token && token.includes(".") && token.length > 50) {
-        return token;
+      // Return token if it exists and has reasonable length
+      if (token && token.length > 50) {
+        return token.trim();
       }
       return null;
     } catch {
@@ -64,7 +71,7 @@ function buildHeaders(options?: {
   if (options?.authenticated !== false) {
     const token = getAuthToken();
     if (token) {
-      headers["Authorization"] = `bearer ${token}`;
+      headers["Authorization"] = `bearer ${token.trim()}`;
     }
   }
 

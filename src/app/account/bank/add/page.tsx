@@ -92,7 +92,7 @@ export default function AddBankAccountPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col bg-zinc-100">
+      <div className="min-h-screen flex flex-col">
         <Header variant="subpage" title={t("account.addBankAccount")} backHref="/account/bank" />
         <div className="flex-1 flex items-center justify-center px-4">
           <p className="text-sm text-zinc-500 text-center">
@@ -104,7 +104,7 @@ export default function AddBankAccountPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-100">
+    <div className="min-h-screen flex flex-col">
       <Header variant="subpage" title={t("account.addBankAccount")} backHref="/account/bank" />
 
       <main className="flex-1 px-4 py-6">

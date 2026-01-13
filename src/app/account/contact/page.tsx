@@ -111,7 +111,7 @@ export default function ContactPage() {
   const totalPendingRequests = friendRequests.length + myRequests.length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header
         variant="subpage"

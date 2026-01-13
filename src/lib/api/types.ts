@@ -66,6 +66,11 @@ export interface DiscoverResponse {
   GameCategories: GameCategory[];
   Games: Game[];
   // User info (when authenticated)
+  Id?: string;
+  Username?: string;
+  Name?: string;
+  Avatar?: string;
+  Currency?: string;
   Cash?: number;
   Chip?: number;
   Point?: number;
@@ -206,16 +211,59 @@ export interface GetUplineResponse {
   ReferralCode: string;
 }
 
-export interface RegisterRequest {
-  Username: string;
-  Password: string;
-  Email: string;
+export interface RegisterGetTacRequest {
   Phone: string;
-  FullName: string;
-  Upline: string; // Required - pass empty string "" if no referral code (system auto-assigns default)
+  Option: "SMS" | "WhatsApp";
+}
+
+export interface RegisterGetTacResponse {
+  Code: number;
+  Message: string;
+  Phone: string;
+  Tac: string;
+  ExpiresIn: number;
+}
+
+export interface RegisterRequest {
+  Name: string;
+  Password: string;
+  Phone: string;
+  Tac: string;
+  UplineReferralCode: string;
+  Username: string;
 }
 
 export interface RegisterResponse {
+  Code: number;
+  Message: string;
+}
+
+// ===========================================
+// Forgot Password Types
+// ===========================================
+
+export interface ForgotPasswordGetTacRequest {
+  Username: string;
+  Phone: string;
+  Option: "SMS" | "WhatsApp";
+}
+
+export interface ForgotPasswordGetTacResponse {
+  Code: number;
+  Message: string;
+  Phone: string;
+  Tac: string;
+  ExpiresIn: number;
+}
+
+export interface ForgotPasswordRequest {
+  Username: string;
+  Phone: string;
+  Tac: string;
+  Password: string;
+}
+
+export interface ForgotPasswordResponse {
   Code: number;
   Message: string;
 }
@@ -442,4 +490,27 @@ export interface RedeemCodeRequest {
 export interface RedeemCodeResponse {
   Code: number;
   Message: string;
+}
+
+// ===========================================
+// User Profile Types
+// ===========================================
+
+export interface UserProfileResponse {
+  Code: number;
+  Message: string;
+  Id: string;
+  Username: string;
+  Name: string;
+  FullName: string;
+  Avatar: string;
+  InboxCount: number;
+  Currency: string;
+  Cash: number;
+  Chip: number;
+  OverviewDate: string;
+  RegisteredDownline: number;
+  ActiveDownline: number;
+  Turnover: number;
+  Pin: string | null;
 }

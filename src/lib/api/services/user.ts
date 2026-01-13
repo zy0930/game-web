@@ -3,9 +3,19 @@ import type {
   QrCodeResponse,
   HaveBankAccountResponse,
   AboutUsResponse,
+  UserProfileResponse,
 } from "../types";
 
 export const userApi = {
+  /**
+   * Get user profile information
+   */
+  async getProfile(): Promise<UserProfileResponse> {
+    return apiClient.get<UserProfileResponse>("/api/mapiuser/getprofile", {
+      authenticated: true,
+    });
+  },
+
   /**
    * Get user's QR code
    */

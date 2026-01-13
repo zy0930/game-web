@@ -133,7 +133,7 @@ export default function InboxPage() {
   const hasSelected = messages.some((m) => m.selected);
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-100">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title={t("inbox.title")} backHref="/account" />
 

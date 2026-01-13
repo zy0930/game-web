@@ -13,31 +13,20 @@ import {
   Users,
   Mail,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { KycVerificationModal } from "@/components/account/kyc-verification-modal";
-
-// Mock user data
-const userData = {
-  avatar: "/avatar.png",
-  username: "design111",
-  uid: "12345ye123",
-  status: "pending", // pending, verified, rejected
-  cashBalance: 126000.00,
-  chipsBalance: 0.00,
-  overview: {
-    date: "2025 Nov 13",
-    registered: 10,
-    activePlayer: 12,
-    turnover: 138.00,
-  },
-};
+import { useProfile } from "@/hooks";
 
 export default function AccountPage() {
   const [imgError, setImgError] = useState(false);
   const [isKycModalOpen, setIsKycModalOpen] = useState(false);
   const { t } = useI18n();
+
+  // Fetch user profile data
+  const { data: profile, isLoading, isError } = useProfile();
 
   const quickActions = [
     {
@@ -88,22 +77,63 @@ export default function AccountPage() {
     { icon: ShieldCheck, labelKey: "account.kyc", onClick: () => setIsKycModalOpen(true), isLink: false },
     { icon: KeyRound, labelKey: "account.resetPin", href: "/account/reset-pin", isLink: true },
     { icon: Users, labelKey: "account.myContact", href: "/account/contact", isLink: true },
-    { icon: Mail, labelKey: "account.inbox", href: "/account/inbox", isLink: true },
+    { icon: Mail, labelKey: "account.inbox", href: "/account/inbox", badge: profile?.InboxCount, isLink: true },
   ];
-
-  const statusConfig = {
-    pending: { labelKey: "common.pending", className: "bg-primary/20 text-primary" },
-    verified: { labelKey: "common.verified", className: "bg-green-100 text-green-600" },
-    rejected: { labelKey: "common.rejected", className: "bg-red-100 text-red-600" },
-  };
 
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("en-MY", { minimumFractionDigits: 2 });
   };
 
+  const formatOverviewDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <RequireAuth>
+        <div className="min-h-screen flex flex-col">
+          <Header variant="logo" />
+          <div className="flex-1 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+          <BottomNav />
+        </div>
+      </RequireAuth>
+    );
+  }
+
+  // Error state
+  if (isError || !profile) {
+    return (
+      <RequireAuth>
+        <div className="min-h-screen flex flex-col">
+          <Header variant="logo" />
+          <div className="flex-1 flex items-center justify-center px-4">
+            <div className="text-center">
+              <p className="text-zinc-600 mb-4">{t("common.error")}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-primary text-white rounded-lg"
+              >
+                {t("common.retry")}
+              </button>
+            </div>
+          </div>
+          <BottomNav />
+        </div>
+      </RequireAuth>
+    );
+  }
+
   return (
     <RequireAuth>
-    <div className="min-h-screen flex flex-col bg-zinc-100">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="logo" />
 
@@ -112,10 +142,10 @@ export default function AccountPage() {
         <div className="flex items-center gap-4">
           {/* Avatar */}
           <div className="w-16 h-16 rounded-full overflow-hidden bg-zinc-600 flex-shrink-0">
-            {!imgError ? (
+            {!imgError && profile.Avatar ? (
               <Image
-                src={userData.avatar}
-                alt={userData.username}
+                src={profile.Avatar}
+                alt={profile.Username}
                 unoptimized
                 width={64}
                 height={64}
@@ -124,7 +154,7 @@ export default function AccountPage() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-zinc-400 text-xl font-roboto-bold">
-                {userData.username.charAt(0).toUpperCase()}
+                {profile.Username.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
@@ -132,7 +162,7 @@ export default function AccountPage() {
           {/* User Info */}
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-white text-lg font-roboto-semibold">{userData.username}</h2>
+              <h2 className="text-white text-lg font-roboto-semibold">{profile.Username}</h2>
               <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -140,15 +170,12 @@ export default function AccountPage() {
               </div>
               <button
                 onClick={() => setIsKycModalOpen(true)}
-                className={cn(
-                  "px-2 py-0.5 rounded-full text-xs font-roboto-medium transition-opacity hover:opacity-80",
-                  statusConfig[userData.status as keyof typeof statusConfig].className
-                )}
+                className="px-2 py-0.5 rounded-full text-xs font-roboto-medium transition-opacity hover:opacity-80 bg-primary/20 text-primary"
               >
-                {t(statusConfig[userData.status as keyof typeof statusConfig].labelKey)}
+                {t("common.verified")}
               </button>
             </div>
-            <p className="text-zinc-400 text-sm">UID: {userData.uid}</p>
+            <p className="text-zinc-400 text-sm">UID: {profile.Id}</p>
           </div>
         </div>
       </div>
@@ -162,9 +189,9 @@ export default function AccountPage() {
               {t("wallet.cash")}
             </span>
             <div className="flex items-baseline gap-1">
-              <span className="text-zinc-400 text-xs">MYR</span>
+              <span className="text-zinc-400 text-xs">{profile.Currency}</span>
               <span className="text-white text-xl font-roboto-bold">
-                {formatCurrency(userData.cashBalance)}
+                {formatCurrency(profile.Cash)}
               </span>
             </div>
           </div>
@@ -182,7 +209,7 @@ export default function AccountPage() {
                 <circle cx="12" cy="12" r="10" />
               </svg>
               <span className="text-white text-xl font-roboto-bold">
-                {formatCurrency(userData.chipsBalance)}
+                {formatCurrency(profile.Chip)}
               </span>
             </div>
           </div>
@@ -193,19 +220,19 @@ export default function AccountPage() {
       <div className="mx-4 mt-4 bg-white rounded-xl p-4">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-sm font-roboto-medium text-zinc-700">{t("account.overview")}</span>
-          <span className="text-sm text-primary">({userData.overview.date})</span>
+          <span className="text-sm text-primary">({formatOverviewDate(profile.OverviewDate)})</span>
         </div>
         <div className="flex items-center divide-x divide-zinc-200">
           <div className="flex-1 text-center">
-            <p className="text-xl font-roboto-bold text-primary">{userData.overview.registered}</p>
+            <p className="text-xl font-roboto-bold text-primary">{profile.RegisteredDownline}</p>
             <p className="text-xs text-zinc-500">{t("account.registered")}</p>
           </div>
           <div className="flex-1 text-center">
-            <p className="text-xl font-roboto-bold text-primary">{userData.overview.activePlayer}</p>
+            <p className="text-xl font-roboto-bold text-primary">{profile.ActiveDownline}</p>
             <p className="text-xs text-zinc-500">{t("account.activePlayer")}</p>
           </div>
           <div className="flex-1 text-center">
-            <p className="text-xl font-roboto-bold text-primary">{formatCurrency(userData.overview.turnover)}</p>
+            <p className="text-xl font-roboto-bold text-primary">{formatCurrency(profile.Turnover)}</p>
             <p className="text-xs text-zinc-500">{t("account.turnover")}</p>
           </div>
         </div>
@@ -238,6 +265,11 @@ export default function AccountPage() {
                 <div className="flex items-center gap-3">
                   <item.icon className="w-5 h-5 text-zinc-400" />
                   <span className="text-sm text-zinc-700">{t(item.labelKey)}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="px-2 py-0.5 text-xs bg-red-500 text-white rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
                 </div>
                 <ChevronRight className="w-5 h-5 text-zinc-400" />
               </>

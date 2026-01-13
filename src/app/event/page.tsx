@@ -82,7 +82,7 @@ export default function EventPage() {
 
   return (
     <RequireAuth>
-    <div className="relative min-h-screen flex flex-col bg-white">
+    <div className="relative min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="logo" />
 

@@ -36,7 +36,7 @@ export default function TurnoverReportPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title="Turnover Report" backHref="/report" />
 

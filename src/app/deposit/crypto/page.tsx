@@ -48,7 +48,7 @@ export default function CryptoPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-100">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title="Crypto" backHref="/deposit" />
 

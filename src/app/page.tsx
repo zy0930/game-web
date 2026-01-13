@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Volume2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { BottomNav, Header, AppDownloadBanner } from "@/components/layout";
 import {
   BannerSlider,
@@ -68,12 +68,30 @@ function transformGame(game: Game) {
 
 export default function HomePage() {
   const [activeCategory, setActiveCategory] = useState("slots");
+  const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
   const [launchingGameId, setLaunchingGameId] = useState<string | null>(null);
+  const previousCategoryRef = useRef(activeCategory);
   const { t, locale } = useI18n();
   const { isAuthenticated, user } = useAuth();
 
   // Fetch discover data from API
   const { data: discoverData, isLoading, error } = useDiscover();
+
+  // Track category changes to determine slide direction
+  useEffect(() => {
+    if (discoverData?.GameCategories && previousCategoryRef.current !== activeCategory) {
+      const categories = discoverData.GameCategories;
+      const prevIndex = categories.findIndex(
+        (cat) => cat.Name.toLowerCase() === previousCategoryRef.current
+      );
+      const currentIndex = categories.findIndex(
+        (cat) => cat.Name.toLowerCase() === activeCategory
+      );
+
+      setSlideDirection(currentIndex > prevIndex ? "right" : "left");
+      previousCategoryRef.current = activeCategory;
+    }
+  }, [activeCategory, discoverData?.GameCategories]);
   const launchGameMutation = useLaunchGame();
 
   const handleLaunchGame = async (game: { id: string; name: string }) => {
@@ -181,7 +199,7 @@ export default function HomePage() {
     : userData;
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       {/* App Download Banner */}
       <AppDownloadBanner />
 
@@ -235,7 +253,7 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Game Providers Grid */}
+        {/* Game Providers Grid with slide animation */}
         <div className="px-4 mt-4">
           {isLoading ? (
             <div className="grid grid-cols-4 gap-1">
@@ -250,16 +268,44 @@ export default function HomePage() {
             <div className="text-center py-8 text-zinc-500 text-sm">
               {t("common.errorLoading")}
             </div>
-          ) : currentProviders.length > 0 ? (
-            <GameProviderGrid
-              providers={currentProviders}
-              columns={4}
-              onSelect={handleLaunchGame}
-              loadingId={launchingGameId}
-            />
           ) : (
-            <div className="text-center py-8 text-zinc-500 text-sm">
-              {t("common.noData")}
+            <div className="relative overflow-hidden">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={activeCategory}
+                  initial={{
+                    x: slideDirection === "right" ? "100%" : "-100%",
+                  }}
+                  animate={{
+                    x: 0,
+                  }}
+                  exit={{
+                    x: slideDirection === "right" ? "-100%" : "100%",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 30,
+                  }}
+                >
+                  {currentProviders.length > 0 ? (
+                    <GameProviderGrid
+                      providers={currentProviders}
+                      columns={4}
+                      onSelect={handleLaunchGame}
+                      loadingId={launchingGameId}
+                    />
+                  ) : (
+                    <div className="text-center py-8 text-zinc-500 text-sm">
+                      {t("common.noData")}
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
           )}
         </div>

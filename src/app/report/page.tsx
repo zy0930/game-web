@@ -21,7 +21,7 @@ const reportOptions = [
 
 export default function ReportPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title="Report" backHref="/account" />
 

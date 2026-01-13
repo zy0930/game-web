@@ -70,9 +70,9 @@ export function Header({
           ) : (
             <button
               onClick={handleBack}
-              className="flex items-center gap-1 text-zinc-400 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-white"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-7 h-7" />
             </button>
           )}
         </div>

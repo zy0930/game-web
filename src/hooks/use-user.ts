@@ -6,10 +6,26 @@ import { userApi } from "@/lib/api";
 // Query keys
 export const userKeys = {
   all: ["user"] as const,
+  profile: () => [...userKeys.all, "profile"] as const,
   qrCode: () => [...userKeys.all, "qrCode"] as const,
   aboutUs: () => [...userKeys.all, "aboutUs"] as const,
   haveBankAccount: () => [...userKeys.all, "haveBankAccount"] as const,
 };
+
+/**
+ * Hook to fetch user profile information
+ */
+export function useProfile(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: userKeys.profile(),
+    queryFn: async () => {
+      const response = await userApi.getProfile();
+      return response;
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes - profile can change
+    enabled: options?.enabled ?? true,
+  });
+}
 
 /**
  * Hook to fetch user's QR code for referral

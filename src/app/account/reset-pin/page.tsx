@@ -39,7 +39,7 @@ export default function ResetPinPage() {
   const isFormValid = sendTo && otpCode && pin && confirmPin && pin === confirmPin;
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <Header variant="subpage" title="Reset PIN" backHref="/account" />
 

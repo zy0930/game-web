@@ -33,7 +33,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -79,13 +79,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
-          {/* Username/Email */}
+          {/* Username */}
           <div>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
               <Image
                   src="/aone/contact.png"
-                  alt="AON1E username"
+                  alt="Username"
                   width={24}
                   height={24}
                   unoptimized
@@ -93,18 +93,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 />
               </div>
               <input
-                {...register("email")}
+                {...register("username")}
                 type="text"
                 placeholder={t("auth.username")}
                 className={cn(
                   "w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50",
-                  errors.email ? "border-red-500" : "border-[#959595]"
+                  errors.username ? "border-red-500" : "border-[#959595]"
                 )}
               />
             </div>
-            {errors.email && (
+            {errors.username && (
               <p className="text-xs text-red-500 mt-1">
-                {errors.email.message}
+                {errors.username.message}
               </p>
             )}
           </div>

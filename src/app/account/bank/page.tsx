@@ -18,7 +18,7 @@ export default function BankAccountsPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col bg-zinc-100">
+      <div className="min-h-screen flex flex-col">
         <Header variant="subpage" title={t("account.bankAccount")} backHref="/account" />
         <div className="flex-1 flex items-center justify-center px-4">
           <p className="text-sm text-zinc-500 text-center">
@@ -33,7 +33,7 @@ export default function BankAccountsPage() {
   const hasLinkedAccounts = data?.Have && linkedAccounts.length > 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-100">
+    <div className="min-h-screen flex flex-col">
       <Header variant="subpage" title={t("account.bankAccount")} backHref="/account" />
 
       <main className="flex-1 px-4 py-6 space-y-4">

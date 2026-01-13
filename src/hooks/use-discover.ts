@@ -21,6 +21,7 @@ export function useDiscover() {
     queryFn: async (): Promise<DiscoverResponse | null> => {
       const hasValidToken = !!getAuthToken();
 
+      console.log("triggered", hasValidToken);
       // Try authenticated endpoint if we have a valid token
       if (hasValidToken) {
         try {
