@@ -74,7 +74,7 @@ export function GameCategories({
           <button
             key={category.Id}
             onClick={() => onCategoryChange(category.Name.toLowerCase())}
-            className="flex flex-col items-center flex-1 min-w-0 transition-all active:scale-95"
+            className="flex flex-col items-center flex-1 min-w-0 cursor-pointer"
           >
             {imageSrc && (
               <Image

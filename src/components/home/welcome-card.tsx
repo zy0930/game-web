@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
-import { ProtectedLink } from "@/components/auth";
+import { useRestore } from "@/hooks";
 
 interface UserData {
   username: string;
@@ -25,6 +26,15 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
   const router = useRouter();
   const [imgError, setImgError] = useState(false);
   const { t } = useI18n();
+  const restoreMutation = useRestore();
+
+  const handleRestore = async () => {
+    try {
+      await restoreMutation.mutateAsync();
+    } catch (error) {
+      console.error("Restore failed:", error);
+    }
+  };
 
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("en-MY", { minimumFractionDigits: 2 });
@@ -190,19 +200,29 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-0.5">
-          <div className="flex flex-col items-center justify-center">
-            <Image
-              src="/images/profile/wallet_dark.png"
-              alt="Restore"
-              width={50}
-              height={50}
-              className="object-contain w-full h-full cursor-pointer"
-              onClick={() => router.push("/restore")}
-            />
+          <button
+            type="button"
+            onClick={handleRestore}
+            disabled={restoreMutation.isPending}
+            className="flex flex-col items-center justify-center disabled:opacity-50"
+          >
+            {restoreMutation.isPending ? (
+              <div className="w-[50px] h-[50px] flex items-center justify-center">
+                <Loader2 className="w-6 h-6 animate-spin text-primary" />
+              </div>
+            ) : (
+              <Image
+                src="/images/profile/wallet_dark.png"
+                alt="Restore"
+                width={50}
+                height={50}
+                className="object-contain w-full h-full cursor-pointer"
+              />
+            )}
             <span className="text-xs text-black font-roboto-bold mt-1">
-              {t("Restore")}
+              {t("common.restore")}
             </span>
-          </div>
+          </button>
 
           <div className="flex flex-col items-center justify-center">
             <Image

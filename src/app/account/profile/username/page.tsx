@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Header } from "@/components/layout";
-import { User } from "lucide-react";
+import { FormInput } from "@/components/ui/form-input";
 import { useI18n } from "@/providers/i18n-provider";
 
 export default function ChangeUsernamePage() {
@@ -26,25 +27,29 @@ export default function ChangeUsernamePage() {
 
       {/* Form */}
       <main className="flex-1 px-4 py-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Username Input */}
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <User className="w-5 h-5" />
-            </div>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder={t("auth.username")}
-              className="w-full pl-12 pr-4 py-3.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-          </div>
+          <FormInput
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder={t("auth.username")}
+            prefix={
+              <Image
+                src="/images/icon/user_icon.png"
+                alt="Username"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
+          />
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3.5 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors"
+            className="uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors"
           >
             {t("common.confirm")}
           </button>

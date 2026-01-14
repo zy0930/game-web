@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Header } from "@/components/layout";
-import { Phone, Mail, Lock, Eye, EyeOff, ChevronDown } from "lucide-react";
+import { FormInput } from "@/components/ui/form-input";
+import { Eye, EyeOff, ChevronDown } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
 import { cn } from "@/lib/utils";
 
@@ -24,13 +26,11 @@ export default function ChangePasswordPage() {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const { t } = useI18n();
 
   const handleRequestOtp = () => {
     // Mock OTP request
-    setOtpSent(true);
     setCountdown(60);
     const interval = setInterval(() => {
       setCountdown((prev) => {
@@ -71,39 +71,52 @@ export default function ChangePasswordPage() {
       <main className="flex-1 px-4 py-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Phone Number Input */}
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Phone className="w-5 h-5" />
-            </div>
-            <input
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder={t("profile.phoneNumber")}
-              className="w-full pl-12 pr-4 py-3.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-          </div>
+          <FormInput
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder={t("profile.phoneNumber")}
+            prefix={
+              <Image
+                src="/images/icon/phone_icon.png"
+                alt="Phone"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
+          />
 
           {/* Send To Dropdown */}
           <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Mail className="w-5 h-5" />
+            <div className="form-input-wrapper relative flex items-center w-full rounded-lg border border-[#959595] bg-white transition-all duration-200">
+              <div className="flex items-center justify-center pl-4 text-zinc-400">
+                <Image
+                  src="/images/icon/otp_icon.png"
+                  alt="Send To"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSendToDropdown(!showSendToDropdown)}
+                className="flex-1 w-full py-3.5 pl-3 pr-4 bg-transparent text-left flex items-center justify-between focus:outline-none"
+              >
+                <span className={selectedSendToOption ? "text-black text-sm font-roboto-regular" : "text-[#959595] text-sm font-roboto-regular"}>
+                  {selectedSendToOption ? t(selectedSendToOption.labelKey) : t("profile.sendTo")}
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "w-auto h-6 text-zinc-400 transition-transform",
+                    showSendToDropdown && "rotate-180"
+                  )}
+                />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => setShowSendToDropdown(!showSendToDropdown)}
-              className="w-full pl-12 pr-4 py-3.5 bg-white border border-zinc-200 rounded-xl text-sm text-left flex items-center justify-between focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            >
-              <span className={selectedSendToOption ? "text-zinc-700" : "text-zinc-400"}>
-                {selectedSendToOption ? t(selectedSendToOption.labelKey) : t("profile.sendTo")}
-              </span>
-              <ChevronDown
-                className={cn(
-                  "w-5 h-5 text-zinc-400 transition-transform",
-                  showSendToDropdown && "rotate-180"
-                )}
-              />
-            </button>
             {showSendToDropdown && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-zinc-200 rounded-xl shadow-lg z-10 overflow-hidden">
                 {sendToOptions.map((option) => (
@@ -127,96 +140,119 @@ export default function ChangePasswordPage() {
           </div>
 
           {/* OTP Code Input with Request Button */}
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Mail className="w-5 h-5" />
-              </div>
-              <input
-                type="text"
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value)}
-                placeholder={t("profile.otpCode")}
-                className="w-full pl-12 pr-4 py-3.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-              />
-            </div>
+          <div className="flex gap-2">
+            <FormInput
+              type="text"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value)}
+              placeholder={t("profile.otpCode")}
+              prefix={
+                <Image
+                  src="/images/icon/otp_icon.png"
+                  alt="OTP"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
+              }
+              wrapperClassName="flex-1"
+            />
             <button
               type="button"
               onClick={handleRequestOtp}
               disabled={countdown > 0}
-              className="px-4 py-3.5 bg-primary text-white text-sm font-roboto-medium rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              className="px-4 py-3.5 bg-primary text-white text-sm font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
             >
               {countdown > 0 ? `${countdown}s` : t("profile.requestOtp")}
             </button>
           </div>
 
           {/* Old Password Input */}
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Lock className="w-5 h-5" />
-            </div>
-            <input
-              type={showOldPassword ? "text" : "password"}
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-              placeholder={t("profile.oldPassword")}
-              className="w-full pl-12 pr-12 py-3.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-            <button
-              type="button"
-              onClick={() => setShowOldPassword(!showOldPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
-            >
-              {showOldPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-            </button>
-          </div>
+          <FormInput
+            type={showOldPassword ? "text" : "password"}
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+            placeholder={t("profile.oldPassword")}
+            prefix={
+              <Image
+                src="/images/icon/lock_icon.png"
+                alt="Password"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
+            suffix={
+              <button
+                type="button"
+                onClick={() => setShowOldPassword(!showOldPassword)}
+                className="text-zinc-400 hover:text-zinc-600"
+              >
+                {showOldPassword ? <Eye className="w-auto h-6" /> : <EyeOff className="w-auto h-6" />}
+              </button>
+            }
+          />
 
           {/* New Password Input */}
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Lock className="w-5 h-5" />
-            </div>
-            <input
-              type={showNewPassword ? "text" : "password"}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder={t("profile.newPassword")}
-              className="w-full pl-12 pr-12 py-3.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-            <button
-              type="button"
-              onClick={() => setShowNewPassword(!showNewPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
-            >
-              {showNewPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-            </button>
-          </div>
+          <FormInput
+            type={showNewPassword ? "text" : "password"}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder={t("profile.newPassword")}
+            prefix={
+              <Image
+                src="/images/icon/lock_icon.png"
+                alt="Password"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
+            suffix={
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="text-zinc-400 hover:text-zinc-600"
+              >
+                {showNewPassword ? <Eye className="w-auto h-6" /> : <EyeOff className="w-auto h-6" />}
+              </button>
+            }
+          />
 
           {/* Confirm New Password Input */}
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Lock className="w-5 h-5" />
-            </div>
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder={t("profile.confirmNewPassword")}
-              className="w-full pl-12 pr-12 py-3.5 bg-white border border-zinc-200 rounded-xl text-sm text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
-            >
-              {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-            </button>
-          </div>
+          <FormInput
+            type={showConfirmPassword ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder={t("profile.confirmNewPassword")}
+            prefix={
+              <Image
+                src="/images/icon/lock_icon.png"
+                alt="Password"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
+            suffix={
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="text-zinc-400 hover:text-zinc-600"
+              >
+                {showConfirmPassword ? <Eye className="w-auto h-6" /> : <EyeOff className="w-auto h-6" />}
+              </button>
+            }
+          />
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3.5 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors"
+            className="uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors"
           >
             {t("common.confirm")}
           </button>

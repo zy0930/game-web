@@ -91,7 +91,7 @@ export default function ReferralPage() {
           {/* Content */}
           <div
             className="
-              mx-8 rounded-lg mt-24 relative z-10 flex flex-col items-center 
+              mx-8 rounded-lg mt-24 relative flex flex-col items-center 
               pt-8 pb-10 px-4 border 
               bg-linear-to-b from-white to-[#F2F4F9]
               shadow-[0px_1px_4px_0px_#151A1F26]
@@ -190,7 +190,7 @@ export default function ReferralPage() {
         </div>
 
         {/* Share Section */}
-        <div className="mx-4 mt-8 flex-1">
+        <div className="mx-4 mt-8 flex-1 mb-10">
           <div className="text-center text-base font-roboto-bold text-[#28323C] mb-2">
             {t("referral.shareQr")}:
           </div>

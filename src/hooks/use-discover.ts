@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { discoverApi, getAuthToken } from "@/lib/api";
 import type { DiscoverResponse } from "@/lib/api/types";
 
@@ -56,5 +56,26 @@ export function useLaunchGame() {
 export function useQuitGame() {
   return useMutation({
     mutationFn: () => discoverApi.quitGame(),
+  });
+}
+
+/**
+ * Hook to restore/refresh - quits any active game and refreshes discover data
+ */
+export function useRestore() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      // First call quitGame API
+      await discoverApi.quitGame();
+      // Then call discover API to refresh data
+      const discoverData = await discoverApi.getDiscover();
+      return discoverData;
+    },
+    onSuccess: (data) => {
+      // Update the discover cache with fresh data
+      queryClient.setQueryData(discoverKeys.data(), data);
+    },
   });
 }

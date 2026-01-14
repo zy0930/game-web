@@ -51,12 +51,12 @@ export function GameProviderGrid({
           src={provider.image}
           alt={provider.name}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
           onError={() => handleImageError(provider.id)}
           unoptimized
         />
       ) : (
-        <div className="w-full h-full bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center">
+        <div className="w-full h-full bg-linear-to-br from-zinc-700 to-zinc-800 flex items-center justify-center">
           <span className="text-white text-xs font-roboto-medium text-center px-2">
             {provider.name}
           </span>

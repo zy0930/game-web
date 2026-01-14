@@ -45,10 +45,10 @@ export default function ChangeAvatarPage() {
       />
 
       {/* Avatar Grid */}
-      <main className="flex-1 px-4 py-6">
+      <main className="flex-1 px-4 py-4">
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
           {/* Avatar Selection Grid */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 px-2 sm:px-6">
             {avatarOptions.map((avatar) => (
               <button
                 key={avatar.id}
@@ -86,8 +86,8 @@ export default function ChangeAvatarPage() {
 
                 {/* Selection Indicator */}
                 {selectedAvatar === avatar.id && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
+                  <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+                    <Check className="w-5 h-5 text-white" />
                   </div>
                 )}
               </button>
@@ -100,7 +100,7 @@ export default function ChangeAvatarPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3.5 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors"
+            className="uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors"
           >
             {t("common.confirm")}
           </button>

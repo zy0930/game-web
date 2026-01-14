@@ -229,7 +229,7 @@ export default function AccountPage() {
               className="object-cover"
               unoptimized
             />
-            <div className="absolute inset-0 bg-black/20" />
+            <div className="absolute inset-0" />
           </div>
         </div>
 
@@ -357,6 +357,7 @@ export default function AccountPage() {
               <Link
                 key={action.id}
                 href={action.href}
+                prefetch={false}
                 className="flex flex-col items-center gap-2 group"
               >
                 <div className="w-full aspect-square rounded-xl bg-[#E8F8F6] flex items-center justify-center group-hover:bg-primary/20 transition-colors">
@@ -406,7 +407,7 @@ export default function AccountPage() {
               );
 
               return item.isLink ? (
-                <Link key={item.href} href={item.href!} className={className}>
+                <Link key={item.href} href={item.href!} prefetch={false} className={className}>
                   {content}
                 </Link>
               ) : (
