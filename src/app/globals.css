@@ -295,3 +295,32 @@
 .animate-marquee {
   animation: marquee 15s linear infinite;
 }
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}
+
+/* FormInput focus styles using :focus-within */
+.form-input-wrapper:focus-within {
+  border-color: #0DC3B1;
+  background-color: rgba(0, 214, 198, 0.1);
+  box-shadow: 0px 0px 20px 0px rgba(20, 187, 176, 0.2);
+}
+
+/* Error state overrides focus state */
+.form-input-wrapper.border-red-500 {
+  border-color: #ef4444 !important;
+  background-color: white !important;
+  box-shadow: none !important;
+}

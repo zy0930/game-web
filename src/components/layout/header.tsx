@@ -87,7 +87,13 @@ export function Header({
         {/* Right Section */}
         <div className="flex items-center gap-3">
           <button
-            onClick={onSupportClick}
+            onClick={() => {
+              if (onSupportClick) {
+                onSupportClick();
+              } else {
+                window.open("https://a1livechat.com/Home/LiveChat", "_blank");
+              }
+            }}
             className="text-primary hover:text-primary/80 transition-colors cursor-pointer"
             aria-label="Support"
           >

@@ -9,7 +9,7 @@ import { EventDetailsModal } from "@/components/event";
 import { cn } from "@/lib/utils";
 import { useEvents, useClaimPromo } from "@/hooks/use-events";
 import { useI18n } from "@/providers/i18n-provider";
-import type { Event as ApiEvent } from "@/lib/api/types";
+import type { Promo } from "@/lib/api/types";
 
 const categories = [
   { id: "all", label: "ALL" },
@@ -21,7 +21,7 @@ const categories = [
   { id: "fishing", label: "FISHING" },
 ];
 
-// Transform API event to component format
+// Transform API promo to component format
 interface TransformedEvent {
   id: string;
   image: string;
@@ -29,27 +29,55 @@ interface TransformedEvent {
   description: string;
   category: string[];
   htmlContent: string;
-  startDate?: string;
-  endDate?: string;
+  mode?: string;
+  type?: string;
+  freq?: string;
 }
 
-function transformEvent(event: ApiEvent): TransformedEvent {
+function transformPromo(promo: Promo, lang: string): TransformedEvent {
+  // Get localized name based on language
+  const getName = () => {
+    if (lang === "zh" && promo.NameCn) return promo.NameCn;
+    if (lang === "ms" && promo.NameMy) return promo.NameMy;
+    return promo.Name;
+  };
+
+  // Get localized terms & conditions based on language
+  const getTnc = () => {
+    if (lang === "zh" && promo.TncCn) return promo.TncCn;
+    if (lang === "ms" && promo.TncMy) return promo.TncMy;
+    return promo.Tnc;
+  };
+
+  // Get localized image based on language
+  const getImage = () => {
+    if (lang === "zh" && promo.ImageCn) return promo.ImageCn;
+    if (lang === "ms" && promo.ImageMy) return promo.ImageMy;
+    return promo.Image;
+  };
+
+  const name = getName();
+  const tnc = getTnc();
+
   return {
-    id: event.Id,
-    image: event.PromoImage,
-    title: event.Name,
-    description: event.Description,
-    // API doesn't provide category info, so show in all
+    id: promo.Id,
+    image: getImage(),
+    title: name,
+    description: tnc,
+    // Map Type to categories - show in all for now since API doesn't provide exact category mapping
     category: ["all", "slots", "app-slots", "live", "sports", "lottery", "fishing"],
-    // Use description as HTML content since API provides Description field
     htmlContent: `
-      <h2>${event.Name}</h2>
-      <p>${event.Description}</p>
-      ${event.StartDate ? `<p><strong>Start Date:</strong> ${new Date(event.StartDate).toLocaleDateString()}</p>` : ""}
-      ${event.EndDate ? `<p><strong>End Date:</strong> ${new Date(event.EndDate).toLocaleDateString()}</p>` : ""}
+      <h2>${name}</h2>
+      <p>${tnc}</p>
+      ${promo.Mode ? `<p><strong>Mode:</strong> ${promo.Mode}</p>` : ""}
+      ${promo.Type ? `<p><strong>Type:</strong> ${promo.Type}</p>` : ""}
+      ${promo.Freq ? `<p><strong>Frequency:</strong> ${promo.Freq}</p>` : ""}
+      ${promo.Rate > 0 ? `<p><strong>Rate:</strong> ${promo.Rate}%</p>` : ""}
+      ${promo.Amount > 0 ? `<p><strong>Amount:</strong> ${promo.Amount}</p>` : ""}
     `,
-    startDate: event.StartDate,
-    endDate: event.EndDate,
+    mode: promo.Mode,
+    type: promo.Type,
+    freq: promo.Freq,
   };
 }
 
@@ -57,14 +85,14 @@ export default function EventPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedEvent, setSelectedEvent] = useState<TransformedEvent | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   // Fetch events from API
-  const { data: apiEvents, isLoading, error } = useEvents();
+  const { data: promos, isLoading, error } = useEvents();
   const claimPromoMutation = useClaimPromo();
 
-  // Transform API events
-  const events = apiEvents?.map(transformEvent) || [];
+  // Transform API promos
+  const events = promos?.map((promo) => transformPromo(promo, locale)) || [];
 
   // Filter events by category (currently all events show in all categories since API doesn't provide category)
   const filteredEvents = events.filter((event) =>
@@ -162,9 +190,12 @@ export default function EventPage() {
                 <h3 className="text-base font-roboto-semibold text-zinc-800 mb-1">
                   {event.title}
                 </h3>
-                <p className="text-sm text-zinc-500 mb-4 line-clamp-2">
+                <p className="text-sm text-zinc-500 mb-2 line-clamp-2">
                   {event.description}
                 </p>
+                {event.freq && (
+                  <p className="text-xs text-primary mb-3">{event.freq}</p>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-3">

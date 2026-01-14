@@ -3,15 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import {
-  ChevronDown,
-  EyeOff,
-  Eye,
-  Loader2,
-} from "lucide-react";
+import { ChevronDown, EyeOff, Eye, Loader2, User, Phone, KeyRound, Lock } from "lucide-react";
 import { authApi } from "@/lib/api";
 import { Header } from "@/components/layout";
+import { FormInput } from "@/components/ui/form-input";
 
 type SendToOption = "SMS" | "WhatsApp";
 
@@ -151,79 +146,38 @@ export default function ForgotPasswordPage() {
       <main className="flex-1 overflow-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-3">
           {/* Username */}
-          <div>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Image
-                  src="/aone/Icon_UID.webp"
-                  alt="Username"
-                  width={24}
-                  height={24}
-                  className="h-6 w-auto object-contain"
-                  unoptimized
-                />
-              </div>
-              <input
-                {...register("username", { required: "Username is required" })}
-                type="text"
-                placeholder="UID"
-                className="w-full pl-12 pr-4 py-3.5 border border-[#959595] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-              />
-            </div>
-            {errors.username && (
-              <p className="text-xs text-red-500 mt-1">{errors.username.message}</p>
-            )}
-          </div>
+          <FormInput
+            {...register("username", { required: "Username is required" })}
+            type="text"
+            placeholder="UID"
+            prefix={<User className="w-5 h-5" />}
+            error={errors.username?.message}
+          />
 
           {/* Phone Number */}
-          <div>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Image
-                  src="/aone/Icon_Phone.webp"
-                  alt="Phone"
-                  width={24}
-                  height={24}
-                  unoptimized
-                  className="h-6 w-auto object-contain"
-                />
-              </div>
-              <input
-                {...register("phoneNumber", {
-                  required: "Phone number is required",
-                  minLength: {
-                    value: 10,
-                    message: "Phone number must be at least 10 digits",
-                  },
-                })}
-                type="tel"
-                placeholder="Phone Number"
-                className="w-full pl-12 pr-4 py-3.5 border border-[#959595] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-              />
-            </div>
-            {errors.phoneNumber && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.phoneNumber.message}
-              </p>
-            )}
-          </div>
+          <FormInput
+            {...register("phoneNumber", {
+              required: "Phone number is required",
+              minLength: {
+                value: 10,
+                message: "Phone number must be at least 10 digits",
+              },
+            })}
+            type="tel"
+            placeholder="Phone Number"
+            prefix={<Phone className="w-5 h-5" />}
+            error={errors.phoneNumber?.message}
+          />
 
           {/* Send to Dropdown */}
           <div className="relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <Image
-                src="/aone/Icon_OTP.webp"
-                alt="OTP Method"
-                width={24}
-                height={24}
-                unoptimized
-                className="h-6 w-auto object-contain"
-              />
+              <KeyRound className="w-5 h-5" />
             </div>
             <select
               value={sendTo}
               onChange={(e) => setSendTo(e.target.value as SendToOption | "")}
-              className={`w-full pl-12 pr-10 py-3.5 border border-[#959595] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white appearance-none ${
+              className={`w-full pl-12 pr-10 py-3.5 border border-[#959595] rounded-lg focus:outline-none focus:border-[#0DC3B1] focus:bg-[#00D6C61A] focus:shadow-[0px_0px_20px_0px_#14BBB033] bg-white appearance-none ${
                 !sendTo ? "text-zinc-500" : "text-zinc-900"
               }`}
             >
@@ -238,27 +192,17 @@ export default function ForgotPasswordPage() {
 
           {/* OTP Code */}
           <div className="flex gap-2">
-            <div className="relative flex-1">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Image
-                  src="/aone/Icon_OTP.webp"
-                  alt="OTP Code"
-                  width={24}
-                  height={24}
-                  unoptimized
-                  className="h-6 w-auto object-contain"
-                />
-              </div>
-              <input
-                {...register("otpCode", {
-                  required: otpSent ? "OTP code is required" : false,
-                })}
-                type="text"
-                placeholder="OTP Code"
-                maxLength={6}
-                className="w-full pl-12 pr-4 py-3.5 border border-[#959595] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-              />
-            </div>
+            <FormInput
+              {...register("otpCode", {
+                required: otpSent ? "OTP code is required" : false,
+              })}
+              type="text"
+              placeholder="OTP Code"
+              maxLength={6}
+              prefix={<KeyRound className="w-5 h-5" />}
+              error={errors.otpCode?.message}
+              wrapperClassName="flex-1"
+            />
             <button
               type="button"
               onClick={handleRequestOTP}
@@ -276,9 +220,6 @@ export default function ForgotPasswordPage() {
               )}
             </button>
           </div>
-          {errors.otpCode && (
-            <p className="text-xs text-red-500 mt-1">{errors.otpCode.message}</p>
-          )}
           {otpSent && otpCountdown > 0 && (
             <p className="text-xs text-green-600 ml-1">
               OTP sent! Please check your {sendTo === "WhatsApp" ? "WhatsApp" : "SMS"}.
@@ -286,34 +227,22 @@ export default function ForgotPasswordPage() {
           )}
 
           {/* New Password */}
-          <div>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Image
-                  src="/aone/lock.png"
-                  alt="Password"
-                  width={24}
-                  height={24}
-                  unoptimized
-                  className="h-6 w-auto object-contain"
-                />
-              </div>
-              <input
-                {...register("newPassword", {
-                  required: "New password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
-                  },
-                })}
-                type={showPassword ? "text" : "password"}
-                placeholder="New Password"
-                className="w-full pl-12 pr-12 py-3.5 border border-[#959595] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-              />
+          <FormInput
+            {...register("newPassword", {
+              required: "New password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+            type={showPassword ? "text" : "password"}
+            placeholder="New Password"
+            prefix={<Lock className="w-5 h-5" />}
+            suffix={
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+                className="text-zinc-400 hover:text-zinc-600"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -321,13 +250,9 @@ export default function ForgotPasswordPage() {
                   <Eye className="w-5 h-5" />
                 )}
               </button>
-            </div>
-            {errors.newPassword && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.newPassword.message}
-              </p>
-            )}
-          </div>
+            }
+            error={errors.newPassword?.message}
+          />
 
           {/* Error Message */}
           {errors.root && (

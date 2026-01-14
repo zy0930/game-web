@@ -100,19 +100,30 @@ export interface QuitGameResponse {
 // Events Types
 // ===========================================
 
-export interface Event {
+export interface Promo {
   Id: string;
   Name: string;
-  Description: string;
-  StartDate: string;
-  EndDate: string;
-  PromoImage: string;
+  NameCn: string | null;
+  NameMy: string | null;
+  Tnc: string;
+  TncCn: string | null;
+  TncMy: string | null;
+  Image: string;
+  ImageCn: string | null;
+  ImageMy: string | null;
+  Mode: string;
+  Type: string;
+  Rate: number;
+  Amount: number;
+  Freq: string;
 }
 
 export interface EventsResponse {
   Code: number;
   Message: string;
-  Data: Event[];
+  DailyCheckInUrl: string | null;
+  FortuneWheelUrl: string | null;
+  Promos: Promo[];
 }
 
 export interface ClaimPromoRequest {

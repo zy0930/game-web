@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { BottomNav, Header, AppDownloadBanner } from "@/components/layout";
@@ -13,6 +14,7 @@ import {
 } from "@/components/home";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { useLoadingOverlay } from "@/providers/loading-overlay-provider";
 import { useDiscover, useLaunchGame } from "@/hooks/use-discover";
 import { ApiError } from "@/lib/api";
 import type { Game } from "@/lib/api/types";
@@ -67,12 +69,14 @@ function transformGame(game: Game) {
 }
 
 export default function HomePage() {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState("slots");
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
   const [launchingGameId, setLaunchingGameId] = useState<string | null>(null);
   const previousCategoryRef = useRef(activeCategory);
   const { t, locale } = useI18n();
   const { isAuthenticated, user } = useAuth();
+  const { showLoading, hideLoading } = useLoadingOverlay();
 
   // Fetch discover data from API
   const { data: discoverData, isLoading, error } = useDiscover();
@@ -97,13 +101,27 @@ export default function HomePage() {
   const handleLaunchGame = async (game: { id: string; name: string }) => {
     try {
       setLaunchingGameId(game.id);
+      showLoading("Launching game...");
       const result = await launchGameMutation.mutateAsync(game.id);
 
-      if (result.LaunchType !== "Browser" && result.Url) {
-        // Launch in current tab for Webview/App types
-        window.location.href = result.Url;
+      if (result.LaunchType === "Browser" && result.Url) {
+        // Browser type opens in new tab, hide loading
+        hideLoading();
+        window.open(result.Url, "_blank");
+      } else if (result.Url) {
+        // Webview/App types - navigate to game page with iframe
+        hideLoading();
+        const params = new URLSearchParams({
+          url: result.Url,
+          name: game.name,
+        });
+        router.push(`/game?${params.toString()}`);
+      } else {
+        // No URL returned, hide loading
+        hideLoading();
       }
     } catch (err) {
+      hideLoading();
       const errorMessage =
         err instanceof ApiError
           ? err.code === 401

@@ -47,12 +47,6 @@ export function useDiscover() {
 export function useLaunchGame() {
   return useMutation({
     mutationFn: (gameId: string) => discoverApi.launchGame(gameId),
-    onSuccess: (data) => {
-      if (data.LaunchType === "Browser" && data.Url) {
-        window.open(data.Url, "_blank");
-      }
-      // For Webview type, the component can handle showing the URL
-    },
   });
 }
 

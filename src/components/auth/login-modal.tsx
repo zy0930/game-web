@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { loginSchema, type LoginFormData } from "@/schemas/auth";
 import { useAuth } from "@/providers/auth-provider";
 import { useI18n } from "@/providers/i18n-provider";
+import { FormInput } from "@/components/ui/form-input";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -51,10 +51,22 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     }
   };
 
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-hidden">
       <div className="bg-white rounded-2xl w-full max-w-88 px-6 py-10 relative">
         {/* Close Button */}
         <button
@@ -80,61 +92,43 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         {/* Login Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
           {/* Username */}
-          <div>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+          <FormInput
+            {...register("username")}
+            type="text"
+            placeholder={t("auth.username")}
+            prefix={
               <Image
-                  src="/aone/contact.png"
-                  alt="Username"
-                  width={24}
-                  height={24}
-                  unoptimized
-                  className="h-5 w-auto object-contain"
-                />
-              </div>
-              <input
-                {...register("username")}
-                type="text"
-                placeholder={t("auth.username")}
-                className={cn(
-                  "w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50",
-                  errors.username ? "border-red-500" : "border-[#959595]"
-                )}
+                src="/aone/contact.png"
+                alt="Username"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
               />
-            </div>
-            {errors.username && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.username.message}
-              </p>
-            )}
-          </div>
+            }
+            error={errors.username?.message}
+          />
 
           {/* Password */}
-          <div>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Image
-                  src="/aone/lock.png"
-                  alt="AON1E password"
-                  width={24}
-                  height={24}
-                  unoptimized
-                  className="h-5 w-auto object-contain"
-                />
-              </div>
-              <input
-                {...register("password")}
-                type={showPassword ? "text" : "password"}
-                placeholder={t("auth.password")}
-                className={cn(
-                  "w-full pl-10 pr-12 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50",
-                  errors.password ? "border-red-500" : "border-[#959595]"
-                )}
+          <FormInput
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            placeholder={t("auth.password")}
+            prefix={
+              <Image
+                src="/aone/lock.png"
+                alt="AON1E password"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-5 w-auto object-contain"
               />
+            }
+            suffix={
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#959595]"
+                className="text-[#959595]"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -142,13 +136,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                   <Eye className="w-5 h-5" />
                 )}
               </button>
-            </div>
-            {errors.password && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+            }
+            error={errors.password?.message}
+          />
 
           {/* Remember Me & Forgot Password */}
           <div className="flex items-center justify-between text-xs">

@@ -17,7 +17,7 @@ export function useEvents() {
     queryKey: eventsKeys.list(),
     queryFn: async () => {
       const response = await eventsApi.getEvents();
-      return response.Data || [];
+      return response.Promos || [];
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
   });

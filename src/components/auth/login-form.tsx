@@ -7,7 +7,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FormInput } from "@/components/ui/form-input";
+import { User, Lock } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -22,7 +23,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { loginSchema, type LoginFormData } from "@/schemas/auth";
 import { useAuth } from "@/hooks/use-auth";
@@ -69,34 +69,36 @@ export function LoginForm() {
               <FormField
                 control={form.control}
                 name="username"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="text"
                         placeholder="Enter your username"
+                        prefix={<User className="w-5 h-5" />}
+                        error={fieldState.error?.message}
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="password"
                         placeholder="••••••••"
+                        prefix={<Lock className="w-5 h-5" />}
+                        error={fieldState.error?.message}
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />

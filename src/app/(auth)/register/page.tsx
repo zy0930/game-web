@@ -5,20 +5,13 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  ChevronLeft,
-  Eye,
-  EyeOff,
-  Headphones,
-  Menu,
-  ChevronDown,
-  Loader2,
-} from "lucide-react";
+import { Eye, EyeOff, ChevronDown, Loader2 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
 import { LoginModal } from "@/components/auth/login-modal";
 import { useRegister } from "@/hooks/use-register";
 import { authApi } from "@/lib/api";
 import { Header } from "@/components/layout";
+import { FormInput } from "@/components/ui/form-input";
 
 interface RegisterFormData {
   referralCode: string;
@@ -223,8 +216,8 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-3">
           {/* Referral Code */}
           <div>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <div className="form-input-wrapper relative flex items-center w-full rounded-lg border border-[#959595] bg-white transition-all duration-200">
+              <div className="flex items-center justify-center pl-4 text-zinc-400">
                 <Image
                   src="/images/icon/referral_icon.png"
                   alt="AON1E referral"
@@ -238,7 +231,7 @@ export default function RegisterPage() {
                 {...register("referralCode")}
                 type="text"
                 placeholder="Referral Code"
-                className="w-full pl-10 pr-20 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
+                className="flex-1 w-full py-3.5 pl-3 pr-20 bg-transparent text-black placeholder:text-zinc-500 focus:outline-none"
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2 items-center">
                 <button
@@ -282,8 +275,11 @@ export default function RegisterPage() {
           </div>
 
           {/* Username */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+          <FormInput
+            {...register("username", { required: "Username is required" })}
+            type="text"
+            placeholder="UID"
+            prefix={
               <Image
                 src="/images/icon/uuid_icon.png"
                 alt="AON1E uuid"
@@ -292,23 +288,22 @@ export default function RegisterPage() {
                 unoptimized
                 className="h-5 w-auto object-contain"
               />
-            </div>
-            <input
-              {...register("username", { required: "Username is required" })}
-              type="text"
-              placeholder="UID"
-              className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-            />
-            {errors.username && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.username.message}
-              </p>
-            )}
-          </div>
+            }
+            error={errors.username?.message}
+          />
 
           {/* Password */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+          <FormInput
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            prefix={
               <Image
                 src="/images/icon/lock_icon.png"
                 alt="AON1E lock"
@@ -317,40 +312,31 @@ export default function RegisterPage() {
                 unoptimized
                 className="h-5 w-auto object-contain"
               />
-            </div>
-            <input
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="w-full pl-10 pr-12 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
-            >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
-            </button>
-            {errors.password && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
+            }
+            suffix={
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-zinc-400 hover:text-zinc-600"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            }
+            error={errors.password?.message}
+          />
 
           {/* Confirm Password */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+          <FormInput
+            {...register("confirmPassword", {
+              required: "Please confirm your password",
+            })}
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm Password"
+            prefix={
               <Image
                 src="/images/icon/lock_icon.png"
                 alt="AON1E lock"
@@ -359,61 +345,53 @@ export default function RegisterPage() {
                 unoptimized
                 className="h-5 w-auto object-contain"
               />
-            </div>
-            <input
-              {...register("confirmPassword", {
-                required: "Please confirm your password",
-              })}
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              className="w-full pl-10 pr-12 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
-            >
-              {showConfirmPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
-            </button>
-            {errors.confirmPassword && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+            }
+            suffix={
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="text-zinc-400 hover:text-zinc-600"
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            }
+            error={errors.confirmPassword?.message}
+          />
 
           {/* Full Name */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+          <FormInput
+            {...register("fullName", { required: "Full name is required" })}
+            type="text"
+            placeholder="Full Name"
+            prefix={
               <Image
                 src="/images/icon/user_icon.png"
-                alt="AON1E lock"
+                alt="AON1E user"
                 width={24}
                 height={24}
                 unoptimized
                 className="h-5 w-auto object-contain"
               />
-            </div>
-            <input
-              {...register("fullName", { required: "Full name is required" })}
-              type="text"
-              placeholder="Full Name"
-              className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-            />
-            {errors.fullName && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.fullName.message}
-              </p>
-            )}
-          </div>
+            }
+            error={errors.fullName?.message}
+          />
 
           {/* Phone Number */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+          <FormInput
+            {...register("phone", {
+              required: "Phone number is required",
+              minLength: {
+                value: 10,
+                message: "Phone number must be at least 10 digits",
+              },
+            })}
+            type="tel"
+            placeholder="Phone Number"
+            prefix={
               <Image
                 src="/images/icon/phone_icon.png"
                 alt="AON1E phone"
@@ -422,32 +400,16 @@ export default function RegisterPage() {
                 unoptimized
                 className="h-5 w-auto object-contain"
               />
-            </div>
-            <input
-              {...register("phone", {
-                required: "Phone number is required",
-                minLength: {
-                  value: 10,
-                  message: "Phone number must be at least 10 digits",
-                },
-              })}
-              type="tel"
-              placeholder="Phone Number"
-              className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-            />
-            {errors.phone && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.phone.message}
-              </p>
-            )}
-          </div>
+            }
+            error={errors.phone?.message}
+          />
 
           {/* Send to Dropdown */}
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+          <div className="form-input-wrapper relative flex items-center w-full rounded-lg border border-[#959595] bg-white transition-all duration-200">
+            <div className="flex items-center justify-center pl-4 text-zinc-400">
               <Image
                 src="/images/icon/otp_icon.png"
-                alt="AON1E phone"
+                alt="AON1E otp"
                 width={24}
                 height={24}
                 unoptimized
@@ -457,7 +419,7 @@ export default function RegisterPage() {
             <select
               value={sendTo}
               onChange={(e) => setSendTo(e.target.value as SendToOption | "")}
-              className={`w-full pl-10 pr-10 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white appearance-none ${
+              className={`flex-1 w-full py-3.5 pl-3 pr-10 bg-transparent focus:outline-none appearance-none ${
                 !sendTo ? "text-zinc-500" : "text-zinc-900"
               }`}
             >
@@ -472,32 +434,26 @@ export default function RegisterPage() {
 
           {/* OTP Code */}
           <div className="flex gap-2">
-            <div className="relative flex-1">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+            <FormInput
+              {...register("otpCode", {
+                required: otpSent ? "OTP code is required" : false,
+              })}
+              type="text"
+              placeholder="OTP Code"
+              maxLength={6}
+              prefix={
                 <Image
                   src="/images/icon/otp_icon.png"
-                  alt="AON1E phone"
+                  alt="AON1E otp"
                   width={24}
                   height={24}
                   unoptimized
                   className="h-5 w-auto object-contain"
                 />
-              </div>
-              <input
-                {...register("otpCode", {
-                  required: otpSent ? "OTP code is required" : false,
-                })}
-                type="text"
-                placeholder="OTP Code"
-                maxLength={6}
-                className="w-full pl-10 pr-4 py-3.5 border border-zinc-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
-              />
-              {errors.otpCode && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.otpCode.message}
-                </p>
-              )}
-            </div>
+              }
+              error={errors.otpCode?.message}
+              wrapperClassName="flex-1"
+            />
             <button
               type="button"
               onClick={handleRequestOTP}

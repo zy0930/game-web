@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { ProtectedLink } from "@/components/auth";
-import { navigate } from "next/dist/client/components/segment-cache/navigation";
-import router from "next/router";
 
 interface UserData {
   username: string;
@@ -23,6 +22,7 @@ interface WelcomeCardProps {
 }
 
 export function WelcomeCard({ user, className }: WelcomeCardProps) {
+  const router = useRouter();
   const [imgError, setImgError] = useState(false);
   const { t } = useI18n();
 
@@ -42,9 +42,9 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
       )}
     >
       {/* Background Image with rounded corners */}
-      <div className="absolute inset-1 z-0 overflow-hidden rounded-3xl">
+      <div className="absolute inset-[2px] z-0 overflow-hidden rounded-3xl">
         <Image
-          src="/images/profile/profile_background.png"
+          src="/images/background/profile_background.png"
           alt=""
           fill
           className="object-fill"
@@ -64,7 +64,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
             aria-label="Refresh cash"
           >
             <Image
-              src="/images/profile/refresh_icon.png"
+              src="/images/icon/refresh_icon.png"
               alt="Refresh"
               width={12}
               height={12}
@@ -142,7 +142,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
               </div>
               <div className="flex items-center gap-0.5">
                 <Image
-                  src="/images/profile/chip_dark.png"
+                  src="/images/icon/chip_dark.png"
                   alt="Chips"
                   width={14}
                   height={14}
@@ -175,7 +175,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
               </div>
               <div className="flex items-center gap-0.5">
                 <Image
-                  src="/images/profile/A1_point_icon.png"
+                  src="/images/icon/A1_point_icon.png"
                   alt="A-Points"
                   width={14}
                   height={14}

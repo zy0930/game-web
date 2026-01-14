@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FormInput } from "@/components/ui/form-input";
+import { User, Mail, Lock } from "lucide-react";
 import { useLoginModal } from "@/providers/login-modal-provider";
 import {
   Card,
@@ -21,7 +22,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { registerSchema, type RegisterFormData } from "@/schemas/auth";
 import { useAuth } from "@/hooks/use-auth";
@@ -75,64 +75,71 @@ export function RegisterForm() {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <FormInput
+                        placeholder="John Doe"
+                        prefix={<User className="w-5 h-5" />}
+                        error={fieldState.error?.message}
+                        {...field}
+                      />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="email"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="email"
                         placeholder="you@example.com"
+                        prefix={<Mail className="w-5 h-5" />}
+                        error={fieldState.error?.message}
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="password"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="password"
                         placeholder="••••••••"
+                        prefix={<Lock className="w-5 h-5" />}
+                        error={fieldState.error?.message}
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="confirmPassword"
-                render={({ field }) => (
+                render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input
+                      <FormInput
                         type="password"
                         placeholder="••••••••"
+                        prefix={<Lock className="w-5 h-5" />}
+                        error={fieldState.error?.message}
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
