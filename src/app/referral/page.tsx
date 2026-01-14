@@ -92,7 +92,7 @@ export default function ReferralPage() {
           <div
             className="
               mx-8 rounded-lg mt-24 relative z-10 flex flex-col items-center 
-              py-8 px-4 border 
+              pt-8 pb-10 px-4 border 
               bg-linear-to-b from-white to-[#F2F4F9]
               shadow-[0px_1px_4px_0px_#151A1F26]
             "
@@ -130,7 +130,7 @@ export default function ReferralPage() {
                 <span className="text-xs">
                   {t("referral.code")}:
                 </span>
-                <span className="text-xs font-roboto-regular text-primary">
+                <span className="text-xs font-roboto-bold text-primary">
                   {referralCode}
                 </span>
                 <button
@@ -146,7 +146,7 @@ export default function ReferralPage() {
             </div>
 
             {/* QR Code */}
-            <div className="w-44 h-44 flex items-center justify-center overflow-hidden">
+            <div className="h-56 flex items-center justify-center overflow-hidden">
               {isQrLoading ? (
                 <Loader2 className="w-8 h-8 text-zinc-400 animate-spin" />
               ) : qrError ? (
@@ -157,8 +157,8 @@ export default function ReferralPage() {
                 <Image
                   src={qrData.QrImageUrl}
                   alt="QR Code"
-                  width={176}
-                  height={176}
+                  width={100}
+                  height={100}
                   unoptimized
                   className="w-full h-full object-contain"
                 />
@@ -172,34 +172,34 @@ export default function ReferralPage() {
         </div>
 
         {/* Referral Link */}
-        <div className="mx-4 mt-6">
-          <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-full overflow-hidden shadow-sm">
+        <div className="mx-8 mt-8 flex gap-2">
+          <div className="flex flex-1 items-center gap-2 bg-white border border-[#959595] rounded-lg overflow-hidden shadow-sm">
             <input
               type="text"
               value={referralLink}
               readOnly
-              className="flex-1 px-5 py-3 text-sm text-zinc-600 bg-transparent outline-none"
+              className="flex-1 p-3 text-xs text-zinc-600 bg-transparent outline-none"
             />
-            <button
+          </div>
+          <button
               onClick={handleCopyLink}
-              className="px-5 py-2.5 mr-1 bg-primary text-white text-sm font-roboto-medium rounded-full hover:bg-primary/90 transition-colors"
+              className="px-5 py-4 bg-primary text-white text-xs font-roboto-bold rounded-lg"
             >
               {copiedLink ? t("common.copied") : t("common.copyLink")}
             </button>
-          </div>
         </div>
 
         {/* Share Section */}
         <div className="mx-4 mt-8 flex-1">
-          <h3 className="text-center text-sm font-roboto-medium text-zinc-700 mb-5">
+          <div className="text-center text-base font-roboto-bold text-[#28323C] mb-2">
             {t("referral.shareQr")}:
-          </h3>
-          <div className="flex justify-center gap-10">
+          </div>
+          <div className="flex justify-center gap-6">
             {shareOptions.map((option) => (
               <button
                 key={option.id}
                 onClick={() => handleShare(option.getShareUrl)}
-                className="flex flex-col items-center gap-2 group"
+                className="flex flex-col items-center gap-1 group"
               >
                 <div className="w-12 h-12 rounded-full overflow-hidden group-hover:opacity-80 transition-opacity">
                   <Image
@@ -211,7 +211,7 @@ export default function ReferralPage() {
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <span className="text-xs text-zinc-600 font-roboto-medium">
+                <span className="text-xs text-[#5F7182] font-roboto-regular">
                   {option.label}
                 </span>
               </button>
