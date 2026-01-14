@@ -84,7 +84,7 @@ export function KycVerificationModal({
             })}
             type="tel"
             placeholder="Phone Number"
-            prefix={<Phone className="w-5 h-5" />}
+            prefix={<Phone className="h-6 w-auto" />}
             error={errors.phoneNumber?.message}
           />
 
@@ -115,7 +115,7 @@ export function KycVerificationModal({
               {...register("otpCode")}
               type="text"
               placeholder="OTP Code"
-              prefix={<KeyRound className="w-5 h-5" />}
+              prefix={<KeyRound className="w-auto h-6" />}
               wrapperClassName="flex-1"
             />
             <button

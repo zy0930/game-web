@@ -20,7 +20,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { login } = useAuth();
   const { t } = useI18n();
   const [showPassword, setShowPassword] = useState(false);
-  const [imgError, setImgError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
@@ -79,13 +78,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         {/* Logo */}
         <div className="flex justify-center mb-9">
           <Image
-            src="/aone/Aone Logo_Dark.webp"
+            src="/images/title.png"
             alt="AON1E"
             width={120}
             height={48}
             unoptimized
             className="h-10 w-auto object-contain"
-            onError={() => setImgError(true)}
           />
         </div>
 
@@ -98,12 +96,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             placeholder={t("auth.username")}
             prefix={
               <Image
-                src="/aone/contact.png"
+                src="/images/icon/user_icon.png"
                 alt="Username"
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             }
             error={errors.username?.message}
@@ -116,12 +114,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             placeholder={t("auth.password")}
             prefix={
               <Image
-                src="/aone/lock.png"
+                src="/images/icon/lock_icon.png"
                 alt="AON1E password"
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             }
             suffix={
@@ -149,12 +147,12 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="w-4 h-4 rounded border-zinc-300 text-primary focus:ring-primary"
               />
-              <span className="text-zinc-600">{t("auth.rememberMe")}</span>
+              <span className="text-[#5F7182] text-xs font-roboto-regular">{t("auth.rememberMe")}</span>
             </label>
             <Link
               href="/forgot-password"
               onClick={onClose}
-              className="text-primary hover:underline"
+              className="text-primary hover:underline text-xs font-roboto-regular"
             >
               {t("auth.forgotPassword")}
             </Link>
@@ -171,18 +169,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-3 w-full py-3 bg-primary text-white font-roboto-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="mt-3 w-full py-3 bg-primary text-white text-base font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? t("auth.signingIn") : t("auth.login").toUpperCase()}
           </button>
 
           {/* Register Link */}
-          <p className="text-center text-xs text-zinc-600">
+          <p className="text-center text-xs text-[#5F7182] font-roboto-regular">
             {t("auth.noAccount")}{" "}
             <Link
               href="/register"
               onClick={onClose}
-              className="text-primary hover:underline font-roboto-medium"
+              className="text-primary hover:underline font-roboto-regular"
             >
               {t("auth.register")} Here
             </Link>
@@ -191,7 +189,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
           <p className="h-[2px] w-full bg-[#f4f4f4]"></p>
 
           {/* Support Notice */}
-          <p className="text-xs text-center text-[#959595] mt-4">
+          <p className="text-xs text-center text-[#959595] mt-4 font-roboto-regular">
             If you encounter any issues while logging in,
             <br />
             please contact our Customer Service for further assist.

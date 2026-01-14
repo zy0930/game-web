@@ -76,7 +76,7 @@ export function LoginForm() {
                       <FormInput
                         type="text"
                         placeholder="Enter your username"
-                        prefix={<User className="w-5 h-5" />}
+                        prefix={<User className="w-auto h-auto" />}
                         error={fieldState.error?.message}
                         {...field}
                       />
@@ -94,7 +94,7 @@ export function LoginForm() {
                       <FormInput
                         type="password"
                         placeholder="••••••••"
-                        prefix={<Lock className="w-5 h-5" />}
+                        prefix={<Lock className="w-auto h-auto" />}
                         error={fieldState.error?.message}
                         {...field}
                       />

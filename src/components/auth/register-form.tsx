@@ -81,7 +81,7 @@ export function RegisterForm() {
                     <FormControl>
                       <FormInput
                         placeholder="John Doe"
-                        prefix={<User className="w-5 h-5" />}
+                        prefix={<User className="w-auto h-auto" />}
                         error={fieldState.error?.message}
                         {...field}
                       />
@@ -99,7 +99,7 @@ export function RegisterForm() {
                       <FormInput
                         type="email"
                         placeholder="you@example.com"
-                        prefix={<Mail className="w-5 h-5" />}
+                        prefix={<Mail className="w-auto h-6" />}
                         error={fieldState.error?.message}
                         {...field}
                       />
@@ -117,7 +117,7 @@ export function RegisterForm() {
                       <FormInput
                         type="password"
                         placeholder="••••••••"
-                        prefix={<Lock className="w-5 h-5" />}
+                        prefix={<Lock className="w-auto h-6" />}
                         error={fieldState.error?.message}
                         {...field}
                       />
@@ -135,7 +135,7 @@ export function RegisterForm() {
                       <FormInput
                         type="password"
                         placeholder="••••••••"
-                        prefix={<Lock className="w-5 h-5" />}
+                        prefix={<Lock className="w-auto h-6" />}
                         error={fieldState.error?.message}
                         {...field}
                       />

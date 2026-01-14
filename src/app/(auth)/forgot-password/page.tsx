@@ -3,10 +3,19 @@
 import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { ChevronDown, EyeOff, Eye, Loader2, User, Phone, KeyRound, Lock } from "lucide-react";
+import {
+  ChevronDown,
+  EyeOff,
+  Eye,
+  Loader2,
+  Phone,
+  KeyRound,
+  Lock,
+} from "lucide-react";
 import { authApi } from "@/lib/api";
 import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
+import Image from "next/image";
 
 type SendToOption = "SMS" | "WhatsApp";
 
@@ -70,7 +79,9 @@ export default function ForgotPasswordPage() {
 
     // Validate send to option
     if (!sendTo) {
-      setError("root", { message: "Please select how to receive OTP (SMS or WhatsApp)" });
+      setError("root", {
+        message: "Please select how to receive OTP (SMS or WhatsApp)",
+      });
       return;
     }
 
@@ -121,21 +132,31 @@ export default function ForgotPasswordPage() {
 
       if (result.Code === 0) {
         // Password reset successful - redirect to login
-        alert("Password reset successfully! Please login with your new password.");
+        alert(
+          "Password reset successfully! Please login with your new password."
+        );
         router.push("/login");
       } else {
-        setError("root", { message: result.Message || "Failed to reset password" });
+        setError("root", {
+          message: result.Message || "Failed to reset password",
+        });
       }
     } catch {
-      setError("root", { message: "Failed to reset password. Please try again." });
+      setError("root", {
+        message: "Failed to reset password. Please try again.",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const canRequestOtp = usernameValue && usernameValue.trim().length > 0 &&
-                        phoneValue && phoneValue.trim().length >= 10 &&
-                        sendTo && otpCountdown === 0;
+  const canRequestOtp =
+    usernameValue &&
+    usernameValue.trim().length > 0 &&
+    phoneValue &&
+    phoneValue.trim().length >= 10 &&
+    sendTo &&
+    otpCountdown === 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -150,7 +171,16 @@ export default function ForgotPasswordPage() {
             {...register("username", { required: "Username is required" })}
             type="text"
             placeholder="UID"
-            prefix={<User className="w-5 h-5" />}
+            prefix={
+              <Image
+                src="/images/icon/uuid_icon.png"
+                alt="AON1E uid"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
             error={errors.username?.message}
           />
 
@@ -165,14 +195,30 @@ export default function ForgotPasswordPage() {
             })}
             type="tel"
             placeholder="Phone Number"
-            prefix={<Phone className="w-5 h-5" />}
+            prefix={
+              <Image
+                src="/images/icon/phone_icon.png"
+                alt="AON1E phone"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
             error={errors.phoneNumber?.message}
           />
 
           {/* Send to Dropdown */}
           <div className="relative">
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400">
-              <KeyRound className="w-5 h-5" />
+              <Image
+                src="/images/icon/otp_icon.png"
+                alt="AON1E otp"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
             </div>
             <select
               value={sendTo}
@@ -186,7 +232,7 @@ export default function ForgotPasswordPage() {
               <option value="WhatsApp">WhatsApp</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
-              <ChevronDown className="w-5 h-5" />
+              <ChevronDown className="w-auto h-6" />
             </div>
           </div>
 
@@ -199,7 +245,16 @@ export default function ForgotPasswordPage() {
               type="text"
               placeholder="OTP Code"
               maxLength={6}
-              prefix={<KeyRound className="w-5 h-5" />}
+              prefix={
+                <Image
+                  src="/images/icon/otp_icon.png"
+                  alt="AON1E otp"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
+              }
               error={errors.otpCode?.message}
               wrapperClassName="flex-1"
             />
@@ -207,10 +262,10 @@ export default function ForgotPasswordPage() {
               type="button"
               onClick={handleRequestOTP}
               disabled={!canRequestOtp || isRequestingOtp}
-              className="px-4 py-3.5 bg-primary text-white text-sm font-roboto-bold rounded-lg whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] flex items-center justify-center"
+              className="px-4 py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
             >
               {isRequestingOtp ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-auto h-6 animate-spin" />
               ) : otpCountdown > 0 ? (
                 `Resend (${otpCountdown}s)`
               ) : otpSent ? (
@@ -222,7 +277,8 @@ export default function ForgotPasswordPage() {
           </div>
           {otpSent && otpCountdown > 0 && (
             <p className="text-xs text-green-600 ml-1">
-              OTP sent! Please check your {sendTo === "WhatsApp" ? "WhatsApp" : "SMS"}.
+              OTP sent! Please check your{" "}
+              {sendTo === "WhatsApp" ? "WhatsApp" : "SMS"}.
             </p>
           )}
 
@@ -237,7 +293,16 @@ export default function ForgotPasswordPage() {
             })}
             type={showPassword ? "text" : "password"}
             placeholder="New Password"
-            prefix={<Lock className="w-5 h-5" />}
+            prefix={
+              <Image
+                src="/images/icon/lock_icon.png"
+                alt="AON1E lock"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
             suffix={
               <button
                 type="button"
@@ -245,9 +310,9 @@ export default function ForgotPasswordPage() {
                 className="text-zinc-400 hover:text-zinc-600"
               >
                 {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
+                  <EyeOff className="w-auto h-6" />
                 ) : (
-                  <Eye className="w-5 h-5" />
+                  <Eye className="w-auto h-6" />
                 )}
               </button>
             }
@@ -265,11 +330,11 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-4 w-full py-3.5 bg-primary text-white text-base font-roboto-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="mt-6 text-base w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-auto h-6 animate-spin" />
                 PROCESSING...
               </>
             ) : (

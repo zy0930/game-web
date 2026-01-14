@@ -40,7 +40,7 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
             type={type}
             ref={ref}
             className={cn(
-              "flex-1 w-full py-3.5 bg-transparent text-black placeholder:text-zinc-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+              "flex-1 w-full py-3.5 bg-transparent text-black placeholder:text-[#959595] font-roboto-regular text-sm focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
               prefix ? "pl-3" : "pl-4",
               suffix ? "pr-3" : "pr-4",
               className

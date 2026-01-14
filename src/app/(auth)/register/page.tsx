@@ -204,7 +204,7 @@ export default function RegisterPage() {
       <main className="flex-1 overflow-auto">
         {/* Welcome Banner */}
         <Image
-          src="/aone/Banner/Welcome_Banner.webp"
+          src="/images/welcome_banner.png"
           alt="register banner"
           width={32}
           height={32}
@@ -224,7 +224,7 @@ export default function RegisterPage() {
                   width={24}
                   height={24}
                   unoptimized
-                  className="h-5 w-auto object-contain"
+                  className="h-6 w-auto object-contain"
                 />
               </div>
               <input
@@ -244,7 +244,7 @@ export default function RegisterPage() {
                     width={24}
                     height={24}
                     unoptimized
-                    className="h-5 w-auto object-contain"
+                    className="h-6 w-auto object-contain"
                   />
                 </button>
                 <button
@@ -257,7 +257,7 @@ export default function RegisterPage() {
                     width={24}
                     height={24}
                     unoptimized
-                    className="h-5 w-auto object-contain"
+                    className="h-6 w-auto object-contain"
                   />
                 </button>
               </div>
@@ -267,8 +267,8 @@ export default function RegisterPage() {
                 {errors.referralCode.message}
               </p>
             ) : (
-              <p className="text-xs text-zinc-500 mt-1 ml-1">
-                <span className="font-roboto-medium">Note:</span> If no referral
+              <p className="text-xs text-[#5F7182] mt-1 mx-2">
+                <span className="font-roboto-bold">Note:</span> If no referral
                 code, system will auto assign a default referral code
               </p>
             )}
@@ -286,7 +286,7 @@ export default function RegisterPage() {
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             }
             error={errors.username?.message}
@@ -310,7 +310,7 @@ export default function RegisterPage() {
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             }
             suffix={
@@ -320,9 +320,9 @@ export default function RegisterPage() {
                 className="text-zinc-400 hover:text-zinc-600"
               >
                 {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
+                  <EyeOff className="w-5 h-6" />
                 ) : (
-                  <Eye className="w-5 h-5" />
+                  <Eye className="w-5 h-6" />
                 )}
               </button>
             }
@@ -343,7 +343,7 @@ export default function RegisterPage() {
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             }
             suffix={
@@ -353,9 +353,9 @@ export default function RegisterPage() {
                 className="text-zinc-400 hover:text-zinc-600"
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="w-5 h-5" />
+                  <EyeOff className="w-5 h-6" />
                 ) : (
-                  <Eye className="w-5 h-5" />
+                  <Eye className="w-5 h-6" />
                 )}
               </button>
             }
@@ -374,7 +374,7 @@ export default function RegisterPage() {
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             }
             error={errors.fullName?.message}
@@ -398,7 +398,7 @@ export default function RegisterPage() {
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             }
             error={errors.phone?.message}
@@ -413,7 +413,7 @@ export default function RegisterPage() {
                 width={24}
                 height={24}
                 unoptimized
-                className="h-5 w-auto object-contain"
+                className="h-6 w-auto object-contain"
               />
             </div>
             <select
@@ -428,7 +428,7 @@ export default function RegisterPage() {
               <option value="WhatsApp">WhatsApp</option>
             </select>
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none">
-              <ChevronDown className="w-5 h-5" />
+              <ChevronDown className="w-5 h-6" />
             </div>
           </div>
 
@@ -448,7 +448,7 @@ export default function RegisterPage() {
                   width={24}
                   height={24}
                   unoptimized
-                  className="h-5 w-auto object-contain"
+                  className="h-6 w-auto object-contain"
                 />
               }
               error={errors.otpCode?.message}
@@ -458,10 +458,10 @@ export default function RegisterPage() {
               type="button"
               onClick={handleRequestOTP}
               disabled={!canRequestOtp || isRequestingOtp}
-              className="px-4 py-3.5 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed min-w-[130px] flex items-center justify-center"
+              className="px-4 py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
             >
               {isRequestingOtp ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-6 h-6 animate-spin" />
               ) : otpCountdown > 0 ? (
                 `Resend (${otpCountdown}s)`
               ) : otpSent ? (
@@ -486,9 +486,9 @@ export default function RegisterPage() {
               onChange={(e) => setAgreeTerms(e.target.checked)}
               className="mt-0.5 w-4 h-4 rounded border-zinc-300 text-primary focus:ring-primary"
             />
-            <span className="text-sm text-zinc-600">
+            <span className="text-sm text-[#5F7182] font-roboto-regular">
               I have read & agree to the{" "}
-              <Link href="/terms" className="text-primary hover:underline">
+              <Link href="/terms" className="text-primary hover:underline text-sm font-roboto-regular">
                 Terms & Conditions
               </Link>
             </span>
@@ -505,11 +505,11 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 bg-primary text-white font-roboto-bold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="mt-6 text-base w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-6 h-6 animate-spin" />
                 {isValidatingUpline
                   ? "Verifying referral code..."
                   : t("auth.creatingAccount")}
@@ -520,12 +520,12 @@ export default function RegisterPage() {
           </button>
 
           {/* Login Link */}
-          <p className="text-center text-sm text-zinc-600 pb-4">
+          <p className="text-center text-sm text-[#5F7182] pb-4 font-roboto-regular">
             Already have an account?{" "}
             <button
               type="button"
               onClick={() => setIsLoginModalOpen(true)}
-              className="text-primary hover:underline font-roboto-medium"
+              className="text-primary hover:underline font-roboto-regular text-sm"
             >
               Login Here
             </button>
