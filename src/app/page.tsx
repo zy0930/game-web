@@ -205,10 +205,11 @@ export default function HomePage() {
   const currentProviders = gamesByCategory[activeCategory] || [];
 
   // Build user data from auth context when authenticated
+  // Use Avatar from Discover API response since auth context doesn't populate avatar
   const authenticatedUserData = user
     ? {
-        username: user.name,
-        avatar: user.avatar,
+        username: discoverData?.Name ?? user.name,
+        avatar: discoverData?.Avatar,
         isVerified: true,
         cashBalance: discoverData?.Cash ?? 128000.0,
         chipsBalance: discoverData?.Chip ?? 0.0,

@@ -82,12 +82,25 @@ const secondaryMenuItems: MenuItem[] = [
     href: "/terms",
     icon: "/images/sidebar/sidebar_tnc_icon.png",
   },
+  {
+    id: "language",
+    labelKey: "sidebar.language",
+    href: "/account/language",
+    icon: "", // Dynamically set based on locale
+  },
 ];
+
+// Map locale to flag icon
+const localeFlagIcons: Record<string, string> = {
+  en: "/images/icon/english_icon.png",
+  zh: "/images/icon/chinese_icon.png",
+  ms: "/images/icon/malay_icon.png",
+};
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [currentTime, setCurrentTime] = useState<string>("");
   const [mounted, setMounted] = useState(false);
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { logout, isAuthenticated } = useAuth();
   const { openLoginModal } = useLoginModal();
 
@@ -263,30 +276,37 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Secondary Menu */}
           <div className="px-4 pb-3">
             <div className="bg-white rounded-lg overflow-hidden shadow-sm px-3">
-              {secondaryMenuItems.map((item, index) => (
-                <div key={item.id}>
-                  <Link
-                    href={item.href}
-                    onClick={onClose}
-                    className={cn("flex items-center gap-5 px-4 py-3")}
-                  >
-                    <Image
-                      src={item.icon}
-                      alt={item.id}
-                      width={24}
-                      height={24}
-                      unoptimized
-                      className="w-6 h-6 object-contain"
-                    />
-                    <span className="flex-1 text-xs font-roboto-bold text-[#28323C]">
-                      {t(item.labelKey)}
-                    </span>
-                  </Link>
-                  {index !== secondaryMenuItems.length - 1 && (
-                    <div className="bg-[#d4f1f0] h-px mx-3"></div>
-                  )}
-                </div>
-              ))}
+              {secondaryMenuItems.map((item, index) => {
+                // Use dynamic flag icon for language item based on current locale
+                const iconSrc = item.id === "language"
+                  ? (localeFlagIcons[locale] || localeFlagIcons.en)
+                  : item.icon;
+
+                return (
+                  <div key={item.id}>
+                    <Link
+                      href={item.href}
+                      onClick={onClose}
+                      className={cn("flex items-center gap-5 px-4 py-3")}
+                    >
+                      <Image
+                        src={iconSrc}
+                        alt={item.id}
+                        width={24}
+                        height={24}
+                        unoptimized
+                        className="w-6 h-6 object-contain"
+                      />
+                      <span className="flex-1 text-xs font-roboto-bold text-[#28323C]">
+                        {t(item.labelKey)}
+                      </span>
+                    </Link>
+                    {index !== secondaryMenuItems.length - 1 && (
+                      <div className="bg-[#d4f1f0] h-px mx-3"></div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
