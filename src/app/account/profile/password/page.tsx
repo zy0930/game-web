@@ -237,7 +237,7 @@ export default function ChangePasswordPage() {
               type="button"
               onClick={handleRequestOtp}
               disabled={!canRequestOtp || getTacMutation.isPending}
-              className="px-4 py-3.5 bg-primary text-white text-sm font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center justify-center min-w-[100px]"
+              className="cursor-pointer px-4 py-3.5 bg-primary text-white text-sm font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center justify-center min-w-[100px]"
             >
               {getTacMutation.isPending ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -349,7 +349,7 @@ export default function ChangePasswordPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="cursor-pointer uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>
