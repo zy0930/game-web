@@ -12,6 +12,7 @@ import {
   GameCategories,
   GameProviderGrid,
 } from "@/components/home";
+import { Marquee } from "@/components/ui/marquee";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useLoadingOverlay } from "@/providers/loading-overlay-provider";
@@ -169,7 +170,7 @@ export default function HomePage() {
         return msg.Message;
       })
       .filter(Boolean)
-      .join(" | ");
+      .join(" ");
   })();
 
   // Group games by category
@@ -245,11 +246,11 @@ export default function HomePage() {
             unoptimized
             className="h-4 w-auto object-contain"
           />
-          <div className="overflow-hidden flex-1">
-            <p className="text-[11px] font-roboto-medium text-dark whitespace-nowrap animate-marquee">
+          <Marquee speed={0.15} className="flex-1">
+            <span className="text-[11px] font-roboto-medium text-dark whitespace-nowrap px-4">
               {runningMessage}
-            </p>
-          </div>
+            </span>
+          </Marquee>
         </div>
 
         {/* Welcome Card / Guest Login */}
