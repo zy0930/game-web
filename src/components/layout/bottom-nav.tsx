@@ -46,7 +46,7 @@ export function BottomNav() {
   const renderNavItem = (item: NavItem) => {
     const isActive = pathname === item.href;
     const imageState = isActive ? "Active" : "Default";
-    const imagePath = `/images/footer/${item.imageName}_icon_${imageState}.png`;
+    const imagePath = `/images/footer/${item.imageName.toLowerCase()}_icon_${imageState.toLowerCase()}.png`;
 
     return (
       <ProtectedLink

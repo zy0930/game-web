@@ -596,3 +596,106 @@ export interface ChangePasswordResponse {
   Code: number;
   Message: string;
 }
+
+// ===========================================
+// Deposit Types
+// ===========================================
+
+export interface WalletInfoResponse {
+  Code: number;
+  Message: string;
+  Id: string;
+  Currency: string;
+  Cash: number;
+  Chip: number;
+  UserName: string;
+  FullName: string;
+}
+
+export interface PaygateNetwork {
+  Id: string;
+  Name: string;
+  Code: string;
+  Image: string;
+}
+
+export interface Paygate {
+  Id: string;
+  Name: string;
+  Type: string;
+  Min: number;
+  Max: number;
+  Image: string;
+  ConversionRate: number;
+  ChargeRate: number;
+  NoBonus: boolean;
+  Networks: PaygateNetwork[];
+}
+
+export interface DepositPromo {
+  Id: string;
+  Name: string;
+  Image: string;
+  Type: string;
+  Rate: number;
+  Freq: string;
+  MinDeposit: number;
+  MaxDeposit: number;
+}
+
+export interface PaygatesResponse {
+  Code: number;
+  Message: string;
+  UserName: string;
+  FullName: string;
+  Cash: number;
+  Rows: Paygate[];
+  Promos: DepositPromo[];
+}
+
+export interface DepositBankAccount {
+  Id: string;
+  BankName: string;
+  BankImage: string;
+  Name: string;
+  No: string;
+}
+
+export interface DepositAccountsResponse {
+  Code: number;
+  Message: string;
+  Min: number;
+  Max: number;
+  UserName: string;
+  FullName: string;
+  Cash: number;
+  Rows: DepositBankAccount[];
+  Promos: DepositPromo[];
+}
+
+export interface SubmitDepositPgRequest {
+  Amount: number;
+  PaygateId: string;
+  PaygateNetworkId: string;
+  PromoCode: string;
+  PromoId: string;
+}
+
+export interface SubmitDepositPgResponse {
+  Code: number;
+  Message: string;
+  Url: string;
+}
+
+export interface SubmitDepositRequest {
+  BankAccountId: string;
+  Amount: number;
+  PromoId: string;
+  PromoCode: string;
+  Receipt: File;
+}
+
+export interface SubmitDepositResponse {
+  Code: number;
+  Message: string;
+}

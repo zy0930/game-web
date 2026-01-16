@@ -339,7 +339,7 @@ export default function ForgotPasswordPage() {
           </div>
           {otpSent && otpCountdown > 0 && (
             <p className="text-xs text-green-600 ml-1">
-              {t("auth.otpSent", { method: sendTo === "WhatsApp" ? t("auth.whatsapp") : t("auth.sms") })}
+              {t("auth.otpSentSuccess")}
             </p>
           )}
 
