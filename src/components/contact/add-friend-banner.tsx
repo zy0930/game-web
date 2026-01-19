@@ -25,7 +25,7 @@ export function AddFriendBanner({
     >
       <div className="flex items-center gap-3">
         <Image
-          src="/aone/Icon_AddNewFriend.webp"
+          src="/images/icon/add_contact_icon.png"
           alt="Add Friend"
           width={24}
           height={24}

@@ -30,7 +30,8 @@
     "loginRequired": "Please login to access this page",
     "copied": "Copied!",
     "copyLink": "Copy Link",
-    "search": "Search"
+    "search": "Search",
+    "fillAllFields": "Please fill in all required fields"
   },
   "referral": {
     "title": "Referral",
@@ -335,15 +336,25 @@
   "pin": {
     "setFirstMessage": "Please set your PIN number first before adding a bank account.",
     "phoneNumber": "Phone Number",
+    "sendTo": "Send to",
+    "otpCode": "OTP Code",
+    "requestOtp": "Request OTP",
     "enterTac": "Enter TAC Code",
     "requestTac": "Request TAC",
     "tacSent": "TAC has been sent to your registered phone number",
     "tacRequestFailed": "Failed to request TAC. Please try again.",
-    "enterPin": "Enter PIN (6 digits)",
+    "enterPin": "Enter PIN",
     "confirmPin": "Confirm PIN",
     "mismatch": "PIN numbers do not match",
     "requirements": "PIN must be 6 digits",
     "resetFailed": "Failed to reset PIN. Please try again."
+  },
+  "redeemCode": {
+    "placeholder": "Redeem Code",
+    "enterCode": "Please enter a redeem code",
+    "success": "Code redeemed successfully!",
+    "invalid": "Invalid redeem code",
+    "failed": "Failed to redeem code. Please try again."
   },
   "scanner": {
     "title": "Scan QR Code",

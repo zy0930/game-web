@@ -20,9 +20,25 @@ function formatDateForApi(date: Date): string {
 }
 
 // Helper function to format date for display
-function formatDateForDisplay(dateString: string): { date: string; time: string } {
+function formatDateForDisplay(dateString: string): {
+  date: string;
+  time: string;
+} {
   const date = new Date(dateString);
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const year = date.getFullYear();
   const month = months[date.getMonth()];
   const day = String(date.getDate()).padStart(2, "0");
@@ -66,9 +82,10 @@ export default function GameRecordPage() {
   } | null>(null);
 
   // Fetch game selections
-  const { data: selectionsData, isLoading: isLoadingSelections } = useGameRecordSelections({
-    enabled: isAuthenticated,
-  });
+  const { data: selectionsData, isLoading: isLoadingSelections } =
+    useGameRecordSelections({
+      enabled: isAuthenticated,
+    });
 
   // Fetch game records when search is triggered
   const {
@@ -83,7 +100,9 @@ export default function GameRecordPage() {
   // Compute initial selected game from fetched data
   const defaultGame = useMemo(() => {
     if (!selectionsData?.Rows || selectionsData.Rows.length === 0) return "ALL";
-    const allOption = selectionsData.Rows.find(s => s.Game.toUpperCase() === "ALL");
+    const allOption = selectionsData.Rows.find(
+      (s) => s.Game.toUpperCase() === "ALL"
+    );
     return allOption ? allOption.Game : selectionsData.Rows[0].Game;
   }, [selectionsData]);
 
@@ -105,12 +124,17 @@ export default function GameRecordPage() {
   const isSearching = isFetchingRecords;
 
   // Get display text for selected game
-  const selectedGameDisplay = gameOptions.find(g => g.Game === currentGame)?.Text || currentGame;
+  const selectedGameDisplay =
+    gameOptions.find((g) => g.Game === currentGame)?.Text || currentGame;
 
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header variant="subpage" title={t("report.gameRecord")} backHref="/report" />
+        <Header
+          variant="subpage"
+          title={t("report.gameRecord")}
+          backHref="/report"
+        />
         <div className="flex-1 flex items-center justify-center px-4">
           <p className="text-sm text-zinc-500 text-center">
             {t("common.loginRequired")}
@@ -123,7 +147,11 @@ export default function GameRecordPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <Header variant="subpage" title={t("report.gameRecord")} backHref="/report" />
+      <Header
+        variant="subpage"
+        title={t("report.gameRecord")}
+        backHref="/report"
+      />
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
@@ -132,7 +160,7 @@ export default function GameRecordPage() {
           {/* Start Date */}
           <div className="flex items-center gap-3 px-4 py-3 border border-zinc-200 rounded-lg bg-white">
             <Image
-              src="/images/report/calendar_icon.png"
+              src="/images/icon/calender_start_icon.png"
               alt="calendar"
               width={20}
               height={20}
@@ -151,7 +179,7 @@ export default function GameRecordPage() {
           {/* End Date */}
           <div className="flex items-center gap-3 px-4 py-3 border border-zinc-200 rounded-lg bg-white">
             <Image
-              src="/images/report/calendar_icon.png"
+              src="/images/icon/calender_end_icon.png"
               alt="calendar"
               width={20}
               height={20}
@@ -177,14 +205,24 @@ export default function GameRecordPage() {
                 className="w-full flex items-center justify-between gap-3 px-4 py-3 border border-zinc-200 rounded-lg bg-white disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                    <span className="text-white text-[10px] font-roboto-bold">G</span>
-                  </div>
+                  <Image
+                    src="/images/icon/game_record_options_icon.png"
+                    alt="calendar"
+                    width={20}
+                    height={20}
+                    className="w-5 h-5 object-contain"
+                    unoptimized
+                  />
                   <span className="text-zinc-800 text-sm">
                     {isLoadingSelections ? "..." : selectedGameDisplay}
                   </span>
                 </div>
-                <ChevronDown className={cn("w-5 h-5 text-zinc-400 transition-transform", showGameDropdown && "rotate-180")} />
+                <ChevronDown
+                  className={cn(
+                    "w-5 h-5 text-zinc-400 transition-transform",
+                    showGameDropdown && "rotate-180"
+                  )}
+                />
               </button>
 
               {showGameDropdown && gameOptions.length > 0 && (
@@ -198,7 +236,9 @@ export default function GameRecordPage() {
                       }}
                       className={cn(
                         "w-full px-4 py-2.5 text-left text-sm hover:bg-zinc-50 transition-colors",
-                        currentGame === game.Game ? "text-primary font-roboto-medium" : "text-zinc-700"
+                        currentGame === game.Game
+                          ? "text-primary font-roboto-medium"
+                          : "text-zinc-700"
                       )}
                     >
                       {game.Text}
@@ -231,12 +271,20 @@ export default function GameRecordPage() {
             <div className="mx-4 mb-4 bg-primary rounded-xl p-4">
               <div className="flex">
                 <div className="flex-1 text-center border-r border-white/20">
-                  <p className="text-white/80 text-xs mb-1">{t("report.totalTurnover")}</p>
-                  <p className="text-white font-roboto-bold">MYR {(recordsData?.TotalTurnover ?? 0).toFixed(2)}</p>
+                  <p className="text-white/80 text-xs mb-1">
+                    {t("report.totalTurnover")}
+                  </p>
+                  <p className="text-white font-roboto-bold">
+                    MYR {(recordsData?.TotalTurnover ?? 0).toFixed(2)}
+                  </p>
                 </div>
                 <div className="flex-1 text-center">
-                  <p className="text-white/80 text-xs mb-1">{t("report.totalProfit")}</p>
-                  <p className="text-white font-roboto-bold">MYR {(recordsData?.TotalProfit ?? 0).toFixed(2)}</p>
+                  <p className="text-white/80 text-xs mb-1">
+                    {t("report.totalProfit")}
+                  </p>
+                  <p className="text-white font-roboto-bold">
+                    MYR {(recordsData?.TotalProfit ?? 0).toFixed(2)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -255,18 +303,29 @@ export default function GameRecordPage() {
               {records.map((record) => {
                 const { date, time } = formatDateForDisplay(record.CreatedDate);
                 return (
-                  <div key={record.Id} className="grid grid-cols-5 gap-2 px-4 py-3 text-xs">
+                  <div
+                    key={record.Id}
+                    className="grid grid-cols-5 gap-2 px-4 py-3 text-xs"
+                  >
                     <div className="text-zinc-600">
                       <div>{date}</div>
                       <div className="text-zinc-400">{time}</div>
                     </div>
-                    <div className="text-zinc-800 flex items-center text-[10px]">{record.GameName}</div>
-                    <div className="text-zinc-800 text-right flex items-center justify-end">{record.Stake.toFixed(2)}</div>
-                    <div className="text-zinc-800 text-right flex items-center justify-end">{record.Turnover.toFixed(2)}</div>
-                    <div className={cn(
-                      "text-right flex items-center justify-end font-roboto-medium",
-                      record.Profit >= 0 ? "text-primary" : "text-red-500"
-                    )}>
+                    <div className="text-zinc-800 flex items-center text-[10px]">
+                      {record.GameName}
+                    </div>
+                    <div className="text-zinc-800 text-right flex items-center justify-end">
+                      {record.Stake.toFixed(2)}
+                    </div>
+                    <div className="text-zinc-800 text-right flex items-center justify-end">
+                      {record.Turnover.toFixed(2)}
+                    </div>
+                    <div
+                      className={cn(
+                        "text-right flex items-center justify-end font-roboto-medium",
+                        record.Profit >= 0 ? "text-primary" : "text-red-500"
+                      )}
+                    >
                       {record.Profit.toFixed(2)}
                     </div>
                   </div>
@@ -287,13 +346,48 @@ export default function GameRecordPage() {
                 className="text-zinc-300"
               >
                 {/* Clipboard shape */}
-                <rect x="15" y="15" width="50" height="55" rx="4" fill="currentColor" />
+                <rect
+                  x="15"
+                  y="15"
+                  width="50"
+                  height="55"
+                  rx="4"
+                  fill="currentColor"
+                />
                 {/* Clipboard top */}
-                <rect x="25" y="10" width="30" height="12" rx="2" fill="#9CA3AF" />
+                <rect
+                  x="25"
+                  y="10"
+                  width="30"
+                  height="12"
+                  rx="2"
+                  fill="#9CA3AF"
+                />
                 {/* Lines on clipboard */}
-                <rect x="22" y="35" width="36" height="4" rx="1" fill="#9CA3AF" />
-                <rect x="22" y="45" width="28" height="4" rx="1" fill="#9CA3AF" />
-                <rect x="22" y="55" width="32" height="4" rx="1" fill="#9CA3AF" />
+                <rect
+                  x="22"
+                  y="35"
+                  width="36"
+                  height="4"
+                  rx="1"
+                  fill="#9CA3AF"
+                />
+                <rect
+                  x="22"
+                  y="45"
+                  width="28"
+                  height="4"
+                  rx="1"
+                  fill="#9CA3AF"
+                />
+                <rect
+                  x="22"
+                  y="55"
+                  width="32"
+                  height="4"
+                  rx="1"
+                  fill="#9CA3AF"
+                />
                 {/* X circle */}
                 <circle cx="52" cy="52" r="16" fill="#6B7280" />
                 <path
@@ -304,9 +398,7 @@ export default function GameRecordPage() {
                 />
               </svg>
             </div>
-            <p className="text-sm text-zinc-400">
-              {t("report.noHistory")}
-            </p>
+            <p className="text-sm text-zinc-400">{t("report.noHistory")}</p>
           </div>
         )}
       </main>

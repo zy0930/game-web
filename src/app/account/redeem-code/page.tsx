@@ -1,23 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { Ticket, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { Header } from "@/components/layout";
+import { FormInput } from "@/components/ui/form-input";
+import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useRedeemCode } from "@/hooks";
 
 export default function RedeemCodePage() {
+  const { t } = useI18n();
   const { isAuthenticated } = useAuth();
 
   const [redeemCode, setRedeemCode] = useState("");
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   // Redeem code mutation
   const redeemCodeMutation = useRedeemCode();
 
   const handleConfirm = async () => {
     if (!redeemCode.trim()) {
-      setMessage({ type: "error", text: "Please enter a redeem code" });
+      setMessage({ type: "error", text: t("redeemCode.enterCode") });
       return;
     }
 
@@ -29,24 +36,34 @@ export default function RedeemCodePage() {
       });
 
       if (response.Code === 0) {
-        setMessage({ type: "success", text: response.Message || "Code redeemed successfully!" });
+        setMessage({
+          type: "success",
+          text: response.Message || t("redeemCode.success"),
+        });
         setRedeemCode("");
       } else {
-        setMessage({ type: "error", text: response.Message || "Invalid redeem code" });
+        setMessage({
+          type: "error",
+          text: response.Message || t("redeemCode.invalid"),
+        });
       }
     } catch (error) {
       console.error("Failed to redeem code:", error);
-      setMessage({ type: "error", text: "Failed to redeem code. Please try again." });
+      setMessage({ type: "error", text: t("redeemCode.failed") });
     }
   };
 
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header variant="subpage" title="Redeem Code" backHref="/account" />
+        <Header
+          variant="subpage"
+          title={t("account.redeemCode")}
+          backHref="/account"
+        />
         <div className="flex-1 flex items-center justify-center px-4">
           <p className="text-sm text-zinc-500 text-center">
-            Please login to access this page
+            {t("common.loginRequired")}
           </p>
         </div>
       </div>
@@ -56,28 +73,36 @@ export default function RedeemCodePage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <Header variant="subpage" title="Redeem Code" backHref="/account" />
+      <Header
+        variant="subpage"
+        title={t("account.redeemCode")}
+        backHref="/account"
+      />
 
       {/* Main Content */}
-      <main className="flex-1 p-4">
+      <main className="flex-1 p-4 space-y-4">
         {/* Redeem Code Input */}
-        <div className="mb-4">
-          <div className="flex items-center gap-3 px-4 py-3 border border-zinc-300 rounded-lg bg-white">
-            <Ticket className="w-5 h-5 text-primary shrink-0" />
-            <input
-              type="text"
-              placeholder="Redeem Code"
-              value={redeemCode}
-              onChange={(e) => setRedeemCode(e.target.value)}
-              className="flex-1 focus:outline-none text-zinc-800 placeholder:text-zinc-400"
+        <FormInput
+          type="text"
+          placeholder={t("redeemCode.placeholder")}
+          value={redeemCode}
+          onChange={(e) => setRedeemCode(e.target.value)}
+          prefix={
+            <Image
+              src="/images/icon/redeem_code_icon.png"
+              alt="Redeem Code"
+              width={24}
+              height={24}
+              unoptimized
+              className="h-6 w-auto object-contain"
             />
-          </div>
-        </div>
+          }
+        />
 
         {/* Message */}
         {message && (
           <div
-            className={`mb-4 p-3 rounded-lg text-sm ${
+            className={`p-3 rounded-lg text-sm ${
               message.type === "success"
                 ? "bg-green-50 text-green-700 border border-green-200"
                 : "bg-red-50 text-red-700 border border-red-200"
@@ -87,14 +112,20 @@ export default function RedeemCodePage() {
           </div>
         )}
 
-        {/* Confirm Button */}
+        {/* Confirm Button - Same style as change username page */}
         <button
           onClick={handleConfirm}
           disabled={redeemCodeMutation.isPending}
-          className="w-full py-4 bg-primary text-white font-roboto-bold text-base rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="cursor-pointer uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {redeemCodeMutation.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-          CONFIRM
+          {redeemCodeMutation.isPending ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {t("common.loading")}
+            </>
+          ) : (
+            t("common.confirm")
+          )}
         </button>
       </main>
     </div>

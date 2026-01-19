@@ -29,7 +29,9 @@
     "errorLoading": "Gagal memuatkan data. Sila cuba lagi.",
     "loginRequired": "Sila log masuk untuk mengakses halaman ini",
     "copied": "Disalin!",
-    "copyLink": "Salin Pautan"
+    "copyLink": "Salin Pautan",
+    "search": "Cari",
+    "fillAllFields": "Sila isi semua ruangan yang diperlukan"
   },
   "referral": {
     "title": "Rujukan",
@@ -306,6 +308,29 @@
     "tacRequestFailed": "Gagal meminta TAC. Sila cuba lagi.",
     "addBankNote": "Sila pastikan nama akaun bank anda sepadan dengan nama penuh berdaftar anda. Akaun bank pihak ketiga tidak diterima.",
     "addFailed": "Gagal menambah akaun bank. Sila cuba lagi."
+  },
+  "pin": {
+    "setFirstMessage": "Sila tetapkan nombor PIN anda terlebih dahulu sebelum menambah akaun bank.",
+    "phoneNumber": "Nombor Telefon",
+    "sendTo": "Hantar ke",
+    "otpCode": "Kod OTP",
+    "requestOtp": "Minta OTP",
+    "enterTac": "Masukkan Kod TAC",
+    "requestTac": "Minta TAC",
+    "tacSent": "TAC telah dihantar ke nombor telefon berdaftar anda",
+    "tacRequestFailed": "Gagal meminta TAC. Sila cuba lagi.",
+    "enterPin": "Masukkan PIN",
+    "confirmPin": "Sahkan PIN",
+    "mismatch": "Nombor PIN tidak sepadan",
+    "requirements": "PIN mesti 6 digit",
+    "resetFailed": "Gagal menetapkan semula PIN. Sila cuba lagi."
+  },
+  "redeemCode": {
+    "placeholder": "Kod Tebusan",
+    "enterCode": "Sila masukkan kod tebusan",
+    "success": "Kod berjaya ditebus!",
+    "invalid": "Kod tebusan tidak sah",
+    "failed": "Gagal menebus kod. Sila cuba lagi."
   },
   "scanner": {
     "title": "Imbas Kod QR",

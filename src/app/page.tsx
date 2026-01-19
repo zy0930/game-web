@@ -16,6 +16,7 @@ import { Marquee } from "@/components/ui/marquee";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useLoadingOverlay } from "@/providers/loading-overlay-provider";
+import { useLoginModal } from "@/providers/login-modal-provider";
 import { useDiscover, useLaunchGame } from "@/hooks/use-discover";
 import { ApiError } from "@/lib/api";
 import type { Game } from "@/lib/api/types";
@@ -78,6 +79,7 @@ export default function HomePage() {
   const { t, locale } = useI18n();
   const { isAuthenticated, user } = useAuth();
   const { showLoading, hideLoading } = useLoadingOverlay();
+  const { openLoginModal } = useLoginModal();
   const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   // Fetch discover data from API
@@ -116,6 +118,12 @@ export default function HomePage() {
   const launchGameMutation = useLaunchGame();
 
   const handleLaunchGame = async (game: { id: string; name: string }) => {
+    // Check if user is authenticated before launching game
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     try {
       setLaunchingGameId(game.id);
       showLoading("Launching game...");
@@ -141,9 +149,7 @@ export default function HomePage() {
       hideLoading();
       const errorMessage =
         err instanceof ApiError
-          ? err.code === 401
-            ? "Please sign in to play this game."
-            : err.message || "Failed to launch game."
+          ? err.message || "Failed to launch game."
           : "Failed to launch game. Please try again.";
 
       alert(errorMessage);

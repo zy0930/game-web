@@ -29,7 +29,9 @@
     "errorLoading": "加载数据失败，请重试。",
     "loginRequired": "请登录以访问此页面",
     "copied": "已复制!",
-    "copyLink": "复制链接"
+    "copyLink": "复制链接",
+    "search": "搜索",
+    "fillAllFields": "请填写所有必填字段"
   },
   "referral": {
     "title": "推荐",
@@ -306,6 +308,29 @@
     "tacRequestFailed": "获取验证码失败，请重试。",
     "addBankNote": "请确保您的银行账户名与您的注册全名一致。不接受第三方银行账户。",
     "addFailed": "添加银行账户失败，请重试。"
+  },
+  "pin": {
+    "setFirstMessage": "添加银行账户前请先设置您的PIN码。",
+    "phoneNumber": "手机号码",
+    "sendTo": "发送至",
+    "otpCode": "验证码",
+    "requestOtp": "获取验证码",
+    "enterTac": "输入验证码",
+    "requestTac": "获取验证码",
+    "tacSent": "验证码已发送至您注册的手机号码",
+    "tacRequestFailed": "获取验证码失败，请重试。",
+    "enterPin": "输入PIN码",
+    "confirmPin": "确认PIN码",
+    "mismatch": "PIN码不匹配",
+    "requirements": "PIN码必须为6位数字",
+    "resetFailed": "重置PIN码失败，请重试。"
+  },
+  "redeemCode": {
+    "placeholder": "兑换码",
+    "enterCode": "请输入兑换码",
+    "success": "兑换成功！",
+    "invalid": "无效的兑换码",
+    "failed": "兑换失败，请重试。"
   },
   "scanner": {
     "title": "扫描二维码",

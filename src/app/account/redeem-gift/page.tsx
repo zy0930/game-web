@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import { Header } from "@/components/layout";
 import { useAuth } from "@/providers/auth-provider";
 import { useRewards, useClaimReward } from "@/hooks";
@@ -94,9 +94,11 @@ export default function RedeemGiftPage() {
       </div>
 
       {/* Points Balance Card */}
-      <div className="mx-4 -mt-6 relative z-10">
+      <div className="mx-6 -mt-6 relative z-10">
         <div className="bg-white rounded-xl shadow-lg px-4 py-3 flex items-center justify-between">
-          <span className="text-zinc-700 font-roboto-medium">A-Point Balance:</span>
+          <span className="text-zinc-700 font-roboto-medium">
+            A-Point Balance:
+          </span>
           <div className="flex items-center gap-2">
             <Image
               src="/images/icon/A1_point_icon.png"
@@ -113,18 +115,9 @@ export default function RedeemGiftPage() {
       </div>
 
       {/* Redeem History Button */}
-      <div className="px-4 mt-4">
-        <button
-          onClick={() => router.push("/account/redeem-history")}
-          className="w-full py-3 border border-primary text-primary font-roboto-medium rounded-lg hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
-        >
-          Redeem History
-          {pendingCount > 0 && (
-            <span className="px-2 py-0.5 bg-primary text-white text-xs rounded-full">
-              {pendingCount}
-            </span>
-          )}
-        </button>
+      <div className="px-4 mt-4 text-center flex items-center gap-2 justify-center cursor-pointer">
+        <span className="text-zinc-400 text-sm">Redeem History</span>
+        <ChevronRight className="w-5 h-5 text-zinc-400" />
       </div>
 
       {/* Rewards Grid */}
@@ -136,7 +129,7 @@ export default function RedeemGiftPage() {
               className="bg-white rounded-xl overflow-hidden shadow-md"
             >
               {/* Reward Image */}
-              <div className="relative aspect-square bg-gradient-to-b from-[#E8F8F6] to-white p-4">
+              <div className="relative aspect-square bg-linear-to-b from-[#E8F8F6] to-white p-4">
                 <Image
                   src={reward.Image}
                   alt={reward.Name}

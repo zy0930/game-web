@@ -9,25 +9,91 @@ import { useRebates } from "@/hooks";
 
 // Define game categories for grouping
 const SLOT_CODES = [
-  "PPSLOT", "LKL365", "BNG", "JILI", "NEXTSPIN", "BTG", "BESOFT", "OCTOPLAY",
-  "AFB", "MEGAH5", "918H5", "HACKSAW", "SPADEGAMING", "PEGASUS", "AP", "ACE333",
-  "FACHAI", "SIMPLEPLAY", "VPOWER", "VPLUS", "JDB", "RELAX", "PLAYSTAR", "LIVE22",
-  "HABANERO", "GFG", "CQ9", "KA", "JOKER", "EVONLC", "CLOTPLAY", "EVOBTG",
-  "EVOREDTIGER", "EVONETENT", "MEGA", "LIONKING", "LEG", "PTSLOT", "MKY888",
-  "KISS918", "FunHouse", "GP", "Arrow Edges", "Belatra Games", "Bgaming",
-  "Leap Games", "Platipus", "RCT Gaming", "REELNRG", "SKYWIND", "Tom Horn",
-  "SUPERLOTTO", "ONLYPLAY", "EVOPLAY", "YGG", "Play n Go", "SPINMATIC",
-  "CZ888", "FASTSPIN"
+  "PPSLOT",
+  "LKL365",
+  "BNG",
+  "JILI",
+  "NEXTSPIN",
+  "BTG",
+  "BESOFT",
+  "OCTOPLAY",
+  "AFB",
+  "MEGAH5",
+  "918H5",
+  "HACKSAW",
+  "SPADEGAMING",
+  "PEGASUS",
+  "AP",
+  "ACE333",
+  "FACHAI",
+  "SIMPLEPLAY",
+  "VPOWER",
+  "VPLUS",
+  "JDB",
+  "RELAX",
+  "PLAYSTAR",
+  "LIVE22",
+  "HABANERO",
+  "GFG",
+  "CQ9",
+  "KA",
+  "JOKER",
+  "EVONLC",
+  "CLOTPLAY",
+  "EVOBTG",
+  "EVOREDTIGER",
+  "EVONETENT",
+  "MEGA",
+  "LIONKING",
+  "LEG",
+  "PTSLOT",
+  "MKY888",
+  "KISS918",
+  "FunHouse",
+  "GP",
+  "Arrow Edges",
+  "Belatra Games",
+  "Bgaming",
+  "Leap Games",
+  "Platipus",
+  "RCT Gaming",
+  "REELNRG",
+  "SKYWIND",
+  "Tom Horn",
+  "SUPERLOTTO",
+  "ONLYPLAY",
+  "EVOPLAY",
+  "YGG",
+  "Play n Go",
+  "SPINMATIC",
+  "CZ888",
+  "FASTSPIN",
 ];
 
 const FISH_CODES = [
-  "FACHAIFISH", "VPOWERFISH", "CQ9FISH", "JILIFISH", "SPADEGAMINGFISH",
-  "JDBFISH", "FASTSPINFISH"
+  "FACHAIFISH",
+  "VPOWERFISH",
+  "CQ9FISH",
+  "JILIFISH",
+  "SPADEGAMINGFISH",
+  "JDBFISH",
+  "FASTSPINFISH",
 ];
 
 const LIVE_CODES = [
-  "PRAGMATICLIVE", "EVOLUTIONGAMING", "BG", "AG", "SEXYGAMING", "DG",
-  "KING855", "SAGAMING", "YEEBET", "WCASINO", "MT", "PTLIVE", "VIVO"
+  "PRAGMATICLIVE",
+  "EVOLUTIONGAMING",
+  "BG",
+  "AG",
+  "SEXYGAMING",
+  "DG",
+  "KING855",
+  "SAGAMING",
+  "YEEBET",
+  "WCASINO",
+  "MT",
+  "PTLIVE",
+  "VIVO",
 ];
 
 const SPORTS_CODES = ["IBC", "OBET"];
@@ -72,7 +138,14 @@ export default function RebateListPage() {
     });
 
     // Return only non-empty categories in order
-    const orderedCategories: GameCategory[] = ["SLOT", "FISH", "LIVE", "SPORTS", "LOTTERY", "OTHER"];
+    const orderedCategories: GameCategory[] = [
+      "SLOT",
+      "FISH",
+      "LIVE",
+      "SPORTS",
+      "LOTTERY",
+      "OTHER",
+    ];
     return orderedCategories
       .filter((cat) => groups[cat].length > 0)
       .map((cat) => ({ category: cat, games: groups[cat] }));
@@ -110,7 +183,7 @@ export default function RebateListPage() {
           src="/images/background/rebate_list_background.png"
           alt=""
           fill
-          className="object-cover object-top"
+          className="object-cover object-top bg-black/20"
           priority
         />
       </div>
@@ -121,15 +194,15 @@ export default function RebateListPage() {
       </div>
 
       {/* Banner */}
-      <div className="relative z-10 px-4 pt-4">
-        <div className="relative w-full aspect-[350/80] rounded-lg overflow-hidden">
-          <Image
-            src="/images/background/rebate_list_background.png"
-            alt="AONE"
-            fill
-            className="object-cover object-top"
-          />
-        </div>
+      <div className="px-4 pt-4 relative rounded-lg mt-6 flex justify-center">
+        <Image
+          src="/images/title_white.png"
+          alt="AON1E"
+          width={80}
+          height={32}
+          className="h-12 w-auto object-contain"
+          unoptimized
+        />
       </div>
 
       {/* Table Header */}

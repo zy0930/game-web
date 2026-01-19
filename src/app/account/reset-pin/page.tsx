@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, EyeOff, KeyRound, MessageSquare, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { Eye, EyeOff, Loader2, ChevronDown } from "lucide-react";
 import { Header } from "@/components/layout";
-import { cn } from "@/lib/utils";
+import { FormInput } from "@/components/ui/form-input";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useResetPinTac, useResetPin } from "@/hooks/use-bank";
@@ -29,6 +30,7 @@ export default function ResetPinPage() {
   const [tacExpiresIn, setTacExpiresIn] = useState<number | null>(null);
   const [tacRequested, setTacRequested] = useState(false);
   const [maskedPhone, setMaskedPhone] = useState<string>("");
+  const [error, setError] = useState("");
 
   // Countdown timer for TAC
   useEffect(() => {
@@ -55,16 +57,34 @@ export default function ResetPinPage() {
       // Mask the phone number for display
       if (response.Phone) {
         const phone = response.Phone;
-        const masked = phone.substring(0, 4) + " *** ***" + phone.substring(phone.length - 4);
+        const masked =
+          phone.substring(0, 4) +
+          " *** ***" +
+          phone.substring(phone.length - 4);
         setMaskedPhone(masked);
       }
-    } catch (error) {
-      console.error("Failed to request TAC:", error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("pin.tacRequestFailed"));
     }
   };
 
   const handleConfirm = async () => {
-    if (!tacCode || !pin || !confirmPin || pin !== confirmPin) return;
+    setError("");
+
+    if (!tacCode || !pin || !confirmPin) {
+      setError(t("common.fillAllFields"));
+      return;
+    }
+
+    if (pin !== confirmPin) {
+      setError(t("pin.mismatch"));
+      return;
+    }
+
+    if (pin.length !== 6) {
+      setError(t("pin.requirements"));
+      return;
+    }
 
     try {
       await resetPin.mutateAsync({
@@ -78,8 +98,8 @@ export default function ResetPinPage() {
       } else {
         router.replace("/account");
       }
-    } catch (error) {
-      console.error("Failed to reset PIN:", error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("pin.resetFailed"));
     }
   };
 
@@ -89,7 +109,8 @@ export default function ResetPinPage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const isFormValid = tacCode && pin && confirmPin && pin === confirmPin && pin.length === 6;
+  const isFormValid =
+    tacCode && pin && confirmPin && pin === confirmPin && pin.length === 6;
 
   // Determine back href based on where user came from
   const backHref = fromPage === "add-bank" ? "/account/bank/add" : "/account";
@@ -97,7 +118,11 @@ export default function ResetPinPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header variant="subpage" title={t("account.resetPin")} backHref={backHref} />
+        <Header
+          variant="subpage"
+          title={t("account.resetPin")}
+          backHref={backHref}
+        />
         <div className="flex-1 flex items-center justify-center px-4">
           <p className="text-sm text-zinc-500 text-center">
             {t("common.loginRequired")}
@@ -110,137 +135,170 @@ export default function ResetPinPage() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <Header variant="subpage" title={t("account.resetPin")} backHref={backHref} />
+      <Header
+        variant="subpage"
+        title={t("account.resetPin")}
+        backHref={backHref}
+      />
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto p-4 space-y-3">
         {/* Info message if coming from add bank */}
         {fromPage === "add-bank" && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-2">
-            <p className="text-sm text-amber-800">
-              {t("pin.setFirstMessage")}
-            </p>
+            <p className="text-sm text-amber-800">{t("pin.setFirstMessage")}</p>
           </div>
         )}
 
-        {/* TAC Request Section */}
-        <div className="bg-white rounded-lg border border-zinc-200 p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <MessageSquare className="w-5 h-5 text-primary shrink-0" />
-            <span className="text-sm text-zinc-700">
-              {maskedPhone || t("pin.phoneNumber")}
-            </span>
-          </div>
-
-          {/* TAC Code Input with Request Button */}
-          <div className="flex items-center gap-3">
-            <input
-              type="text"
-              placeholder={t("pin.enterTac")}
-              value={tacCode}
-              onChange={(e) => setTacCode(e.target.value.replace(/[^0-9]/g, ""))}
-              maxLength={6}
-              className="flex-1 px-4 py-3 border border-zinc-200 rounded-lg focus:outline-none focus:border-primary text-zinc-800 text-sm placeholder:text-zinc-400"
+        {/* Send To Field (Display only) */}
+        <FormInput
+          type="text"
+          value={maskedPhone || t("pin.sendTo")}
+          readOnly
+          placeholder={t("pin.sendTo")}
+          prefix={
+            <Image
+              src="/images/icon/otp_icon.png"
+              alt="Send to"
+              width={24}
+              height={24}
+              unoptimized
+              className="h-6 w-auto object-contain"
             />
-            <button
-              onClick={handleRequestTac}
-              disabled={resetPinTac.isPending || (tacExpiresIn !== null && tacExpiresIn > 0)}
-              className="px-4 py-3 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-2"
-            >
-              {resetPinTac.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : tacExpiresIn !== null && tacExpiresIn > 0 ? (
-                formatTime(tacExpiresIn)
-              ) : (
-                t("pin.requestTac")
-              )}
-            </button>
-          </div>
+          }
+          suffix={<ChevronDown className="w-5 h-5 text-zinc-400" />}
+          className="cursor-default"
+        />
 
-          {tacRequested && resetPinTac.isSuccess && (
-            <p className="text-xs text-green-600 mt-2">
-              {t("pin.tacSent")}
-            </p>
-          )}
-          {resetPinTac.isError && (
-            <p className="text-xs text-red-500 mt-2">
-              {resetPinTac.error?.message || t("pin.tacRequestFailed")}
-            </p>
-          )}
+        {/* OTP Code Input with Request Button */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <FormInput
+              type="text"
+              placeholder={t("pin.otpCode")}
+              value={tacCode}
+              onChange={(e) =>
+                setTacCode(e.target.value.replace(/[^0-9]/g, ""))
+              }
+              maxLength={6}
+              prefix={
+                <Image
+                  src="/images/icon/otp_icon.png"
+                  alt="OTP"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
+              }
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleRequestTac}
+            disabled={
+              resetPinTac.isPending ||
+              (tacExpiresIn !== null && tacExpiresIn > 0)
+            }
+            className="px-4 py-3.5 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-2"
+          >
+            {resetPinTac.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : tacExpiresIn !== null && tacExpiresIn > 0 ? (
+              formatTime(tacExpiresIn)
+            ) : (
+              t("pin.requestOtp")
+            )}
+          </button>
         </div>
+
+        {tacRequested && resetPinTac.isSuccess && (
+          <p className="text-xs text-green-600 px-1">{t("pin.tacSent")}</p>
+        )}
 
         {/* Enter PIN */}
-        <div className="flex items-center gap-3 px-4 py-3 border border-zinc-200 rounded-lg bg-white">
-          <KeyRound className="w-5 h-5 text-primary shrink-0" />
-          <input
-            type={showPin ? "text" : "password"}
-            placeholder={t("pin.enterPin")}
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ""))}
-            maxLength={6}
-            className="flex-1 focus:outline-none text-zinc-800 text-sm placeholder:text-zinc-400"
-          />
-          <button
-            onClick={() => setShowPin(!showPin)}
-            className="text-zinc-400 hover:text-zinc-600"
-          >
-            {showPin ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-          </button>
-        </div>
+        <FormInput
+          type={showPin ? "text" : "password"}
+          placeholder={t("pin.enterPin")}
+          value={pin}
+          onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ""))}
+          maxLength={6}
+          prefix={
+            <Image
+              src="/images/icon/reset_pin_icon.png"
+              alt="PIN"
+              width={24}
+              height={24}
+              unoptimized
+              className="h-6 w-auto object-contain"
+            />
+          }
+          suffix={
+            <button
+              type="button"
+              onClick={() => setShowPin(!showPin)}
+              className="text-zinc-400 hover:text-zinc-600"
+            >
+              {showPin ? (
+                <Eye className="w-5 h-5" />
+              ) : (
+                <EyeOff className="w-5 h-5" />
+              )}
+            </button>
+          }
+        />
 
         {/* Confirm PIN */}
-        <div className="flex items-center gap-3 px-4 py-3 border border-zinc-200 rounded-lg bg-white">
-          <KeyRound className="w-5 h-5 text-primary shrink-0" />
-          <input
-            type={showConfirmPin ? "text" : "password"}
-            placeholder={t("pin.confirmPin")}
-            value={confirmPin}
-            onChange={(e) => setConfirmPin(e.target.value.replace(/[^0-9]/g, ""))}
-            maxLength={6}
-            className="flex-1 focus:outline-none text-zinc-800 text-sm placeholder:text-zinc-400"
-          />
-          <button
-            onClick={() => setShowConfirmPin(!showConfirmPin)}
-            className="text-zinc-400 hover:text-zinc-600"
-          >
-            {showConfirmPin ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-          </button>
-        </div>
+        <FormInput
+          type={showConfirmPin ? "text" : "password"}
+          placeholder={t("pin.confirmPin")}
+          value={confirmPin}
+          onChange={(e) => setConfirmPin(e.target.value.replace(/[^0-9]/g, ""))}
+          maxLength={6}
+          prefix={
+            <Image
+              src="/images/icon/reset_pin_icon.png"
+              alt="Confirm PIN"
+              width={24}
+              height={24}
+              unoptimized
+              className="h-6 w-auto object-contain"
+            />
+          }
+          suffix={
+            <button
+              type="button"
+              onClick={() => setShowConfirmPin(!showConfirmPin)}
+              className="text-zinc-400 hover:text-zinc-600"
+            >
+              {showConfirmPin ? (
+                <Eye className="w-5 h-5" />
+              ) : (
+                <EyeOff className="w-5 h-5" />
+              )}
+            </button>
+          }
+        />
 
-        {/* PIN mismatch warning */}
-        {confirmPin && pin !== confirmPin && (
-          <p className="text-xs text-red-500 px-1">
-            {t("pin.mismatch")}
-          </p>
-        )}
+        {/* Error message */}
+        {error && <p className="text-xs text-red-500 px-1">{error}</p>}
 
-        {/* PIN requirements */}
-        <div className="bg-zinc-50 rounded-lg p-4">
-          <p className="text-xs text-zinc-500">
-            {t("pin.requirements")}
-          </p>
-        </div>
-
-        {/* Confirm Button */}
+        {/* Confirm Button - Same style as change username page */}
         <button
+          type="button"
           onClick={handleConfirm}
           disabled={!isFormValid || resetPin.isPending}
-          className={cn(
-            "w-full py-4 text-white font-roboto-bold text-base rounded-full transition-colors mt-4 flex items-center justify-center gap-2",
-            isFormValid && !resetPin.isPending
-              ? "bg-primary hover:bg-primary/90"
-              : "bg-zinc-300 cursor-not-allowed"
-          )}
+          className="cursor-pointer uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
         >
-          {resetPin.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
-          {t("common.confirm")}
+          {resetPin.isPending ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {t("common.loading")}
+            </>
+          ) : (
+            t("common.confirm")
+          )}
         </button>
-
-        {resetPin.isError && (
-          <p className="text-red-500 text-sm text-center">
-            {resetPin.error?.message || t("pin.resetFailed")}
-          </p>
-        )}
       </main>
     </div>
   );

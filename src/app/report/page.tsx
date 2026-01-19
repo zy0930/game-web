@@ -1,20 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Gamepad2, FileText } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Header } from "@/components/layout";
+import Image from "next/image";
 
 const reportOptions = [
   {
     id: "game-record",
     label: "Game Record",
-    icon: Gamepad2,
+    icon: "/images/icon/game_record_options_icon.png",
     href: "/report/game-record",
   },
   {
     id: "turnover",
     label: "Turnover Report",
-    icon: FileText,
+    icon: "/images/icon/turnover_report_option_icon.png",
     href: "/report/turnover",
   },
 ];
@@ -31,13 +32,22 @@ export default function ReportPage() {
           <Link
             key={option.id}
             href={option.href}
-            className="flex items-center justify-between p-4 bg-white border border-zinc-200 rounded-xl hover:bg-zinc-50 transition-colors"
+            className="flex items-center justify-between p-4 bg-[#D4F1F0] rounded-2xl"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <option.icon className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center">
+                <Image
+                  src={option.icon}
+                  alt="calendar"
+                  width={20}
+                  height={20}
+                  className="w-6 h-6 object-contain"
+                  unoptimized
+                />
               </div>
-              <span className="text-sm font-roboto-medium text-zinc-800">{option.label}</span>
+              <span className="text-sm font-roboto-medium text-zinc-800">
+                {option.label}
+              </span>
             </div>
             <ChevronRight className="w-5 h-5 text-zinc-400" />
           </Link>
