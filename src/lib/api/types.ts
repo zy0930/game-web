@@ -864,3 +864,23 @@ export interface SubmitDepositResponse {
   Code: number;
   Message: string;
 }
+
+// ===========================================
+// Rebate Types
+// ===========================================
+
+export interface RebateGame {
+  Id: string;
+  Name: string;
+  Code: string;
+  PlayerCommRate: number;
+  PlayerL1CommRate: number;
+  PlayerL2CommRate: number;
+  AgentCommRate: number;
+}
+
+export interface GetRebatesResponse {
+  Code: number;
+  Message: string;
+  Games: RebateGame[];
+}

@@ -8,6 +8,7 @@ import type { DiscoverResponse } from "@/lib/api/types";
 export const discoverKeys = {
   all: ["discover"] as const,
   data: () => [...discoverKeys.all, "data"] as const,
+  rebates: () => [...discoverKeys.all, "rebates"] as const,
 };
 
 /**
@@ -77,5 +78,19 @@ export function useRestore() {
       // Update the discover cache with fresh data
       queryClient.setQueryData(discoverKeys.data(), data);
     },
+  });
+}
+
+/**
+ * Hook to fetch rebates list
+ */
+export function useRebates(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: discoverKeys.rebates(),
+    queryFn: async () => {
+      return discoverApi.getRebates();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: options?.enabled ?? true,
   });
 }
