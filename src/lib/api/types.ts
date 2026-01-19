@@ -593,21 +593,35 @@ export interface PostTransferResponse {
 export interface Reward {
   Id: string;
   Name: string;
-  Description: string;
   Image: string;
+  Price: number;
 }
 
-export interface RewardsResponse {
+export interface GetRewardsResponse {
   Code: number;
   Message: string;
-  Data: Reward[];
+  Point: number;
+  RewardPendingCount: number;
+  Rewards: Reward[];
+}
+
+export interface MyReward {
+  Id: string;
+  Name: string;
+  Image: string;
+  Price: number;
+  Status: string;
+  CreatedDate: string;
+}
+
+export interface GetMyRewardsResponse {
+  Code: number;
+  Message: string;
+  Rewards: MyReward[];
 }
 
 export interface ClaimRewardRequest {
   Id: string;
-  ReceiverName: string;
-  ReceiverPhone: string;
-  ReceiverAddress: string;
 }
 
 export interface ClaimRewardResponse {
