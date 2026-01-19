@@ -29,7 +29,8 @@
     "errorLoading": "Failed to load data. Please try again.",
     "loginRequired": "Please login to access this page",
     "copied": "Copied!",
-    "copyLink": "Copy Link"
+    "copyLink": "Copy Link",
+    "search": "Search"
   },
   "referral": {
     "title": "Referral",
@@ -208,6 +209,22 @@
     "personal": "Personal",
     "noMessages": "No messages"
   },
+  "report": {
+    "gameRecord": "Game Record",
+    "turnoverReport": "Turnover Report",
+    "totalTurnover": "Total Turnover",
+    "totalProfit": "Total Profit",
+    "totalRollover": "Total Rollover",
+    "totalWinLose": "Total Win Lose",
+    "date": "Date",
+    "game": "Game",
+    "stake": "Stake",
+    "turnover": "Turnover",
+    "profit": "Profit",
+    "rollover": "Rollover",
+    "winLose": "Win Lose",
+    "noHistory": "There are no history at the moment."
+  },
   "about": {
     "title": "About AONE",
     "aboutTitle": "About Aone Global Gaming",
@@ -308,7 +325,12 @@
     "tacSent": "TAC has been sent to your registered phone number",
     "tacRequestFailed": "Failed to request TAC. Please try again.",
     "addBankNote": "Please ensure your bank account name matches your registered full name. Third-party bank accounts are not accepted.",
-    "addFailed": "Failed to add bank account. Please try again."
+    "addFailed": "Failed to add bank account. Please try again.",
+    "noBanksAdded": "There are no banks added.",
+    "bankAccount": "Bank Account",
+    "accountInfo": "Account Info",
+    "bankHolderName": "Bank Holder Name",
+    "accountNo": "Account No."
   },
   "pin": {
     "setFirstMessage": "Please set your PIN number first before adding a bank account.",
