@@ -1,40 +1,124 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { Header } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
+import { useAuth } from "@/providers/auth-provider";
+import { useGameRecordSelections, useGameRecords } from "@/hooks/use-report";
 
-// Mock game options
-const gameOptions = ["PPSLOT", "PGSOFT", "JILI", "SPADEGAMING", "ALL"];
+// Helper function to format date for API (YYYY-MM-DD HH:mm)
+function formatDateForApi(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
 
-// Mock data - set to empty array to test empty state
-const mockGameRecords = [
-  { date: "2025 Nov 24", time: "12:11", game: "PPSLOT", stake: 0.5, turnover: 0.5, profit: -0.5 },
-  { date: "2025 Nov 24", time: "10:11", game: "PPSLOT", stake: 0.5, turnover: 0.5, profit: 0.5 },
-];
+// Helper function to format date for display
+function formatDateForDisplay(dateString: string): { date: string; time: string } {
+  const date = new Date(dateString);
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const year = date.getFullYear();
+  const month = months[date.getMonth()];
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return {
+    date: `${year} ${month} ${day}`,
+    time: `${hours}:${minutes}`,
+  };
+}
 
-const mockSummary = {
-  totalTurnover: 1.00,
-  totalProfit: 0.00,
-};
+// Default dates: today at 23:59 and 7 days ago at 00:00
+function getDefaultDates() {
+  const today = new Date();
+  today.setHours(23, 59, 0, 0);
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  sevenDaysAgo.setHours(0, 0, 0, 0);
+
+  return {
+    startDate: formatDateForApi(sevenDaysAgo),
+    endDate: formatDateForApi(today),
+  };
+}
 
 export default function GameRecordPage() {
   const { t } = useI18n();
-  const [startDate, setStartDate] = useState("2025-11-24 23:59");
-  const [endDate, setEndDate] = useState("2025-11-24 00:00");
-  const [selectedGame, setSelectedGame] = useState("PPSLOT");
+  const { isAuthenticated } = useAuth();
+
+  const defaultDates = getDefaultDates();
+  const [startDate, setStartDate] = useState(defaultDates.startDate);
+  const [endDate, setEndDate] = useState(defaultDates.endDate);
+  const [selectedGame, setSelectedGame] = useState<string | null>(null);
   const [showGameDropdown, setShowGameDropdown] = useState(false);
-  const [records] = useState(mockGameRecords);
+  const [searchParams, setSearchParams] = useState<{
+    StartDt: string;
+    EndDt: string;
+    Game: string;
+    PageNumber: number;
+  } | null>(null);
+
+  // Fetch game selections
+  const { data: selectionsData, isLoading: isLoadingSelections } = useGameRecordSelections({
+    enabled: isAuthenticated,
+  });
+
+  // Fetch game records when search is triggered
+  const {
+    data: recordsData,
+    isLoading: isLoadingRecords,
+    isFetching: isFetchingRecords,
+  } = useGameRecords(
+    searchParams ?? { StartDt: "", EndDt: "", Game: "", PageNumber: 1 },
+    { enabled: !!searchParams && isAuthenticated }
+  );
+
+  // Compute initial selected game from fetched data
+  const defaultGame = useMemo(() => {
+    if (!selectionsData?.Rows || selectionsData.Rows.length === 0) return "ALL";
+    const allOption = selectionsData.Rows.find(s => s.Game.toUpperCase() === "ALL");
+    return allOption ? allOption.Game : selectionsData.Rows[0].Game;
+  }, [selectionsData]);
+
+  // Use selected game or default
+  const currentGame = selectedGame ?? defaultGame;
 
   const handleSearch = () => {
-    // TODO: API call to fetch game records
-    console.log("Searching:", { startDate, endDate, selectedGame });
+    setSearchParams({
+      StartDt: startDate,
+      EndDt: endDate,
+      Game: currentGame,
+      PageNumber: 1,
+    });
   };
 
+  const gameOptions = selectionsData?.Rows ?? [];
+  const records = recordsData?.Rows ?? [];
   const hasRecords = records.length > 0;
+  const isSearching = isFetchingRecords;
+
+  // Get display text for selected game
+  const selectedGameDisplay = gameOptions.find(g => g.Game === currentGame)?.Text || currentGame;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header variant="subpage" title={t("report.gameRecord")} backHref="/report" />
+        <div className="flex-1 flex items-center justify-center px-4">
+          <p className="text-sm text-zinc-500 text-center">
+            {t("common.loginRequired")}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -89,32 +173,35 @@ export default function GameRecordPage() {
             <div className="relative flex-1">
               <button
                 onClick={() => setShowGameDropdown(!showGameDropdown)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-3 border border-zinc-200 rounded-lg bg-white"
+                disabled={isLoadingSelections}
+                className="w-full flex items-center justify-between gap-3 px-4 py-3 border border-zinc-200 rounded-lg bg-white disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                     <span className="text-white text-[10px] font-roboto-bold">G</span>
                   </div>
-                  <span className="text-zinc-800 text-sm">{selectedGame}</span>
+                  <span className="text-zinc-800 text-sm">
+                    {isLoadingSelections ? "..." : selectedGameDisplay}
+                  </span>
                 </div>
                 <ChevronDown className={cn("w-5 h-5 text-zinc-400 transition-transform", showGameDropdown && "rotate-180")} />
               </button>
 
-              {showGameDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg z-10">
+              {showGameDropdown && gameOptions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
                   {gameOptions.map((game) => (
                     <button
-                      key={game}
+                      key={game.Game}
                       onClick={() => {
-                        setSelectedGame(game);
+                        setSelectedGame(game.Game);
                         setShowGameDropdown(false);
                       }}
                       className={cn(
                         "w-full px-4 py-2.5 text-left text-sm hover:bg-zinc-50 transition-colors",
-                        selectedGame === game ? "text-primary font-roboto-medium" : "text-zinc-700"
+                        currentGame === game.Game ? "text-primary font-roboto-medium" : "text-zinc-700"
                       )}
                     >
-                      {game}
+                      {game.Text}
                     </button>
                   ))}
                 </div>
@@ -124,25 +211,32 @@ export default function GameRecordPage() {
             {/* Search Button */}
             <button
               onClick={handleSearch}
-              className="px-6 py-3 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors"
+              disabled={isSearching || isLoadingSelections}
+              className="px-6 py-3 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
+              {isSearching && <Loader2 className="w-4 h-4 animate-spin" />}
               {t("common.search")}
             </button>
           </div>
         </div>
 
-        {hasRecords ? (
+        {/* Results */}
+        {isLoadingRecords ? (
+          <div className="flex-1 flex items-center justify-center py-20">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        ) : searchParams && hasRecords ? (
           <>
             {/* Summary Card */}
             <div className="mx-4 mb-4 bg-primary rounded-xl p-4">
               <div className="flex">
                 <div className="flex-1 text-center border-r border-white/20">
                   <p className="text-white/80 text-xs mb-1">{t("report.totalTurnover")}</p>
-                  <p className="text-white font-roboto-bold">MYR {mockSummary.totalTurnover.toFixed(2)}</p>
+                  <p className="text-white font-roboto-bold">MYR {(recordsData?.TotalTurnover ?? 0).toFixed(2)}</p>
                 </div>
                 <div className="flex-1 text-center">
                   <p className="text-white/80 text-xs mb-1">{t("report.totalProfit")}</p>
-                  <p className="text-white font-roboto-bold">MYR {mockSummary.totalProfit.toFixed(2)}</p>
+                  <p className="text-white font-roboto-bold">MYR {(recordsData?.TotalProfit ?? 0).toFixed(2)}</p>
                 </div>
               </div>
             </div>
@@ -158,23 +252,26 @@ export default function GameRecordPage() {
 
             {/* Table Body */}
             <div className="divide-y divide-zinc-100">
-              {records.map((record, index) => (
-                <div key={index} className="grid grid-cols-5 gap-2 px-4 py-3 text-xs">
-                  <div className="text-zinc-600">
-                    <div>{record.date}</div>
-                    <div className="text-zinc-400">{record.time}</div>
+              {records.map((record) => {
+                const { date, time } = formatDateForDisplay(record.CreatedDate);
+                return (
+                  <div key={record.Id} className="grid grid-cols-5 gap-2 px-4 py-3 text-xs">
+                    <div className="text-zinc-600">
+                      <div>{date}</div>
+                      <div className="text-zinc-400">{time}</div>
+                    </div>
+                    <div className="text-zinc-800 flex items-center text-[10px]">{record.GameName}</div>
+                    <div className="text-zinc-800 text-right flex items-center justify-end">{record.Stake.toFixed(2)}</div>
+                    <div className="text-zinc-800 text-right flex items-center justify-end">{record.Turnover.toFixed(2)}</div>
+                    <div className={cn(
+                      "text-right flex items-center justify-end font-roboto-medium",
+                      record.Profit >= 0 ? "text-primary" : "text-red-500"
+                    )}>
+                      {record.Profit.toFixed(2)}
+                    </div>
                   </div>
-                  <div className="text-zinc-800 flex items-center">{record.game}</div>
-                  <div className="text-zinc-800 text-right flex items-center justify-end">{record.stake.toFixed(1)}</div>
-                  <div className="text-zinc-800 text-right flex items-center justify-end">{record.turnover.toFixed(1)}</div>
-                  <div className={cn(
-                    "text-right flex items-center justify-end font-roboto-medium",
-                    record.profit >= 0 ? "text-primary" : "text-red-500"
-                  )}>
-                    {record.profit.toFixed(1)}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </>
         ) : (

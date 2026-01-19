@@ -193,26 +193,35 @@ export interface AboutUsResponse {
 // Game Records Types
 // ===========================================
 
-export interface GameSelection {
-  Id: string;
-  Name: string;
-  Image: string;
+export interface GameRecordSelection {
+  Text: string;
+  Game: string;
 }
 
-export interface GameSelectionsResponse {
+export interface GameRecordSelectionsResponse {
   Code: number;
   Message: string;
-  Data: GameSelection[];
+  Rows: GameRecordSelection[];
 }
 
 export interface GameRecord {
+  Id: string;
   GameName: string;
-  Amount: number;
-  WinAmount: number;
+  Stake: number;
+  Turnover: number;
+  Profit: number;
   CreatedDate: string;
 }
 
-export interface GameRecordsResponse extends PaginatedResponse<GameRecord> {}
+export interface GameRecordsResponse {
+  Code: number;
+  Message: string;
+  PageNumber: number;
+  TotalStake: number;
+  TotalTurnover: number;
+  TotalProfit: number;
+  Rows: GameRecord[];
+}
 
 // ===========================================
 // Register Types
@@ -553,9 +562,10 @@ export interface TurnoverGameSelectionsResponse {
 }
 
 export interface TurnoverRecord {
+  Id: string;
   GameName: string;
-  Amount: number;
-  WinAmount: number;
+  Rollover: number;
+  WinLose: number;
   CreatedDate: string;
 }
 
@@ -563,7 +573,8 @@ export interface TurnoverReportResponse {
   Code: number;
   Message: string;
   PageNumber: number;
-  TotalAmount: number;
+  TotalRollover: number;
+  TotalWinLose: number;
   Rows: TurnoverRecord[];
 }
 
