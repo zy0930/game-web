@@ -7,3 +7,4 @@ export { withdrawalApi } from "./withdrawal";
 export { bankApi } from "./bank";
 export { depositApi } from "./deposit";
 export { reportApi } from "./report";
+export { contactApi } from "./contact";

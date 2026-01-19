@@ -465,50 +465,119 @@ export interface AnnouncementResponse {
 
 export interface Contact {
   Id: string;
-  Name: string;
-  Phone: string;
-  Status: string;
+  Alias: string;
+  Letter: string;
+  Image: string;
 }
 
-export interface ContactsResponse {
+export interface GetContactsResponse {
   Code: number;
   Message: string;
-  Data: Contact[];
+  Contacts: Contact[];
 }
 
-export interface ContactRequest {
+export interface FriendRequest {
   Id: string;
   Name: string;
-  Phone: string;
+  Username: string;
+  Image: string;
 }
 
-export interface ContactRequestsResponse {
+export interface GetContactRequestsResponse {
   Code: number;
   Message: string;
-  Data: ContactRequest[];
+  FrRequests: FriendRequest[];
+  MyRequests: FriendRequest[];
+}
+
+export interface ContactDetail {
+  Id: string;
+  TargetId: string;
+  Username: string;
+  Name: string;
+  Alias: string;
+  Image: string;
+}
+
+export interface GetContactDetailResponse {
+  Code: number;
+  Message: string;
+  Id: string;
+  TargetId: string;
+  Username: string;
+  Name: string;
+  Alias: string;
+  Image: string;
+}
+
+export interface DeleteContactRequest {
+  Id: string;
+}
+
+export interface DeleteContactResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface SearchContactResult {
+  Id: string;
+  Name: string;
+  Username: string;
+  Image: string;
 }
 
 export interface SearchContactResponse {
   Code: number;
   Message: string;
-  Data: ContactRequest[];
+  Text: string;
+  Contacts: SearchContactResult[];
+}
+
+export interface AddContactRequest {
+  Id: string;
+}
+
+export interface AddContactResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface ApproveContactRequest {
+  Id: string;
+}
+
+export interface ApproveContactResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface RejectContactRequest {
+  Id: string;
+}
+
+export interface RejectContactResponse {
+  Code: number;
+  Message: string;
 }
 
 // ===========================================
 // Transfer Types
 // ===========================================
 
-export interface TransferInfoResponse {
+export interface GetTransferInfoResponse {
   Code: number;
   Message: string;
+  Id: string;
   Name: string;
-  Phone: string;
-  MaximumTransfer: number;
+  Username: string;
+  Image: string;
+  Currency: string;
+  AvailableCash: number;
 }
 
 export interface PostTransferRequest {
   Id: string;
-  Amount: string;
+  Amount: number;
   Pin: string;
 }
 

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, FolderOpen, Camera } from "lucide-react";
+import { Search, FolderOpen, Camera, Loader2 } from "lucide-react";
 import { Header } from "@/components/layout";
 import {
   ContactListItem,
@@ -11,35 +11,15 @@ import {
   SearchResultCard,
 } from "@/components/contact";
 import { cn } from "@/lib/utils";
-
-// Mock data for contacts
-const mockContacts = [
-  { id: "1", username: "Aunsk02", avatar: "/aone/Avatar/Avatar1.webp", alias: "Leong Fei Fan" },
-  { id: "2", username: "Ampaen12", avatar: "/aone/Avatar/Avatar2.webp", alias: "Amy Chen" },
-  { id: "3", username: "Aulde38", avatar: "/aone/Avatar/Avatar3.webp", alias: "Alex Wong" },
-  { id: "4", username: "Umksbjt34", avatar: "/aone/Avatar/Avatar4.webp", alias: "Uma Kumar" },
-  { id: "5", username: "Upma90", avatar: "/aone/Avatar/Avatar5.webp", alias: "Upendra Patel" },
-];
-
-// Mock data for friend requests (incoming)
-const mockFriendRequests = [
-  { id: "r1", username: "majspo9", avatar: "/aone/Avatar/Avatar6.webp" },
-  { id: "r2", username: "Pmpaenw2", avatar: "/aone/Avatar/Avatar7.webp" },
-];
-
-// Mock data for my requests (outgoing)
-const mockMyRequests = [
-  { id: "m1", username: "majspo9", avatar: "/aone/Avatar/Avatar6.webp" },
-  { id: "m2", username: "Pmpaenw2", avatar: "/aone/Avatar/Avatar1.webp" },
-  { id: "m3", username: "DHnsk", avatar: "/aone/Avatar/Avatar8.webp" },
-];
-
-// Mock search result
-const mockSearchResult = {
-  id: "s1",
-  username: "FancyYo24",
-  avatar: "/aone/Avatar/Avatar9.webp",
-};
+import { useAuth } from "@/providers/auth-provider";
+import {
+  useContacts,
+  useContactRequests,
+  useSearchContact,
+  useAddContact,
+  useApproveContact,
+  useRejectContact,
+} from "@/hooks/use-contact";
 
 type ViewMode = "contacts" | "addFriend";
 type RequestTab = "incoming" | "outgoing";
@@ -48,67 +28,142 @@ type PageMode = "contact" | "transfer";
 export default function ContactPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isAuthenticated } = useAuth();
 
   // Determine page mode from query param
   const pageMode: PageMode = searchParams.get("mode") === "transfer" ? "transfer" : "contact";
   const isTransferMode = pageMode === "transfer";
 
   const [viewMode, setViewMode] = useState<ViewMode>("contacts");
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [requestTab, setRequestTab] = useState<RequestTab>("incoming");
-  const [friendRequests, setFriendRequests] = useState(mockFriendRequests);
-  const [myRequests, setMyRequests] = useState(mockMyRequests);
 
-  // Group contacts alphabetically
-  const groupedContacts = useMemo(() => {
-    const groups: Record<string, typeof mockContacts> = {};
+  // Fetch contacts
+  const { data: contactsData, isLoading: isLoadingContacts } = useContacts({
+    enabled: isAuthenticated,
+  });
 
-    const filteredContacts = mockContacts.filter((contact) =>
-      contact.username.toLowerCase().includes(searchQuery.toLowerCase())
+  // Fetch contact requests (only when in addFriend view)
+  const { data: requestsData, isLoading: isLoadingRequests } = useContactRequests({
+    enabled: isAuthenticated && viewMode === "addFriend",
+  });
+
+  // Search for contacts - only when searchQuery is set (on Enter press)
+  const { data: searchData, isLoading: isSearching } = useSearchContact(searchQuery, {
+    enabled: isAuthenticated && viewMode === "addFriend" && searchQuery.length > 0,
+  });
+
+  // Handle search on Enter key
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && viewMode === "addFriend") {
+      setSearchQuery(searchInput);
+    }
+  };
+
+  // Mutations
+  const addContact = useAddContact();
+  const approveContact = useApproveContact();
+  const rejectContact = useRejectContact();
+
+  // Get contacts and filter by search in contacts view (local filtering uses searchInput)
+  const filteredContacts = useMemo(() => {
+    const contacts = contactsData?.Contacts ?? [];
+    if (viewMode !== "contacts") return contacts;
+    if (!searchInput) return contacts;
+    return contacts.filter((contact) =>
+      contact.Alias.toLowerCase().includes(searchInput.toLowerCase())
     );
+  }, [contactsData?.Contacts, searchInput, viewMode]);
+
+  // Group contacts alphabetically by Letter field
+  const groupedContacts = useMemo(() => {
+    const groups: Record<string, typeof filteredContacts> = {};
 
     filteredContacts.forEach((contact) => {
-      const firstLetter = contact.username.charAt(0).toUpperCase();
-      if (!groups[firstLetter]) {
-        groups[firstLetter] = [];
+      const letter = contact.Letter.toUpperCase();
+      if (!groups[letter]) {
+        groups[letter] = [];
       }
-      groups[firstLetter].push(contact);
+      groups[letter].push(contact);
     });
 
     return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
-  }, [searchQuery]);
+  }, [filteredContacts]);
 
-  const handleContactClick = (contactId: string, username: string) => {
+  // Get friend requests
+  const friendRequests = requestsData?.FrRequests ?? [];
+  const myRequests = requestsData?.MyRequests ?? [];
+
+  // Get search results
+  const searchResults = searchData?.Contacts ?? [];
+
+  const handleContactClick = (contactId: string, targetId: string) => {
     if (isTransferMode) {
-      // In transfer mode, go to transfer page with selected contact
-      router.push(`/transfer?to=${username}`);
+      // In transfer mode, go to transfer page with target ID
+      router.push(`/transfer?id=${targetId}`);
     } else {
       // In contact mode, go to contact detail page
       router.push(`/account/contact/${contactId}`);
     }
   };
 
-  const handleApproveRequest = (requestId: string) => {
-    setFriendRequests((prev) => prev.filter((r) => r.id !== requestId));
-    // TODO: API call to approve
+  const handleApproveRequest = async (requestId: string) => {
+    try {
+      await approveContact.mutateAsync({ Id: requestId });
+    } catch (error) {
+      console.error("Failed to approve request:", error);
+    }
   };
 
-  const handleRejectRequest = (requestId: string) => {
-    setFriendRequests((prev) => prev.filter((r) => r.id !== requestId));
-    // TODO: API call to reject
+  const handleRejectRequest = async (requestId: string) => {
+    try {
+      await rejectContact.mutateAsync({ Id: requestId });
+    } catch (error) {
+      console.error("Failed to reject request:", error);
+    }
   };
 
-  const handleCancelRequest = (requestId: string) => {
-    setMyRequests((prev) => prev.filter((r) => r.id !== requestId));
-    // TODO: API call to cancel
+  const handleCancelRequest = async (requestId: string) => {
+    // Cancel is same as reject for outgoing requests
+    try {
+      await rejectContact.mutateAsync({ Id: requestId });
+    } catch (error) {
+      console.error("Failed to cancel request:", error);
+    }
   };
 
-  const handleAddFriend = () => {
-    // TODO: API call to add friend
-    console.log("Adding friend:", searchQuery);
+  const handleAddFriend = async (userId: string) => {
+    try {
+      const response = await addContact.mutateAsync({ Id: userId });
+      if (response.Code === 0) {
+        // Clear search after successful request
+        setSearchInput("");
+        setSearchQuery("");
+      }
+    } catch (error) {
+      console.error("Failed to add friend:", error);
+    }
   };
 
   const totalPendingRequests = friendRequests.length + myRequests.length;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header
+          variant="subpage"
+          title={isTransferMode ? "Transfer" : "My Contact"}
+          backHref="/account"
+        />
+        <div className="flex-1 flex items-center justify-center px-4">
+          <p className="text-sm text-zinc-500 text-center">
+            Please login to access this page
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -135,9 +190,10 @@ export default function ContactPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search UID"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={viewMode === "addFriend" ? "Search UID (press Enter)" : "Search UID"}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
               className="w-full pl-12 pr-4 py-3 border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white"
             />
             {viewMode === "addFriend" && (
@@ -156,25 +212,29 @@ export default function ContactPage() {
         {viewMode === "contacts" ? (
           /* Contacts List View */
           <div>
-            {groupedContacts.map(([letter, contacts]) => (
-              <div key={letter}>
-                {/* Letter Header */}
-                <div className="px-4 py-2 bg-zinc-50 border-y border-zinc-200">
-                  <span className="text-sm font-roboto-semibold text-zinc-600">{letter}</span>
-                </div>
-                {/* Contact Items */}
-                {contacts.map((contact) => (
-                  <ContactListItem
-                    key={contact.id}
-                    username={contact.username}
-                    avatar={contact.avatar}
-                    onClick={() => handleContactClick(contact.id, contact.username)}
-                  />
-                ))}
+            {isLoadingContacts ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
               </div>
-            ))}
-
-            {groupedContacts.length === 0 && (
+            ) : groupedContacts.length > 0 ? (
+              groupedContacts.map(([letter, letterContacts]) => (
+                <div key={letter}>
+                  {/* Letter Header */}
+                  <div className="px-4 py-2 bg-zinc-50 border-y border-zinc-200">
+                    <span className="text-sm font-roboto-semibold text-zinc-600">{letter}</span>
+                  </div>
+                  {/* Contact Items */}
+                  {letterContacts.map((contact) => (
+                    <ContactListItem
+                      key={contact.Id}
+                      username={contact.Alias}
+                      avatar={contact.Image}
+                      onClick={() => handleContactClick(contact.Id, contact.Id)}
+                    />
+                  ))}
+                </div>
+              ))
+            ) : (
               <div className="flex flex-col items-center justify-center py-12 text-zinc-500">
                 <p>No contacts found</p>
               </div>
@@ -186,11 +246,30 @@ export default function ContactPage() {
             {/* Search Result */}
             {searchQuery && (
               <div className="mb-4">
-                <SearchResultCard
-                  username={searchQuery || mockSearchResult.username}
-                  avatar={mockSearchResult.avatar}
-                  onAdd={handleAddFriend}
-                />
+                {isSearching ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  searchResults.map((result) => (
+                    <SearchResultCard
+                      key={result.Id}
+                      username={result.Username}
+                      avatar={result.Image}
+                      onAdd={() => handleAddFriend(result.Id)}
+                      isAdding={addContact.isPending}
+                    />
+                  ))
+                ) : searchData ? (
+                  <div className="py-4 text-center text-zinc-500">
+                    No users found
+                  </div>
+                ) : null}
+                {addContact.isSuccess && (
+                  <p className="text-sm text-primary text-center mt-2">
+                    Friend request sent!
+                  </p>
+                )}
               </div>
             )}
 
@@ -222,16 +301,20 @@ export default function ContactPage() {
 
             {/* Request List */}
             <div>
-              {requestTab === "incoming" ? (
+              {isLoadingRequests ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                </div>
+              ) : requestTab === "incoming" ? (
                 friendRequests.length > 0 ? (
                   friendRequests.map((request) => (
                     <FriendRequestItem
-                      key={request.id}
-                      username={request.username}
-                      avatar={request.avatar}
+                      key={request.Id}
+                      username={request.Username}
+                      avatar={request.Image}
                       type="incoming"
-                      onApprove={() => handleApproveRequest(request.id)}
-                      onReject={() => handleRejectRequest(request.id)}
+                      onApprove={() => handleApproveRequest(request.Id)}
+                      onReject={() => handleRejectRequest(request.Id)}
                     />
                   ))
                 ) : (
@@ -242,11 +325,11 @@ export default function ContactPage() {
               ) : myRequests.length > 0 ? (
                 myRequests.map((request) => (
                   <FriendRequestItem
-                    key={request.id}
-                    username={request.username}
-                    avatar={request.avatar}
+                    key={request.Id}
+                    username={request.Username}
+                    avatar={request.Image}
                     type="outgoing"
-                    onCancel={() => handleCancelRequest(request.id)}
+                    onCancel={() => handleCancelRequest(request.Id)}
                   />
                 ))
               ) : (
