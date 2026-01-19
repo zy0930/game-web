@@ -5,3 +5,4 @@ export { useTransactions, useInfiniteTransactions, transactionsKeys } from "./us
 export { useProfile, useQrCode, useAboutUs, useHaveBankAccount, useName, useChangeName, useAvatars, useChangeAvatar, useChangePasswordGetTac, useChangePassword, userKeys } from "./use-user";
 export { useRegister, registerKeys } from "./use-register";
 export { useRewards, useMyRewards, useClaimReward, rewardKeys } from "./use-reward";
+export { useRedeemCode } from "./use-redeem-code";

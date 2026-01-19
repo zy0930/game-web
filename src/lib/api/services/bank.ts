@@ -9,6 +9,8 @@ import type {
   ResetPinGetTacResponse,
   ResetPinRequest,
   ResetPinResponse,
+  RedeemCodeRequest,
+  RedeemCodeResponse,
 } from "../types";
 
 export const bankApi = {
@@ -90,6 +92,16 @@ export const bankApi = {
    */
   async resetPin(data: ResetPinRequest): Promise<ResetPinResponse> {
     return apiClient.post<ResetPinResponse>("/api/mapiuser/resetpin", data, {
+      authenticated: true,
+    });
+  },
+
+  /**
+   * Submit redeem code
+   * POST /api/mapibank/RedeemCodeSubmit
+   */
+  async redeemCodeSubmit(data: RedeemCodeRequest): Promise<RedeemCodeResponse> {
+    return apiClient.post<RedeemCodeResponse>("/api/mapibank/RedeemCodeSubmit", data, {
       authenticated: true,
     });
   },
