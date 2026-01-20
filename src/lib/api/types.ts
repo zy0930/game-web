@@ -224,6 +224,21 @@ export interface GameRecordsResponse {
 }
 
 // ===========================================
+// Message Selection Types
+// ===========================================
+
+export interface MessageSelectionOption {
+  Value: string;
+  Text: string;
+}
+
+export interface MessageSelectionResponse {
+  Code: number;
+  Message: string;
+  Data: MessageSelectionOption[];
+}
+
+// ===========================================
 // Register Types
 // ===========================================
 
@@ -239,7 +254,7 @@ export interface GetUplineResponse {
 
 export interface RegisterGetTacRequest {
   Phone: string;
-  Option: "SMS" | "WhatsApp";
+  Option: string;
 }
 
 export interface RegisterGetTacResponse {
@@ -271,7 +286,7 @@ export interface RegisterResponse {
 export interface ForgotPasswordGetTacRequest {
   Username: string;
   Phone: string;
-  Option: "SMS" | "WhatsApp";
+  Option: string;
 }
 
 export interface ForgotPasswordGetTacResponse {

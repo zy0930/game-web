@@ -11,6 +11,7 @@ import type {
   ForgotPasswordGetTacResponse,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
+  MessageSelectionResponse,
 } from "../types";
 
 export const authApi = {
@@ -87,6 +88,16 @@ export const authApi = {
    */
   async forgotPassword(data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
     return apiClient.post<ForgotPasswordResponse>("/api/mapiuser/forgotpassword", data, {
+      authenticated: false,
+    });
+  },
+
+  /**
+   * Get message selection options (SMS, WhatsApp, etc.)
+   * GET /api/MapiDiscover/MessageSelection
+   */
+  async getMessageSelection(): Promise<MessageSelectionResponse> {
+    return apiClient.get<MessageSelectionResponse>("/api/MapiDiscover/MessageSelection", {
       authenticated: false,
     });
   },

@@ -11,8 +11,14 @@ import { useI18n } from "@/providers/i18n-provider";
 import { LoginModal } from "@/components/auth/login-modal";
 import { useRegister } from "@/hooks/use-register";
 import { authApi } from "@/lib/api";
+import type { MessageSelectionOption } from "@/lib/api/types";
 import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
+
+interface SendToOption {
+  value: string;
+  label: string;
+}
 
 interface RegisterFormData {
   referralCode: string;
@@ -24,8 +30,6 @@ interface RegisterFormData {
   otpCode: string;
 }
 
-type SendToOption = "SMS" | "WhatsApp";
-
 const DEFAULT_REFERRAL_CODE = "196B48";
 
 export default function RegisterPage() {
@@ -36,7 +40,9 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [sendTo, setSendTo] = useState<SendToOption | "">("");
+  const [sendTo, setSendTo] = useState<string>("");
+  const [sendToOptions, setSendToOptions] = useState<SendToOption[]>([]);
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
   const [isValidatingUpline, setIsValidatingUpline] = useState(false);
   const [isRequestingOtp, setIsRequestingOtp] = useState(false);
   const [otpCountdown, setOtpCountdown] = useState(0);
@@ -67,6 +73,36 @@ export default function RegisterPage() {
       otpCode: "",
     },
   });
+
+  // Fetch message selection options on mount
+  useEffect(() => {
+    const fetchMessageOptions = async () => {
+      try {
+        const response = await authApi.getMessageSelection();
+        if (response.Code === 200 && response.Data) {
+          // Filter out "Select" option and map to our format
+          const options = response.Data
+            .filter((opt: MessageSelectionOption) => opt.Value !== "Select")
+            .map((opt: MessageSelectionOption) => ({
+              value: opt.Value,
+              label: opt.Text,
+            }));
+          setSendToOptions(options);
+        }
+      } catch (error) {
+        console.error("Failed to fetch message options:", error);
+        // Fallback to default options if API fails
+        setSendToOptions([
+          { value: "SMS", label: t("auth.sms") },
+          { value: "WhatsApp", label: t("auth.whatsapp") },
+        ]);
+      } finally {
+        setIsLoadingOptions(false);
+      }
+    };
+
+    fetchMessageOptions();
+  }, [t]);
 
   // Handle referral code from URL params (e.g., from QR scanner or redirect)
   useEffect(() => {
@@ -132,10 +168,6 @@ export default function RegisterPage() {
   );
 
   const phoneValue = watch("phone");
-  const sendToOptions: Array<{ value: SendToOption; label: string }> = [
-    { value: "SMS", label: t("auth.sms") },
-    { value: "WhatsApp", label: t("auth.whatsapp") },
-  ];
 
   // OTP countdown timer
   useEffect(() => {
@@ -529,9 +561,7 @@ export default function RegisterPage() {
                   }`}
                 >
                   {sendTo
-                    ? sendTo === "WhatsApp"
-                      ? t("auth.whatsapp")
-                      : t("auth.sms")
+                    ? sendToOptions.find((opt) => opt.value === sendTo)?.label || sendTo
                     : t("auth.sendTo")}
                 </span>
               </span>
