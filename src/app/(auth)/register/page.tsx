@@ -233,11 +233,13 @@ export default function RegisterPage() {
       });
 
       if (result.Code === 0) {
+        clearErrors("otpCode");
         setOtpSent(true);
         setOtpAlreadySent(false);
         setOtpCountdown(result.ExpiresIn || 300);
       } else if (result.ExpiresIn && result.ExpiresIn > 0) {
         // TAC already sent, show countdown timer
+        clearErrors("otpCode");
         setOtpSent(true);
         setOtpAlreadySent(true);
         setOtpCountdown(result.ExpiresIn);
@@ -249,6 +251,7 @@ export default function RegisterPage() {
       if (error instanceof ApiError && error.data?.ExpiresIn) {
         const expiresIn = error.data.ExpiresIn as number;
         if (expiresIn > 0) {
+          clearErrors("otpCode");
           setOtpSent(true);
           setOtpAlreadySent(true);
           setOtpCountdown(expiresIn);
@@ -649,14 +652,18 @@ export default function RegisterPage() {
                   className="h-6 w-auto object-contain"
                 />
               }
-              error={errors.otpCode?.message}
+              error={errors.otpCode?.message
+                ? errors.otpCode.message
+                : (otpSent && otpCountdown > 0
+                  ? (otpAlreadySent ? t("auth.otpAlreadySent") : t("auth.otpSentSuccess"))
+                  : undefined)}
               wrapperClassName="flex-1"
             />
             <button
               type="button"
               onClick={handleRequestOTP}
               disabled={!canRequestOtp || isRequestingOtp}
-              className="cursor-pointer px-4 py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
+              className="h-fit cursor-pointer px-4 py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
             >
               {isRequestingOtp ? (
                 <Loader2 className="w-6 h-6 animate-spin" />
@@ -669,11 +676,6 @@ export default function RegisterPage() {
               )}
             </button>
           </div>
-          {otpSent && otpCountdown > 0 && (
-            <p className="text-xs text-red-600 ml-1">
-              {otpAlreadySent ? t("auth.otpAlreadySent") : t("auth.otpSentSuccess")}
-            </p>
-          )}
 
           {/* Terms & Conditions */}
           <label className="flex items-start gap-2 cursor-pointer">
