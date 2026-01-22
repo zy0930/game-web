@@ -453,6 +453,15 @@ export interface ResetPinResponse {
   Message: string;
 }
 
+export interface DeleteBankAccountRequest {
+  Id: string;
+}
+
+export interface DeleteBankAccountResponse {
+  Code: number;
+  Message: string;
+}
+
 // ===========================================
 // Carousel/Announcement Types
 // ===========================================

@@ -113,7 +113,7 @@ export default function ResetPinPage() {
     tacCode && pin && confirmPin && pin === confirmPin && pin.length === 6;
 
   // Determine back href based on where user came from
-  const backHref = fromPage === "add-bank" ? "/account/bank/add" : "/account";
+  const backHref = fromPage === "add-bank" ? "/account/bank" : "/account";
 
   if (!isAuthenticated) {
     return (
@@ -143,13 +143,6 @@ export default function ResetPinPage() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto p-4 space-y-3">
-        {/* Info message if coming from add bank */}
-        {fromPage === "add-bank" && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-2">
-            <p className="text-sm text-amber-800">{t("pin.setFirstMessage")}</p>
-          </div>
-        )}
-
         {/* Send To Field (Display only) */}
         <FormInput
           type="text"
@@ -171,7 +164,7 @@ export default function ResetPinPage() {
         />
 
         {/* OTP Code Input with Request Button */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <div className="flex-1">
             <FormInput
               type="text"
@@ -200,7 +193,7 @@ export default function ResetPinPage() {
               resetPinTac.isPending ||
               (tacExpiresIn !== null && tacExpiresIn > 0)
             }
-            className="px-4 py-3.5 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-2"
+            className="cursor-pointer px-4 py-3.5 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center gap-2"
           >
             {resetPinTac.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -288,7 +281,7 @@ export default function ResetPinPage() {
           type="button"
           onClick={handleConfirm}
           disabled={!isFormValid || resetPin.isPending}
-          className="cursor-pointer uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+          className="mt-6 cursor-pointer uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {resetPin.isPending ? (
             <>

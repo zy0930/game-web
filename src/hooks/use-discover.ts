@@ -82,6 +82,26 @@ export function useRestore() {
 }
 
 /**
+ * Hook to refresh cash balance by calling the discover API
+ * Used by the refresh button in the welcome card
+ */
+export function useRefreshCash() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      // Call discover API to refresh balance data
+      const discoverData = await discoverApi.getDiscover();
+      return discoverData;
+    },
+    onSuccess: (data) => {
+      // Update the discover cache with fresh data
+      queryClient.setQueryData(discoverKeys.data(), data);
+    },
+  });
+}
+
+/**
  * Hook to fetch rebates list
  */
 export function useRebates(options?: { enabled?: boolean }) {

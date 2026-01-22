@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
-import { Plus, Lock, Loader2 } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
+import { FaCheck } from "react-icons/fa";
+import { FormInput } from "@/components/ui/form-input";
 import { useAuth } from "@/providers/auth-provider";
 import { useWithdrawAccounts, useSubmitWithdraw } from "@/hooks/use-withdrawal";
 
@@ -73,8 +75,9 @@ export default function WithdrawalPage() {
         <main className="flex-1 overflow-auto px-4 py-4">
           {/* Bank Account Selection */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("withdrawal.bankAccount")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 flex gap-1">
+              {t("withdrawal.bankAccount")}
+              <span className="text-primary">*</span>
             </label>
 
             {isLoadingAccounts ? (
@@ -82,52 +85,60 @@ export default function WithdrawalPage() {
                 <Loader2 className="w-6 h-6 text-primary animate-spin" />
               </div>
             ) : (
-              <div className="flex gap-3 flex-wrap">
+              <div className="grid grid-cols-5 gap-3 items-start">
                 {/* Existing bank accounts */}
                 {accountsData?.Rows?.map((bank) => (
                   <button
                     key={bank.Id}
                     onClick={() => setSelectedBankId(bank.Id)}
-                    className="flex flex-col items-center"
+                    className="flex flex-col items-center cursor-pointer"
                   >
                     <div
                       className={cn(
-                        "w-14 h-14 rounded-lg flex items-center justify-center border-2 transition-all relative overflow-hidden bg-white",
+                        "w-full aspect-square rounded-lg border-2 shadow-sm relative flex items-center justify-center bg-white",
                         selectedBankId === bank.Id
                           ? "border-primary"
-                          : "border-zinc-200"
+                          : "border-zinc-200 hover:border-zinc-300"
                       )}
                     >
                       {bank.BankImage ? (
                         <Image
                           src={bank.BankImage}
                           alt={bank.BankName}
-                          width={48}
-                          height={48}
-                          className="w-10 h-10 object-contain"
+                          width={35}
+                          height={35}
+                          className="object-contain rounded-lg"
                           unoptimized
                         />
                       ) : (
-                        <span className="text-zinc-600 text-xs font-roboto-bold">
-                          {bank.BankName.substring(0, 2).toUpperCase()}
+                        <span className="text-sm font-roboto-bold text-zinc-600">
+                          {bank.BankName.substring(0, 3)}
                         </span>
                       )}
                       {selectedBankId === bank.Id && (
-                        <div className="absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-tl-lg flex items-center justify-center">
-                          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
+                        <div className="absolute bottom-0 right-0 pl-1.5 py-1 pr-0.5 bg-primary rounded-tl-lg rounded-br-md flex items-center justify-center">
+                          <FaCheck className="w-2.5 h-2.5" />
                         </div>
                       )}
                     </div>
+                    <span
+                      className={cn(
+                        "text-xs text-center mt-1 font-roboto-regular",
+                        selectedBankId === bank.Id
+                          ? "text-primary"
+                          : "text-[#28323C]"
+                      )}
+                    >
+                      {bank.BankName}
+                    </span>
                   </button>
                 ))}
                 {/* Add Bank Button - Always visible */}
                 <button
                   onClick={() => router.push("/account/bank")}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center cursor-pointer"
                 >
-                  <div className="w-14 h-14 rounded-lg border-2 border-dashed border-zinc-300 flex items-center justify-center hover:border-primary transition-colors">
+                  <div className="w-full aspect-square rounded-lg border-2 border-dashed border-zinc-300 shadow-sm flex items-center justify-center bg-white hover:border-primary transition-colors">
                     <Plus className="w-6 h-6 text-zinc-400" />
                   </div>
                 </button>
@@ -137,24 +148,26 @@ export default function WithdrawalPage() {
 
           {/* Enter Amount */}
           <div className="mb-2">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("withdrawal.enterAmount")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-[#28323C] mb-2 flex gap-1">
+              {t("withdrawal.enterAmount")}
+              <span className="text-primary">*</span>
             </label>
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <svg className="w-5 h-5 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v12M9 9h6M9 15h6" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
-                placeholder={`Min. ${currency} ${formatCurrency(minAmount)}/ Max. ${currency} ${formatCurrency(maxAmount)}`}
-                className="w-full pl-12 pr-4 py-3 bg-white border border-zinc-200 rounded-lg text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary"
-              />
-            </div>
+            <FormInput
+              type="text"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+              placeholder={`Min. ${currency} ${formatCurrency(minAmount)}/ Max. ${currency} ${formatCurrency(maxAmount)}`}
+              prefix={
+                <Image
+                  src="/images/icon/amount_icon.png"
+                  alt="Amount"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
+              }
+            />
           </div>
 
           {/* Available Balance */}
@@ -171,44 +184,60 @@ export default function WithdrawalPage() {
 
           {/* PIN Input */}
           <div className="mb-6">
-            <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                <Lock className="w-5 h-5 text-zinc-400" />
-              </div>
-              <input
-                type="password"
-                value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder={t("withdrawal.pin")}
-                maxLength={6}
-                className="w-full pl-12 pr-4 py-3 bg-white border border-zinc-200 rounded-lg text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary"
-              />
-            </div>
+            <FormInput
+              type="password"
+              value={pin}
+              onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ""))}
+              placeholder={t("withdrawal.pin")}
+              maxLength={6}
+              prefix={
+                <Image
+                  src="/images/icon/lock_icon.png"
+                  alt="PIN"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
+              }
+            />
           </div>
 
           {/* Important Notice */}
-          <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4 mb-4">
-            <h3 className="font-roboto-medium text-zinc-700 mb-3">{t("deposit.importantNotice")}</h3>
-            <div className="space-y-1 text-sm text-zinc-500 mb-4">
-              <p>{t("withdrawal.minMaxLimit")}: {currency} {formatCurrency(minAmount)}/{formatCurrency(maxAmount)}</p>
-              <p>{t("withdrawal.dailyLimit")}: {currency} {formatCurrency(dailyLimit)}</p>
-              <p>{t("withdrawal.dailyCount")}: {dailyFreq}</p>
+          <div className="bg-white border border-[#959595] rounded-2xl p-4">
+            <h3 className="font-roboto-bold text-zinc-800 mb-3">{t("deposit.importantNotice")}</h3>
+            {/* Basic Info */}
+            <div className="space-y-1 text-sm text-[#5F7182] mb-4">
+              <div>
+                <span>{t("withdrawal.minMaxLimit")}: </span>
+                <span>{currency} {formatCurrency(minAmount)}/{formatCurrency(maxAmount)}</span>
+              </div>
+              <div>
+                <span>{t("withdrawal.dailyLimit")}: </span>
+                <span>{currency} {formatCurrency(dailyLimit)}</span>
+              </div>
+              <div>
+                <span>{t("withdrawal.dailyCount")}: </span>
+                <span>{dailyFreq}</span>
+              </div>
             </div>
-            <div className="space-y-3 text-sm text-zinc-500">
+            {/* Notice Items */}
+            <div className="space-y-4 text-sm text-[#5F7182]">
               <p>1.{t("withdrawal.notice1")}</p>
               <p>2.{t("withdrawal.notice2")}</p>
               <p>3.{t("withdrawal.notice3")}</p>
               <p>4.{t("withdrawal.notice4")}</p>
+              <p>5.{t("withdrawal.notice5")}</p>
             </div>
           </div>
         </main>
 
         {/* Submit Button - Sticky at bottom */}
-        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-zinc-200">
+        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-primary">
           <button
             onClick={handleSubmit}
             disabled={submitWithdraw.isPending || !selectedBankId || !amount || !pin}
-            className="w-full py-4 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="cursor-pointer w-full py-4 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {submitWithdraw.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
             {t("common.submit")}

@@ -23,7 +23,7 @@ export function ContactListItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 py-3 px-4 hover:bg-zinc-50 transition-colors",
+        "w-full flex items-center gap-5 py-3 px-4 hover:bg-zinc-50 transition-colors cursor-pointer",
         className
       )}
     >
@@ -44,7 +44,7 @@ export function ContactListItem({
           </div>
         )}
       </div>
-      <span className="text-zinc-800 font-roboto-medium">{username}</span>
+      <span className="text-[#28323C] font-roboto-regular text-sm">{username}</span>
     </button>
   );
 }

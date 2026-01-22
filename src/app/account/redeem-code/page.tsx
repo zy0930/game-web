@@ -80,7 +80,7 @@ export default function RedeemCodePage() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 p-4 space-y-4">
+      <main className="flex-1 p-4 space-y-6">
         {/* Redeem Code Input */}
         <FormInput
           type="text"
@@ -100,7 +100,7 @@ export default function RedeemCodePage() {
         />
 
         {/* Message */}
-        {message && (
+        {/* {message && (
           <div
             className={`p-3 rounded-lg text-sm ${
               message.type === "success"
@@ -110,13 +110,13 @@ export default function RedeemCodePage() {
           >
             {message.text}
           </div>
-        )}
+        )} */}
 
         {/* Confirm Button - Same style as change username page */}
         <button
           onClick={handleConfirm}
           disabled={redeemCodeMutation.isPending}
-          className="cursor-pointer uppercase w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="cursor-pointer uppercase w-full py-3 bg-primary text-white font-roboto-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {redeemCodeMutation.isPending ? (
             <>

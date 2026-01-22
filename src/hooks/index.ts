@@ -1,5 +1,5 @@
 export { useAuth } from "./use-auth";
-export { useDiscover, useLaunchGame, useQuitGame, useRestore, useRebates, discoverKeys } from "./use-discover";
+export { useDiscover, useLaunchGame, useQuitGame, useRestore, useRefreshCash, useRebates, discoverKeys } from "./use-discover";
 export { useEvents, useClaimPromo, eventsKeys } from "./use-events";
 export { useTransactions, useInfiniteTransactions, transactionsKeys } from "./use-transactions";
 export { useProfile, useQrCode, useAboutUs, useHaveBankAccount, useName, useChangeName, useAvatars, useChangeAvatar, useChangePasswordGetTac, useChangePassword, userKeys } from "./use-user";

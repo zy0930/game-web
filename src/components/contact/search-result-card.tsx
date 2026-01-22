@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/providers/i18n-provider";
 
 interface SearchResultCardProps {
   username: string;
   avatar: string;
   onAdd?: () => void;
   isAdding?: boolean;
+  isRequested?: boolean;
   className?: string;
 }
 
@@ -18,19 +19,21 @@ export function SearchResultCard({
   avatar,
   onAdd,
   isAdding = false,
+  isRequested = false,
   className,
 }: SearchResultCardProps) {
   const [imgError, setImgError] = useState(false);
+  const { t } = useI18n();
 
   return (
     <div
       className={cn(
-        "flex items-center justify-between bg-zinc-100 rounded-lg p-3",
+        "flex items-center justify-between bg-[#D4F1F0] rounded-4xl py-4 px-6",
         className
       )}
     >
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-200 shrink-0">
+      <div className="flex items-center gap-5">
+        <div className="w-11 h-11 rounded-full overflow-hidden bg-zinc-200 shrink-0">
           {!imgError ? (
             <Image
               src={avatar}
@@ -38,11 +41,11 @@ export function SearchResultCard({
               width={48}
               height={48}
               unoptimized
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-cover shadow-lg"
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-zinc-500 font-roboto-bold text-lg">
+            <div className="w-full h-full flex items-center justify-center text-[#28323C] font-roboto-bold text-lg">
               {username.charAt(0).toUpperCase()}
             </div>
           )}
@@ -50,14 +53,27 @@ export function SearchResultCard({
         <span className="text-zinc-800 font-roboto-medium">{username}</span>
       </div>
 
-      <button
-        onClick={onAdd}
-        disabled={isAdding}
-        className="flex items-center gap-1.5 px-4 py-2 bg-dark text-white text-sm font-roboto-medium rounded-md hover:bg-dark/90 transition-colors disabled:opacity-50"
-      >
-        <UserPlus className="w-4 h-4" />
-        <span>Add</span>
-      </button>
+      {isRequested ? (
+        <div className="px-4 py-2 bg-primary text-white text-sm font-roboto-regular rounded-full">
+          {t("contact.requested")}
+        </div>
+      ) : (
+        <button
+          onClick={onAdd}
+          disabled={isAdding}
+          className="flex items-center gap-3 px-4 py-2 bg-[#28323C] text-white text-sm font-roboto-regular rounded-full cursor-pointer"
+        >
+          <Image
+            src="/images/icon/add_contact_icon.png"
+            alt="AON1E add friend"
+            width={24}
+            height={24}
+            unoptimized
+            className="h-6 w-auto object-contain cursor-pointer"
+          />
+          <span>{t("contact.add")}</span>
+        </button>
+      )}
     </div>
   );
 }

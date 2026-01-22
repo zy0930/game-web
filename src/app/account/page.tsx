@@ -396,10 +396,10 @@ export default function AccountPage() {
           </div>
           <div className="h-0.5 w-full bg-[#D4F1F0]"></div>
           <div className="bg-white overflow-hidden">
-            {menuItems.map((item, index) => {
+            {menuItems.map((item) => {
               const content = (
                 <>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 cursor-pointer">
                     <Image
                       src={item.icon}
                       alt=""
@@ -416,12 +416,12 @@ export default function AccountPage() {
                       </span>
                     )}
                   </div>
-                  <ChevronRight className="w-5 h-5 text-zinc-400" />
+                  <ChevronRight className="w-5 h-5 text-zinc-400 cursor-pointer" />
                 </>
               );
 
               const className = cn(
-                "flex items-center justify-between px-4 py-3.5 w-full"
+                "flex items-center justify-between px-4 py-3.5 w-full cursor-pointer"
               );
 
               return item.isLink ? (

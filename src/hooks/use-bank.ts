@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { bankApi } from "@/lib/api";
-import type { AddBankAccountRequest, ResetPinRequest } from "@/lib/api/types";
+import type { AddBankAccountRequest, ResetPinRequest, DeleteBankAccountRequest } from "@/lib/api/types";
 import { withdrawalKeys } from "./use-withdrawal";
 import { userKeys } from "./use-user";
 
@@ -91,6 +91,25 @@ export function useResetPin() {
   return useMutation({
     mutationFn: async (data: ResetPinRequest) => {
       return bankApi.resetPin(data);
+    },
+  });
+}
+
+/**
+ * Hook to delete a bank account
+ */
+export function useDeleteBankAccount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: DeleteBankAccountRequest) => {
+      return bankApi.deleteBankAccount(data);
+    },
+    onSuccess: () => {
+      // Invalidate relevant queries after successful deletion
+      queryClient.invalidateQueries({ queryKey: bankKeys.all });
+      queryClient.invalidateQueries({ queryKey: withdrawalKeys.accounts() });
+      queryClient.invalidateQueries({ queryKey: userKeys.haveBankAccount() });
     },
   });
 }

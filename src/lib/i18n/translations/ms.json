@@ -162,11 +162,27 @@
     "chargeRate": "Kadar Caj",
     "confirmDeposit": "Sahkan Deposit",
     "bankNotice1": "Sentiasa semak butiran bank deposit aktif terkini sebelum membuat deposit.",
-    "bankNotice2": "Untuk menggunakan pilihan deposit - Pindahan Bank, sila buat pindahan sebelum menghantar transaksi untuk mengelakkan transaksi ditolak.",
+    "bankNotice2": "Untuk menggunakan pilihan deposit - Pindahan Bank, sila buat pindahan sebelum menghantar transaksi untuk mengelakkan kelewatan transaksi.",
+    "bankNotice3": "NAMA AKAUN pendeposit mesti sepadan dengan nama penuh yang didaftarkan. Kami tidak menggalakkan transaksi menggunakan akaun pihak ketiga/syarikat.",
+    "bankNotice4": "Sila JANGAN isi AONE, # atau sebarang perkataan sensitif berkaitan perjudian sebagai rujukan/catatan dalam transaksi pindahan dalam talian anda.",
+    "bankNotice5": "Sila ambil perhatian bahawa 1x pusing ganti atau pusing ganti khusus promosi diperlukan untuk semua deposit yang dibuat sebelum sebarang pengeluaran boleh diproses.",
+    "bankNotice6": "Sila hubungi LIVECHAT 24/7 kami jika jumlah deposit anda tertunda lebih daripada 5 minit.",
     "ewalletNotice1": "Sentiasa semak notis aktif terkini dari AONE sebelum membuat deposit.",
-    "ewalletNotice2": "Untuk menggunakan pilihan deposit - E-Dompet. Sila ikut semua arahan untuk mengelakkan transaksi ditolak.",
-    "cryptoNotice1": "Sentiasa semak notis aktif terkini dari AONE sebelum membuat deposit kripto.",
-    "cryptoNotice2": "Untuk menggunakan pilihan deposit - Kripto. Sila ikut semua arahan untuk mengelakkan transaksi ditolak."
+    "ewalletNotice2": "Untuk menggunakan pilihan deposit - E-Dompet, sila ikut semua langkah pindahan segera untuk melengkapkan deposit.",
+    "ewalletNotice3": "NAMA AKAUN pendeposit mesti sepadan dengan nama penuh yang didaftarkan. Kami tidak menggalakkan transaksi menggunakan akaun pihak ketiga/syarikat.",
+    "ewalletNotice4": "Sila JANGAN isi AONE, # atau sebarang perkataan sensitif berkaitan perjudian sebagai rujukan/catatan dalam transaksi pindahan dalam talian anda.",
+    "ewalletNotice5": "Sila ambil perhatian bahawa 1x pusing ganti atau pusing ganti khusus promosi diperlukan untuk semua deposit yang dibuat sebelum sebarang pengeluaran boleh diproses.",
+    "ewalletNotice6": "Sila hubungi LIVECHAT 24/7 kami jika jumlah deposit anda telah ditolak dari akaun bank tetapi tidak menerima kredit atau transaksi menunjukkan tertunda/ditolak.",
+    "cryptoNotice1": "Sentiasa semak notis aktif terkini dari AONE sebelum membuat deposit.",
+    "cryptoNotice2": "Untuk menggunakan pilihan deposit - Kripto, sila ikut semua langkah pindahan segera untuk melengkapkan deposit.",
+    "cryptoNotice3": "Sila ambil perhatian bahawa 1x pusing ganti atau pusing ganti khusus promosi diperlukan untuk semua deposit yang dibuat sebelum sebarang pengeluaran boleh diproses.",
+    "cryptoNotice4": "Sila hubungi LIVECHAT 24/7 kami jika jumlah deposit anda telah ditolak dari akaun bank tetapi tidak menerima kredit atau transaksi menunjukkan tertunda/ditolak.",
+    "instantNotice1": "Sentiasa semak notis aktif terkini dari AONE sebelum membuat deposit.",
+    "instantNotice2": "Untuk menggunakan pilihan deposit - Pindahan Segera, sila ikut semua langkah pindahan segera untuk melengkapkan deposit.",
+    "instantNotice3": "NAMA AKAUN pendeposit mesti sepadan dengan nama penuh yang didaftarkan. Kami tidak menggalakkan transaksi menggunakan akaun pihak ketiga/syarikat.",
+    "instantNotice4": "Sila JANGAN isi AONE, # atau sebarang perkataan sensitif berkaitan perjudian sebagai rujukan/catatan dalam transaksi pindahan dalam talian anda.",
+    "instantNotice5": "Sila ambil perhatian bahawa 1x pusing ganti atau pusing ganti khusus promosi diperlukan untuk semua deposit yang dibuat sebelum sebarang pengeluaran boleh diproses.",
+    "instantNotice6": "Sila hubungi LIVECHAT 24/7 kami jika jumlah deposit anda telah ditolak dari akaun bank tetapi tidak menerima kredit atau transaksi menunjukkan tertunda/ditolak."
   },
   "withdrawal": {
     "title": "Pengeluaran",
@@ -181,7 +197,26 @@
     "notice1": "Nama bank pengeluaran mesti sepadan dengan nama penuh berdaftar. Ahli tidak boleh mengeluarkan wang ke akaun bank pihak ketiga.",
     "notice2": "Sila pastikan sudah mencapai 1x pusing ganti jumlah deposit sebelum menghantar transaksi pengeluaran.",
     "notice3": "Sila pastikan nama akaun bank & nombor akaun bank adalah betul sebelum menghantar transaksi pengeluaran.",
-    "notice4": "Sesetengah pembekal permainan memerlukan sehingga 30 minit laporan"
+    "notice4": "Sesetengah pembekal permainan memerlukan sehingga 30 minit masa penyegerakan laporan, sila hantar transaksi pengeluaran selepas itu, untuk mengelakkan penolakan automatik sistem.",
+    "notice5": "Setelah anda berjaya menghantar transaksi pengeluaran anda, serahkan kepada pasukan kami untuk memproses transaksi anda secepat mungkin. Jika lebih daripada 10 minit, beritahu kami dengan menghubungi sokongan Khidmat Pelanggan kami. Mereka akan membantu anda 24/7 pada bila-bila masa."
+  },
+  "transfer": {
+    "title": "Pindahan",
+    "loginRequired": "Sila log masuk untuk mengakses halaman ini",
+    "noRecipient": "Tiada penerima dipilih. Sila pilih kenalan untuk dipindahkan.",
+    "loadFailed": "Gagal memuatkan maklumat pindahan",
+    "amountPlaceholder": "Min. MYR 10/ Maks. MYR 30,000",
+    "availableBalance": "Baki Tersedia",
+    "pin": "PIN",
+    "transferButton": "PINDAHAN",
+    "confirmMessage": "Sahkan pindahan",
+    "toFriend": "kepada rakan anda",
+    "cancel": "BATAL",
+    "confirm": "SAHKAN",
+    "successTitle": "Pindahan Berjaya!",
+    "successMessage": "telah dipindahkan kepada",
+    "ok": "OK",
+    "failed": "Pindahan gagal"
   },
   "account": {
     "title": "Akaun",
@@ -265,6 +300,14 @@
     "lottery": "LOTERI",
     "fishing": "MEMANCING"
   },
+  "rebate": {
+    "game": "Permainan",
+    "playerPercent": "Pemain %",
+    "uplineL1Percent": "Upline L1 %",
+    "uplineL2Percent": "Upline L2 %",
+    "other": "LAIN-LAIN",
+    "noData": "Tiada data rebat"
+  },
   "profile": {
     "changeUsername": "Tukar Nama Pengguna",
     "changePassword": "Tukar Kata Laluan",
@@ -310,7 +353,10 @@
     "tacSent": "TAC telah dihantar ke nombor telefon berdaftar anda",
     "tacRequestFailed": "Gagal meminta TAC. Sila cuba lagi.",
     "addBankNote": "Sila pastikan nama akaun bank anda sepadan dengan nama penuh berdaftar anda. Akaun bank pihak ketiga tidak diterima.",
-    "addFailed": "Gagal menambah akaun bank. Sila cuba lagi."
+    "addFailed": "Gagal menambah akaun bank. Sila cuba lagi.",
+    "deleteConfirmTitle": "Padam Akaun Bank?",
+    "deleteConfirmMessage": "Adakah anda pasti mahu memadam akaun bank ini? Tindakan ini tidak boleh dibatalkan.",
+    "deleteFailed": "Gagal memadam akaun bank. Sila cuba lagi."
   },
   "pin": {
     "setFirstMessage": "Sila tetapkan nombor PIN anda terlebih dahulu sebelum menambah akaun bank.",
@@ -344,5 +390,37 @@
     "cameraError": "Tidak dapat mengakses kamera",
     "cameraAccessDenied": "Akses Kamera Diperlukan",
     "cameraAccessInfo": "Sila benarkan akses kamera dalam tetapan pelayar anda untuk mengimbas kod QR."
+  },
+  "contact": {
+    "myContact": "Kenalan Saya",
+    "transfer": "Pindahan",
+    "addNewFriend": "Tambah Rakan Baru",
+    "searchUid": "Cari UID",
+    "searchUidEnter": "Cari UID (tekan Enter)",
+    "noContactsFound": "Tiada kenalan dijumpai",
+    "noUsersFound": "Tiada pengguna dijumpai",
+    "friendRequest": "Permintaan Rakan",
+    "myRequest": "Permintaan Saya",
+    "noFriendRequests": "Tiada permintaan rakan",
+    "noPendingRequests": "Tiada permintaan tertunda",
+    "friendRequestSent": "Permintaan rakan dihantar!",
+    "confirmReject": "Adakah anda pasti mahu menolak permintaan rakan ini?",
+    "confirmCancel": "Adakah anda pasti mahu membatalkan permintaan rakan ini?",
+    "reject": "Tolak",
+    "rejectUpper": "TOLAK",
+    "yes": "YA",
+    "no": "TIDAK",
+    "add": "Tambah",
+    "requested": "Diminta",
+    "approve": "Terima",
+    "cancel": "Batal",
+    "cancelUpper": "BATAL",
+    "friendDetail": "Butiran Rakan",
+    "loginRequired": "Sila log masuk untuk mengakses halaman ini",
+    "loadFailed": "Gagal memuatkan butiran kenalan",
+    "transferButton": "PINDAHAN",
+    "deleteButton": "PADAM",
+    "deleteTitle": "Padam rakan ini?",
+    "deleteMessage": "Tindakan ini tidak boleh dibatalkan."
   }
 }

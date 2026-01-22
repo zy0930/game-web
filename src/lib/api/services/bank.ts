@@ -11,6 +11,8 @@ import type {
   ResetPinResponse,
   RedeemCodeRequest,
   RedeemCodeResponse,
+  DeleteBankAccountRequest,
+  DeleteBankAccountResponse,
 } from "../types";
 
 export const bankApi = {
@@ -102,6 +104,16 @@ export const bankApi = {
    */
   async redeemCodeSubmit(data: RedeemCodeRequest): Promise<RedeemCodeResponse> {
     return apiClient.post<RedeemCodeResponse>("/api/mapibank/RedeemCodeSubmit", data, {
+      authenticated: true,
+    });
+  },
+
+  /**
+   * Delete a bank account
+   * POST /api/mapibank/deletebankaccount
+   */
+  async deleteBankAccount(data: DeleteBankAccountRequest): Promise<DeleteBankAccountResponse> {
+    return apiClient.post<DeleteBankAccountResponse>("/api/mapibank/deletebankaccount", data, {
       authenticated: true,
     });
   },

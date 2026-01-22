@@ -78,7 +78,7 @@ export default function ReferralPage() {
         {/* QR Code Section with Background */}
         <div className="relative overflow-hidden">
           {/* Background Image */}
-          <div className="absolute inset-0 z-0">
+          <div className="absolute -top-20 left-0 right-0 bottom-0 z-0">
             <Image
               src="/images/referral/qr_code_background.png"
               alt=""
@@ -127,15 +127,11 @@ export default function ReferralPage() {
 
               {/* Referral Code */}
               <div className="flex items-center gap-2 mb-6">
-                <span className="text-xs">
-                  {t("referral.code")}:
-                </span>
+                <span className="text-xs">{t("referral.code")}:</span>
                 <span className="text-xs font-roboto-bold text-primary">
                   {referralCode}
                 </span>
-                <button
-                  onClick={handleCopyCode}
-                >
+                <button className="cursor-pointer" onClick={handleCopyCode}>
                   {copiedCode ? (
                     <Check className="w-4 h-4 text-primary cursor-pointer" />
                   ) : (
@@ -182,11 +178,11 @@ export default function ReferralPage() {
             />
           </div>
           <button
-              onClick={handleCopyLink}
-              className="px-5 py-4 bg-primary text-white text-xs font-roboto-bold rounded-lg"
-            >
-              {copiedLink ? t("common.copied") : t("common.copyLink")}
-            </button>
+            onClick={handleCopyLink}
+            className="px-5 py-4 bg-primary text-white text-xs font-roboto-bold rounded-lg cursor-pointer"
+          >
+            {copiedLink ? t("common.copied") : t("common.copyLink")}
+          </button>
         </div>
 
         {/* Share Section */}
@@ -201,14 +197,14 @@ export default function ReferralPage() {
                 onClick={() => handleShare(option.getShareUrl)}
                 className="flex flex-col items-center gap-1 group"
               >
-                <div className="w-12 h-12 rounded-full overflow-hidden group-hover:opacity-80 transition-opacity">
+                <div className="w-12 h-12 rounded-full overflow-hidden">
                   <Image
                     src={option.icon}
                     alt={option.label}
                     width={48}
                     height={48}
                     unoptimized
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain cursor-pointer"
                   />
                 </div>
                 <span className="text-xs text-[#5F7182] font-roboto-regular">

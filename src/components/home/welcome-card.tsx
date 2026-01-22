@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
-import { useRestore } from "@/hooks";
+import { useRestore, useRefreshCash } from "@/hooks";
 
 interface UserData {
   username: string;
@@ -27,6 +27,15 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
   const [imgError, setImgError] = useState(false);
   const { t } = useI18n();
   const restoreMutation = useRestore();
+  const refreshCashMutation = useRefreshCash();
+
+  const handleRefreshCash = async () => {
+    try {
+      await refreshCashMutation.mutateAsync();
+    } catch (error) {
+      console.error("Refresh cash failed:", error);
+    }
+  };
 
   const handleRestore = async () => {
     try {
@@ -70,16 +79,22 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
           <span className="text-base font-roboto-bold"> {user.username}</span>
           <button
             type="button"
-            className="cursor-pointer ml-1 self-center"
+            onClick={handleRefreshCash}
+            disabled={refreshCashMutation.isPending}
+            className="cursor-pointer ml-1 self-center disabled:opacity-50"
             aria-label="Refresh cash"
           >
-            <Image
-              src="/images/icon/refresh_icon.png"
-              alt="Refresh"
-              width={12}
-              height={12}
-              className="object-contain w-5 h-5"
-            />
+            {refreshCashMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            ) : (
+              <Image
+                src="/images/icon/refresh_icon.png"
+                alt="Refresh"
+                width={12}
+                height={12}
+                className="object-contain w-5 h-5"
+              />
+            )}
           </button>
         </h2>
 

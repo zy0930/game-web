@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Header } from "@/components/layout";
-import { User, CreditCard, Loader2 } from "lucide-react";
+import { FormInput } from "@/components/ui/form-input";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -16,7 +17,11 @@ export default function AddBankAccountPage() {
   const { isAuthenticated } = useAuth();
 
   // Fetch available banks list - also checks if PIN is set
-  const { data: banksData, isLoading: isLoadingBanks, error: banksError } = useUserBanks({
+  const {
+    data: banksData,
+    isLoading: isLoadingBanks,
+    error: banksError,
+  } = useUserBanks({
     enabled: isAuthenticated,
   });
 
@@ -41,7 +46,7 @@ export default function AddBankAccountPage() {
     }
   }, [banksData, accountName]);
 
-  const selectedBank = banksData?.Rows?.find(b => b.Id === selectedBankId);
+  const selectedBank = banksData?.Rows?.find((b) => b.Id === selectedBankId);
 
   const handleSubmit = async () => {
     if (!selectedBankId || !accountName || !accountNumber) return;
@@ -63,7 +68,11 @@ export default function AddBankAccountPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header variant="subpage" title={t("account.addBankAccount")} backHref="/account/bank" />
+        <Header
+          variant="subpage"
+          title={t("account.addBankAccount")}
+          backHref="/account/bank"
+        />
         <div className="flex-1 flex items-center justify-center px-4">
           <p className="text-sm text-zinc-500 text-center">
             {t("common.loginRequired")}
@@ -77,7 +86,11 @@ export default function AddBankAccountPage() {
   if (isLoadingBanks) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header variant="subpage" title={t("account.addBankAccount")} backHref="/account/bank" />
+        <Header
+          variant="subpage"
+          title={t("account.addBankAccount")}
+          backHref="/account/bank"
+        />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
         </div>
@@ -89,7 +102,11 @@ export default function AddBankAccountPage() {
   if (banksError) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header variant="subpage" title={t("account.addBankAccount")} backHref="/account/bank" />
+        <Header
+          variant="subpage"
+          title={t("account.addBankAccount")}
+          backHref="/account/bank"
+        />
         <div className="flex-1 flex items-center justify-center px-4">
           <p className="text-sm text-red-500 text-center">
             {t("common.errorLoading")}
@@ -103,7 +120,11 @@ export default function AddBankAccountPage() {
   if (banksData?.Code === 1) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header variant="subpage" title={t("account.addBankAccount")} backHref="/account/bank" />
+        <Header
+          variant="subpage"
+          title={t("account.addBankAccount")}
+          backHref="/account/bank"
+        />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
         </div>
@@ -115,13 +136,18 @@ export default function AddBankAccountPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header variant="subpage" title={t("account.addBankAccount")} backHref="/account/bank" />
+      <Header
+        variant="subpage"
+        title={t("account.addBankAccount")}
+        backHref="/account/bank"
+      />
 
       <main className="flex-1 px-4 py-4 overflow-auto">
         {/* Bank Account Selection - Grid of banks */}
         <div className="mb-6">
-          <label className="text-sm font-roboto-medium text-zinc-700 mb-3 block">
-            {t("bank.bankAccount")}<span className="text-red-500">*</span>
+          <label className="text-sm font-roboto-medium text-zinc-700 mb-2 flex gap-1">
+            {t("bank.bankAccount")}
+            <span className="text-primary">*</span>
           </label>
 
           <div className="grid grid-cols-5 gap-3">
@@ -130,7 +156,7 @@ export default function AddBankAccountPage() {
                 key={bank.Id}
                 type="button"
                 onClick={() => setSelectedBankId(bank.Id)}
-                className="flex flex-col items-center"
+                className="flex flex-col items-center cursor-pointer"
               >
                 <div
                   className={cn(
@@ -155,10 +181,14 @@ export default function AddBankAccountPage() {
                     </span>
                   )}
                 </div>
-                <span className={cn(
-                  "text-[10px] mt-1 text-center leading-tight max-w-[56px]",
-                  selectedBankId === bank.Id ? "text-primary font-roboto-medium" : "text-zinc-500"
-                )}>
+                <span
+                  className={cn(
+                    "text-[10px] mt-1 text-center leading-tight max-w-[56px]",
+                    selectedBankId === bank.Id
+                      ? "text-primary font-roboto-medium"
+                      : "text-zinc-500"
+                  )}
+                >
                   {bank.Name}
                 </span>
               </button>
@@ -168,37 +198,48 @@ export default function AddBankAccountPage() {
 
         {/* Account Info Section */}
         <div className="space-y-3">
-          <label className="text-sm font-roboto-medium text-zinc-700 block">
-            {t("bank.accountInfo")}<span className="text-red-500">*</span>
+          <label className="text-sm font-roboto-medium text-zinc-700 mb-2 flex gap-1">
+            {t("bank.accountInfo")}
+            <span className="text-primary">*</span>
           </label>
 
           {/* Bank Holder Name */}
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              <User className="w-5 h-5 text-zinc-400" />
-            </div>
-            <input
-              type="text"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
-              placeholder={t("bank.bankHolderName")}
-              className="w-full pl-12 pr-4 py-3 bg-white border border-zinc-200 rounded-lg text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary"
-            />
-          </div>
+          <FormInput
+            type="text"
+            value={accountName}
+            onChange={(e) => setAccountName(e.target.value)}
+            placeholder={t("bank.bankHolderName")}
+            prefix={
+              <Image
+                src="/images/icon/user_icon.png"
+                alt="User"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
+          />
 
           {/* Account Number */}
-          <div className="relative">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-              <CreditCard className="w-5 h-5 text-zinc-400" />
-            </div>
-            <input
-              type="text"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value.replace(/[^0-9]/g, ""))}
-              placeholder={t("bank.accountNo")}
-              className="w-full pl-12 pr-4 py-3 bg-white border border-zinc-200 rounded-lg text-zinc-700 placeholder:text-zinc-400 focus:outline-none focus:border-primary"
-            />
-          </div>
+          <FormInput
+            type="text"
+            value={accountNumber}
+            onChange={(e) =>
+              setAccountNumber(e.target.value.replace(/[^0-9]/g, ""))
+            }
+            placeholder={t("bank.accountNo")}
+            prefix={
+              <Image
+                src="/images/icon/card_icon.png"
+                alt="Card"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
+          />
         </div>
       </main>
 
@@ -206,10 +247,17 @@ export default function AddBankAccountPage() {
       <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-zinc-100">
         <button
           onClick={handleSubmit}
-          disabled={addBankAccount.isPending || !selectedBankId || !accountName || !accountNumber}
-          className="w-full py-4 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase"
+          disabled={
+            addBankAccount.isPending ||
+            !selectedBankId ||
+            !accountName ||
+            !accountNumber
+          }
+          className="cursor-pointer w-full py-4 bg-primary text-white font-roboto-semibold rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 uppercase"
         >
-          {addBankAccount.isPending && <Loader2 className="w-5 h-5 animate-spin" />}
+          {addBankAccount.isPending && (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          )}
           {t("common.submit")}
         </button>
         {addBankAccount.isError && (
