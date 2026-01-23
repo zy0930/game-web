@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { FormInput } from "@/components/ui/form-input";
 import { ChevronDown, X, Loader2 } from "lucide-react";
@@ -20,8 +19,8 @@ export default function EWalletPage() {
   const { data: paygatesData, isLoading } = useEWalletPaygates();
   const submitDeposit = useSubmitDepositPg();
 
-  const [selectedMethod, setSelectedMethod] = useState<Paygate | null>(null);
-  const [selectedPaymentType, setSelectedPaymentType] = useState<PaygateNetwork | null>(null);
+  const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
+  const [selectedPaymentTypeId, setSelectedPaymentTypeId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [selectedPromotion, setSelectedPromotion] = useState<DepositPromo | null>(null);
   const [promoCode, setPromoCode] = useState("");
@@ -30,25 +29,23 @@ export default function EWalletPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const promotionDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Set initial selections when data loads
-  useEffect(() => {
-    if (paygatesData?.Rows?.length && !selectedMethod) {
-      const firstMethod = paygatesData.Rows[0];
-      setSelectedMethod(firstMethod);
-      if (firstMethod.Networks?.length) {
-        setSelectedPaymentType(firstMethod.Networks[0]);
-      }
-    }
-  }, [paygatesData, selectedMethod]);
+  // Derive selected method: user selection takes priority, otherwise use first from API
+  const selectedMethod =
+    paygatesData?.Rows?.find((m) => m.Id === selectedMethodId) ||
+    paygatesData?.Rows?.[0] ||
+    null;
 
-  // Update payment type selection when method changes
-  useEffect(() => {
-    if (selectedMethod?.Networks?.length) {
-      setSelectedPaymentType(selectedMethod.Networks[0]);
-    } else {
-      setSelectedPaymentType(null);
-    }
-  }, [selectedMethod]);
+  // Derive selected payment type: user selection if valid for current method, otherwise first network
+  const selectedPaymentType =
+    selectedMethod?.Networks?.find((n) => n.Id === selectedPaymentTypeId) ||
+    selectedMethod?.Networks?.[0] ||
+    null;
+
+  // Handle method selection - also reset payment type
+  const handleMethodSelect = (method: Paygate) => {
+    setSelectedMethodId(method.Id);
+    setSelectedPaymentTypeId(null); // Reset to let it default to first network
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -133,7 +130,7 @@ export default function EWalletPage() {
               {paymentMethods.map((method) => (
                 <button
                   key={method.Id}
-                  onClick={() => setSelectedMethod(method)}
+                  onClick={() => handleMethodSelect(method)}
                   className="flex flex-col items-center cursor-pointer"
                 >
                   <div
@@ -190,7 +187,7 @@ export default function EWalletPage() {
                 {networks.map((network) => (
                   <button
                     key={network.Id}
-                    onClick={() => setSelectedPaymentType(network)}
+                    onClick={() => setSelectedPaymentTypeId(network.Id)}
                     className="flex flex-col items-center cursor-pointer"
                   >
                     <div

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { Plus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,16 +26,12 @@ export default function WithdrawalPage() {
 
   const submitWithdraw = useSubmitWithdraw();
 
-  const [selectedBankId, setSelectedBankId] = useState<string>("");
+  const [selectedBankIdState, setSelectedBankId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [pin, setPin] = useState("");
 
-  // Set first bank as default when accounts load
-  useEffect(() => {
-    if (accountsData?.Rows?.length && !selectedBankId) {
-      setSelectedBankId(accountsData.Rows[0].Id);
-    }
-  }, [accountsData, selectedBankId]);
+  // Derive selected bank ID: user selection takes priority, otherwise use first from API
+  const selectedBankId = selectedBankIdState || accountsData?.Rows?.[0]?.Id || "";
 
   const cashBalance = accountsData?.Cash ?? 0;
   const currency = accountsData?.Currency ?? "MYR";

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Search, FolderOpen, Camera, Loader2 } from "lucide-react";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import {
   FriendRequestItem,

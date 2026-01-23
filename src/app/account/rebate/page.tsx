@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
-import { Header } from "@/components/layout";
 import { useAuth } from "@/providers/auth-provider";
 import { useI18n } from "@/providers/i18n-provider";
 import { useRebates } from "@/hooks";

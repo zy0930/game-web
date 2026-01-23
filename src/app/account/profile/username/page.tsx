@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { FormInput } from "@/components/ui/form-input";
 import { Loader2 } from "lucide-react";
@@ -11,29 +11,25 @@ import { useName, useChangeName } from "@/hooks";
 export default function ChangeUsernamePage() {
   const { t } = useI18n();
   const { showSuccess, showError } = useToast();
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState<string | null>(null);
 
   // Fetch current name
   const { data: nameData, isLoading: isLoadingName } = useName();
   const changeNameMutation = useChangeName();
 
-  // Pre-populate username when data loads
-  useEffect(() => {
-    if (nameData?.Name) {
-      setUsername(nameData.Name);
-    }
-  }, [nameData]);
+  // Derive current value: user input takes priority, otherwise use API data
+  const currentUsername = username ?? nameData?.Name ?? "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!username.trim()) {
+    if (!currentUsername.trim()) {
       showError(t("auth.usernameRequired"));
       return;
     }
 
     try {
-      await changeNameMutation.mutateAsync({ Name: username.trim() });
+      await changeNameMutation.mutateAsync({ Name: currentUsername.trim() });
       showSuccess(t("profile.usernameChanged"));
     } catch (err) {
       showError(err instanceof Error ? err.message : t("common.error"));
@@ -59,7 +55,7 @@ export default function ChangeUsernamePage() {
           {/* Username Input */}
           <FormInput
             type="text"
-            value={username}
+            value={currentUsername}
             onChange={(e) => setUsername(e.target.value)}
             placeholder={t("auth.username")}
             prefix={

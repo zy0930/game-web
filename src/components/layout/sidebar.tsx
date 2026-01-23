@@ -103,7 +103,6 @@ const localeFlagIcons: Record<string, string> = {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const router = useRouter();
   const [currentTime, setCurrentTime] = useState<string>("");
-  const [mounted, setMounted] = useState(false);
   const { t, locale } = useI18n();
   const { logout, isAuthenticated } = useAuth();
   const { openLoginModal } = useLoginModal();
@@ -116,10 +115,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
     return true;
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const updateTime = () => {
@@ -155,7 +150,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     };
   }, [isOpen]);
 
-  if (!mounted) return null;
+  // Only render after time is set (ensures we're on client)
+  if (!currentTime) return null;
 
   const container = document.getElementById("mobile-container");
   if (!container) return null;

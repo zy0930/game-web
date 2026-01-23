@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { BottomNav, Header, AppDownloadBanner } from "@/components/layout";
+import { AppDownloadBanner } from "@/components/layout";
 import {
   BannerSlider,
   WelcomeCard,

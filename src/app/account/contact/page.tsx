@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search, Loader2 } from "lucide-react";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { ContactListItem, AddFriendBanner } from "@/components/contact";
 import { useAuth } from "@/providers/auth-provider";

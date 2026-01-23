@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -14,7 +13,7 @@ export default function RedeemCodePage() {
   const { isAuthenticated } = useAuth();
 
   const [redeemCode, setRedeemCode] = useState("");
-  const [message, setMessage] = useState<{
+  const [, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);

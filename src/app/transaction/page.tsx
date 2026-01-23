@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Header, BottomNav } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { Dropdown } from "@/components/ui/dropdown";
 import { Copy, Check } from "lucide-react";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { Check, Loader2 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
@@ -18,23 +18,19 @@ export default function ChangeAvatarPage() {
   const { data: avatarsData, isLoading: isLoadingAvatars } = useAvatars();
   const changeAvatarMutation = useChangeAvatar();
 
-  // Pre-select current avatar when data loads
-  useEffect(() => {
-    if (avatarsData?.AvatarId) {
-      setSelectedAvatar(avatarsData.AvatarId);
-    }
-  }, [avatarsData]);
+  // Use current avatar as default selection if no avatar selected yet
+  const currentSelection = selectedAvatar || avatarsData?.AvatarId || "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedAvatar) {
+    if (!currentSelection) {
       showError(t("profile.selectAvatar"));
       return;
     }
 
     try {
-      await changeAvatarMutation.mutateAsync({ Id: selectedAvatar });
+      await changeAvatarMutation.mutateAsync({ Id: currentSelection });
       // Show toast on success
       showSuccess(t("profile.avatarChanged"));
     } catch (err) {
@@ -78,7 +74,7 @@ export default function ChangeAvatarPage() {
                 <div
                   className={cn(
                     "w-full h-full rounded-full overflow-hidden border-2 transition-colors",
-                    selectedAvatar === avatar.Id
+                    currentSelection === avatar.Id
                       ? "border-primary"
                       : "border-primary/20"
                   )}
@@ -103,7 +99,7 @@ export default function ChangeAvatarPage() {
                 </div>
 
                 {/* Selection Indicator */}
-                {selectedAvatar === avatar.Id && (
+                {currentSelection === avatar.Id && (
                   <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
                     <Check className="w-5 h-5 text-white" />
                   </div>

@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Header, BottomNav } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { Button } from "@/components/ui/button";
 import { EventDetailsModal } from "@/components/event";

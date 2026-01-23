@@ -29,7 +29,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
     reset,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),

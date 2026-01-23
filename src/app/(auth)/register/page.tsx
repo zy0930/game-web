@@ -13,7 +13,6 @@ import { LoginModal } from "@/components/auth/login-modal";
 import { useRegister } from "@/hooks/use-register";
 import { authApi, ApiError } from "@/lib/api";
 import type { MessageSelectionOption } from "@/lib/api/types";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 
 interface SendToOption {

@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { FormInput } from "@/components/ui/form-input";
 import {
@@ -27,9 +26,7 @@ export default function BankTransferPage() {
   const { data: accountsData, isLoading } = useDepositAccounts();
   const submitDeposit = useSubmitDeposit();
 
-  const [selectedBank, setSelectedBank] = useState<DepositBankAccount | null>(
-    null
-  );
+  const [selectedBankId, setSelectedBankId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
   const [selectedPromotion, setSelectedPromotion] =
@@ -42,12 +39,11 @@ export default function BankTransferPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const promotionDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Set initial selection when data loads
-  useEffect(() => {
-    if (accountsData?.Rows?.length && !selectedBank) {
-      setSelectedBank(accountsData.Rows[0]);
-    }
-  }, [accountsData, selectedBank]);
+  // Derive selected bank: user selection takes priority, otherwise use first from API
+  const selectedBank =
+    accountsData?.Rows?.find((b) => b.Id === selectedBankId) ||
+    accountsData?.Rows?.[0] ||
+    null;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -161,7 +157,7 @@ export default function BankTransferPage() {
               {bankAccounts.map((bank) => (
                 <button
                   key={bank.Id}
-                  onClick={() => setSelectedBank(bank)}
+                  onClick={() => setSelectedBankId(bank.Id)}
                   className="flex flex-col items-center cursor-pointer"
                 >
                   <div

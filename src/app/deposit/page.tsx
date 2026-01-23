@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Header, BottomNav } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";

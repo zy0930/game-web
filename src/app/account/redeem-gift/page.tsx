@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronRight, Loader2 } from "lucide-react";
-import { Header } from "@/components/layout";
 import { useAuth } from "@/providers/auth-provider";
 import { useI18n } from "@/providers/i18n-provider";
 import { useToast } from "@/providers/toast-provider";
@@ -28,7 +27,6 @@ export default function RedeemGiftPage() {
   const claimReward = useClaimReward();
 
   const userPoints = rewardsData?.Point ?? 0;
-  const pendingCount = rewardsData?.RewardPendingCount ?? 0;
   const rewards = rewardsData?.Rewards ?? [];
 
   const formatPoints = (points: number) => {

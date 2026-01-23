@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -40,15 +39,6 @@ export default function AddBankAccountPage() {
       router.replace("/account/reset-pin?from=add-bank");
     }
   }, [banksData, router]);
-
-  // Pre-fill account name from API response
-  useEffect(() => {
-    if (banksData?.FullName && !accountName) {
-      setAccountName(banksData.FullName);
-    }
-  }, [banksData, accountName]);
-
-  const selectedBank = banksData?.Rows?.find((b) => b.Id === selectedBankId);
 
   const handleSubmit = async () => {
     if (!selectedBankId || !accountName || !accountNumber) return;

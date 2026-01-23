@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { useAuth } from "@/providers/auth-provider";
 import { useI18n } from "@/providers/i18n-provider";

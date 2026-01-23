@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/providers/auth-provider";
 import { useLoginModal } from "@/providers/login-modal-provider";
 
@@ -16,7 +15,6 @@ interface ProtectedLinkProps {
  * If user is not authenticated, opens login modal instead of navigating.
  */
 export function ProtectedLink({ href, children, className }: ProtectedLinkProps) {
-  const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { openLoginModal } = useLoginModal();
 

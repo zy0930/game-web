@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Header } from "@/components/layout";
 import { ChevronRight } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
 import Image from "next/image";

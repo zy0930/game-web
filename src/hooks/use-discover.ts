@@ -30,7 +30,7 @@ export function useDiscover() {
           return response;
         } catch (error) {
           // If auth fails, fall back to unauthenticated endpoint
-          console.warn("Authenticated discover failed, falling back to public endpoint");
+          console.warn("Authenticated discover failed, falling back to public endpoint: ", error);
         }
       }
 

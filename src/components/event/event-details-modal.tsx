@@ -51,7 +51,7 @@ export function EventDetailsModal({
         </button>
 
         {/* Event Banner */}
-        <div className="relative h-48 bg-gradient-to-r from-zinc-700 to-zinc-500 flex-shrink-0">
+        <div className="relative h-48 bg-linear-to-r from-zinc-700 to-zinc-500 shrink-0">
           <Image
             src={event.image}
             alt={event.title}

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Header, BottomNav } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { Copy, Check, Loader2 } from "lucide-react";
 import { useQrCode } from "@/hooks/use-user";

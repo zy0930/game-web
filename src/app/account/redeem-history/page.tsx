@@ -1,8 +1,7 @@
 "use client";
 
-import { Loader2, X, ClipboardList } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { useAuth } from "@/providers/auth-provider";
 import { useI18n } from "@/providers/i18n-provider";
 import { useMyRewards } from "@/hooks";

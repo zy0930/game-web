@@ -4,9 +4,9 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   useCallback,
   ReactNode,
+  useSyncExternalStore,
 } from "react";
 import {
   Locale,
@@ -27,18 +27,33 @@ interface I18nProviderProps {
   children: ReactNode;
 }
 
-export function I18nProvider({ children }: I18nProviderProps) {
-  const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-  const [isHydrated, setIsHydrated] = useState(false);
+// Helper to get initial locale from localStorage
+function getStoredLocale(): Locale {
+  if (typeof window === "undefined") return defaultLocale;
+  const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY) as Locale | null;
+  if (savedLocale && ["en", "zh", "ms"].includes(savedLocale)) {
+    return savedLocale;
+  }
+  return defaultLocale;
+}
 
-  // Load locale from localStorage on mount
-  useEffect(() => {
-    const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY) as Locale | null;
-    if (savedLocale && ["en", "zh", "ms"].includes(savedLocale)) {
-      setLocaleState(savedLocale);
-    }
-    setIsHydrated(true);
-  }, []);
+// useSyncExternalStore for hydration-safe client detection
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+export function I18nProvider({ children }: I18nProviderProps) {
+  // Detect if we're on the client (hydration-safe)
+  const isClient = useSyncExternalStore(
+    emptySubscribe,
+    getClientSnapshot,
+    getServerSnapshot
+  );
+
+  // Use lazy initialization to read from localStorage
+  const [locale, setLocaleState] = useState<Locale>(() =>
+    isClient ? getStoredLocale() : defaultLocale
+  );
 
   // Save locale to localStorage when changed
   const setLocale = useCallback((newLocale: Locale) => {
@@ -55,7 +70,7 @@ export function I18nProvider({ children }: I18nProviderProps) {
   );
 
   // Prevent hydration mismatch by not rendering until client-side
-  if (!isHydrated) {
+  if (!isClient) {
     return null;
   }
 

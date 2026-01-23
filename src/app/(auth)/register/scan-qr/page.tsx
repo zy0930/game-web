@@ -6,7 +6,6 @@ import Image from "next/image";
 import QrScanner from "qr-scanner";
 import { X } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
-import { Header } from "@/components/layout";
 
 export default function ScanQrPage() {
   const router = useRouter();

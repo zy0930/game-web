@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { FormInput } from "@/components/ui/form-input";
 import { ChevronDown, Loader2, X } from "lucide-react";
@@ -20,8 +19,8 @@ export default function InstantDepositPage() {
   const { data: paygatesData, isLoading } = usePaygates();
   const submitDeposit = useSubmitDepositPg();
 
-  const [selectedMethod, setSelectedMethod] = useState<Paygate | null>(null);
-  const [selectedBank, setSelectedBank] = useState<PaygateNetwork | null>(null);
+  const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
+  const [selectedBankId, setSelectedBankId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [selectedPromotion, setSelectedPromotion] =
     useState<DepositPromo | null>(null);
@@ -31,25 +30,23 @@ export default function InstantDepositPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const promotionDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Set initial selections when data loads
-  useEffect(() => {
-    if (paygatesData?.Rows?.length && !selectedMethod) {
-      const firstMethod = paygatesData.Rows[0];
-      setSelectedMethod(firstMethod);
-      if (firstMethod.Networks?.length) {
-        setSelectedBank(firstMethod.Networks[0]);
-      }
-    }
-  }, [paygatesData, selectedMethod]);
+  // Derive selected method: user selection takes priority, otherwise use first from API
+  const selectedMethod =
+    paygatesData?.Rows?.find((m) => m.Id === selectedMethodId) ||
+    paygatesData?.Rows?.[0] ||
+    null;
 
-  // Update bank selection when method changes
-  useEffect(() => {
-    if (selectedMethod?.Networks?.length) {
-      setSelectedBank(selectedMethod.Networks[0]);
-    } else {
-      setSelectedBank(null);
-    }
-  }, [selectedMethod]);
+  // Derive selected bank: user selection if valid for current method, otherwise first network
+  const selectedBank =
+    selectedMethod?.Networks?.find((n) => n.Id === selectedBankId) ||
+    selectedMethod?.Networks?.[0] ||
+    null;
+
+  // Handle method selection - also reset bank
+  const handleMethodSelect = (method: Paygate) => {
+    setSelectedMethodId(method.Id);
+    setSelectedBankId(null); // Reset to let it default to first network
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -134,7 +131,7 @@ export default function InstantDepositPage() {
               {paymentMethods.map((method) => (
                 <button
                   key={method.Id}
-                  onClick={() => setSelectedMethod(method)}
+                  onClick={() => handleMethodSelect(method)}
                   className="flex flex-col items-center cursor-pointer"
                 >
                   <div
@@ -191,7 +188,7 @@ export default function InstantDepositPage() {
                 {networks.map((bank) => (
                   <button
                     key={bank.Id}
-                    onClick={() => setSelectedBank(bank)}
+                    onClick={() => setSelectedBankId(bank.Id)}
                     className="flex flex-col items-center cursor-pointer"
                   >
                     <div

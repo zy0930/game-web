@@ -90,7 +90,7 @@ export function GameProviderGrid({
       )}
 
       {/* Provider Name Overlay - optional, for providers without clear branding in image */}
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <span className="text-white text-xs font-roboto-medium">{provider.name}</span>
       </div>
 

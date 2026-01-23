@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { useI18n } from "@/providers/i18n-provider";
 
 export default function AboutPage() {

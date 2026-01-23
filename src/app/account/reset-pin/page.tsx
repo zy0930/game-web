@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Eye, EyeOff, Loader2, ChevronDown } from "lucide-react";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
@@ -112,9 +111,6 @@ export default function ResetPinPage() {
 
   const isFormValid =
     tacCode && pin && confirmPin && pin === confirmPin && pin.length === 6;
-
-  // Determine back href based on where user came from
-  const backHref = fromPage === "add-bank" ? "/account/bank" : "/account";
 
   if (!isAuthenticated) {
     return (
