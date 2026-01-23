@@ -40,7 +40,6 @@ export default function ForgotPasswordPage() {
   const [isRequestingOtp, setIsRequestingOtp] = useState(false);
   const [otpCountdown, setOtpCountdown] = useState(0);
   const [otpSent, setOtpSent] = useState(false);
-  const [otpAlreadySent, setOtpAlreadySent] = useState(false);
   const [isSendToDropdownOpen, setIsSendToDropdownOpen] = useState(false);
   const sendToDropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -158,14 +157,14 @@ export default function ForgotPasswordPage() {
       if (result.Code === 0) {
         clearErrors("otpCode");
         setOtpSent(true);
-        setOtpAlreadySent(false);
         setOtpCountdown(result.ExpiresIn || 300);
+        showSuccess(t("auth.otpSentSuccess"));
       } else if (result.ExpiresIn && result.ExpiresIn > 0) {
         // TAC already sent, show countdown timer
         clearErrors("otpCode");
         setOtpSent(true);
-        setOtpAlreadySent(true);
         setOtpCountdown(result.ExpiresIn);
+        showError(t("auth.otpAlreadySent"));
       } else {
         showError(result.Message || t("auth.otpSendFailed"));
       }
@@ -176,8 +175,8 @@ export default function ForgotPasswordPage() {
         if (expiresIn > 0) {
           clearErrors("otpCode");
           setOtpSent(true);
-          setOtpAlreadySent(true);
           setOtpCountdown(expiresIn);
+          showError(t("auth.otpAlreadySent"));
           return;
         }
       }
@@ -185,7 +184,7 @@ export default function ForgotPasswordPage() {
     } finally {
       setIsRequestingOtp(false);
     }
-  }, [usernameValue, phoneValue, sendTo, setError, clearErrors, t]);
+  }, [usernameValue, phoneValue, sendTo, setError, clearErrors, t, showSuccess, showError]);
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     // Validate OTP was requested and code is entered
@@ -369,11 +368,7 @@ export default function ForgotPasswordPage() {
                   className="h-6 w-auto object-contain"
                 />
               }
-              error={errors.otpCode?.message
-                ? errors.otpCode.message
-                : (otpSent && otpCountdown > 0
-                  ? (otpAlreadySent ? t("auth.otpAlreadySent") : t("auth.otpSentSuccess"))
-                  : undefined)}
+              error={errors.otpCode?.message}
               wrapperClassName="flex-1"
             />
             <button

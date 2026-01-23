@@ -45,6 +45,10 @@ const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
               suffix ? "pr-3" : "pr-4",
               className
             )}
+            style={{
+              WebkitBoxShadow: "0 0 0 1000px transparent inset",
+              boxShadow: "0 0 0 1000px transparent inset",
+            }}
             {...props}
           />
 

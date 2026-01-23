@@ -63,6 +63,7 @@ export default function ChangePasswordPage() {
       if (result.Code === 0) {
         setOtpSent(true);
         setCountdown(result.ExpiresIn || 60);
+        showSuccess(t("auth.otpSentSuccess"));
       } else {
         showError(result.Message || t("common.error"));
       }
@@ -251,11 +252,6 @@ export default function ChangePasswordPage() {
               )}
             </button>
           </div>
-          {otpSent && countdown > 0 && (
-            <p className="text-xs text-green-600 ml-1">
-              {t("auth.otpSentSuccess")}
-            </p>
-          )}
 
           {/* Old Password Input */}
           <FormInput

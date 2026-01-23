@@ -37,19 +37,18 @@ export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useI18n();
-  const { showError } = useToast();
+  const { showError, showSuccess } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [sendTo, setSendTo] = useState<string>("");
   const [sendToOptions, setSendToOptions] = useState<SendToOption[]>([]);
-  const [isLoadingOptions, setIsLoadingOptions] = useState(true);
+  const [, setIsLoadingOptions] = useState(true);
   const [isValidatingUpline, setIsValidatingUpline] = useState(false);
   const [isRequestingOtp, setIsRequestingOtp] = useState(false);
   const [otpCountdown, setOtpCountdown] = useState(0);
   const [otpSent, setOtpSent] = useState(false);
-  const [otpAlreadySent, setOtpAlreadySent] = useState(false);
   const [isSendToDropdownOpen, setIsSendToDropdownOpen] = useState(false);
   const sendToDropdownRef = useRef<HTMLDivElement | null>(null);
   const qrFileInputRef = useRef<HTMLInputElement>(null);
@@ -233,14 +232,14 @@ export default function RegisterPage() {
       if (result.Code === 0) {
         clearErrors("otpCode");
         setOtpSent(true);
-        setOtpAlreadySent(false);
         setOtpCountdown(result.ExpiresIn || 300);
+        showSuccess(t("auth.otpSentSuccess"));
       } else if (result.ExpiresIn && result.ExpiresIn > 0) {
         // TAC already sent, show countdown timer
         clearErrors("otpCode");
         setOtpSent(true);
-        setOtpAlreadySent(true);
         setOtpCountdown(result.ExpiresIn);
+        showError(t("auth.otpAlreadySent"));
       } else {
         showError(result.Message || t("auth.otpSendFailed"));
       }
@@ -251,8 +250,8 @@ export default function RegisterPage() {
         if (expiresIn > 0) {
           clearErrors("otpCode");
           setOtpSent(true);
-          setOtpAlreadySent(true);
           setOtpCountdown(expiresIn);
+          showError(t("auth.otpAlreadySent"));
           return;
         }
       }
@@ -260,7 +259,7 @@ export default function RegisterPage() {
     } finally {
       setIsRequestingOtp(false);
     }
-  }, [phoneValue, sendTo, setError, clearErrors, t]);
+  }, [phoneValue, sendTo, setError, clearErrors, t, showSuccess, showError]);
 
   const onSubmit = async (data: RegisterFormData) => {
     if (!agreeTerms) {
@@ -650,11 +649,7 @@ export default function RegisterPage() {
                   className="h-6 w-auto object-contain"
                 />
               }
-              error={errors.otpCode?.message
-                ? errors.otpCode.message
-                : (otpSent && otpCountdown > 0
-                  ? (otpAlreadySent ? t("auth.otpAlreadySent") : t("auth.otpSentSuccess"))
-                  : undefined)}
+              error={errors.otpCode?.message}
               wrapperClassName="flex-1"
             />
             <button

@@ -324,3 +324,27 @@
   background-color: white !important;
   box-shadow: none !important;
 }
+
+/* Override browser autofill background color */
+.form-input-wrapper input:-webkit-autofill,
+.form-input-wrapper input:-webkit-autofill:hover,
+.form-input-wrapper input:-webkit-autofill:focus,
+.form-input-wrapper input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: #000 !important;
+  background-color: transparent !important;
+  background-clip: content-box !important;
+  transition: background-color 9999s ease-out;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+/* Autofill styles when input wrapper is focused */
+.form-input-wrapper:focus-within input:-webkit-autofill,
+.form-input-wrapper:focus-within input:-webkit-autofill:hover,
+.form-input-wrapper:focus-within input:-webkit-autofill:focus,
+.form-input-wrapper:focus-within input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+}

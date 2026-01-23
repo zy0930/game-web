@@ -8,6 +8,7 @@ import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { useToast } from "@/providers/toast-provider";
 import { useResetPinTac, useResetPin } from "@/hooks/use-bank";
 
 export default function ResetPinPage() {
@@ -15,6 +16,7 @@ export default function ResetPinPage() {
   const searchParams = useSearchParams();
   const { t } = useI18n();
   const { isAuthenticated } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   // Check where user came from (for redirect after success)
   const fromPage = searchParams.get("from");
@@ -28,9 +30,8 @@ export default function ResetPinPage() {
   const [showPin, setShowPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
   const [tacExpiresIn, setTacExpiresIn] = useState<number | null>(null);
-  const [tacRequested, setTacRequested] = useState(false);
+  const [, setTacRequested] = useState(false);
   const [maskedPhone, setMaskedPhone] = useState<string>("");
-  const [error, setError] = useState("");
 
   // Countdown timer for TAC
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function ResetPinPage() {
       const response = await resetPinTac.mutateAsync();
       setTacRequested(true);
       setTacExpiresIn(response.ExpiresIn || 300); // Default 5 minutes
+      showSuccess(t("pin.tacSent"));
 
       // Mask the phone number for display
       if (response.Phone) {
@@ -64,25 +66,23 @@ export default function ResetPinPage() {
         setMaskedPhone(masked);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("pin.tacRequestFailed"));
+      showError(err instanceof Error ? err.message : t("pin.tacRequestFailed"));
     }
   };
 
   const handleConfirm = async () => {
-    setError("");
-
     if (!tacCode || !pin || !confirmPin) {
-      setError(t("common.fillAllFields"));
+      showError(t("common.fillAllFields"));
       return;
     }
 
     if (pin !== confirmPin) {
-      setError(t("pin.mismatch"));
+      showError(t("pin.mismatch"));
       return;
     }
 
     if (pin.length !== 6) {
-      setError(t("pin.requirements"));
+      showError(t("pin.requirements"));
       return;
     }
 
@@ -93,13 +93,14 @@ export default function ResetPinPage() {
       });
 
       // On success, redirect back to add bank page or account page
+      showSuccess(t("pin.resetSuccess") || t("common.success"));
       if (fromPage === "add-bank") {
         router.replace("/account/bank/add");
       } else {
         router.replace("/account");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("pin.resetFailed"));
+      showError(err instanceof Error ? err.message : t("pin.resetFailed"));
     }
   };
 
@@ -205,10 +206,6 @@ export default function ResetPinPage() {
           </button>
         </div>
 
-        {tacRequested && resetPinTac.isSuccess && (
-          <p className="text-xs text-green-600 px-1">{t("pin.tacSent")}</p>
-        )}
-
         {/* Enter PIN */}
         <FormInput
           type={showPin ? "text" : "password"}
@@ -272,9 +269,6 @@ export default function ResetPinPage() {
             </button>
           }
         />
-
-        {/* Error message */}
-        {error && <p className="text-xs text-red-500 px-1">{error}</p>}
 
         {/* Confirm Button - Same style as change username page */}
         <button
