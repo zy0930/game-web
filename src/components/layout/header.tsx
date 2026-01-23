@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
 import { Sidebar } from "./sidebar";
 import { getRouteConfig } from "@/lib/route-config";
+import { getBackDestination } from "@/lib/navigation";
 import { useI18n } from "@/providers/i18n-provider";
 
 interface HeaderProps {
@@ -15,9 +16,9 @@ interface HeaderProps {
   variant?: "logo" | "subpage";
   /** Override the auto-detected title (useful for dynamic titles like game names) */
   title?: string;
-  /** Custom back navigation href */
+  /** Custom back navigation href (overrides auto-detection) */
   backHref?: string;
-  /** Custom back navigation handler */
+  /** Custom back navigation handler (overrides everything) */
   onBack?: () => void;
   /** Custom support click handler */
   onSupportClick?: () => void;
@@ -28,13 +29,14 @@ interface HeaderProps {
 export function Header({
   variant: variantProp,
   title: titleProp,
-  backHref,
+  backHref: backHrefProp,
   onBack,
   onSupportClick,
   className,
 }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { t } = useI18n();
   const [imgError, setImgError] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -46,13 +48,15 @@ export function Header({
   const variant = variantProp ?? routeConfig.variant;
   const title = titleProp ?? (routeConfig.titleKey ? t(routeConfig.titleKey) : undefined);
 
+  // Get back destination - use prop if provided, otherwise auto-detect
+  const backDestination = getBackDestination(pathname, searchParams);
+  const backHref = backHrefProp ?? backDestination.href;
+
   const handleBack = () => {
     if (onBack) {
       onBack();
-    } else if (backHref) {
-      router.push(backHref);
     } else {
-      router.back();
+      router.push(backHref);
     }
   };
 

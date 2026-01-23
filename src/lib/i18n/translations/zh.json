@@ -328,7 +328,10 @@
     "oldPasswordRequired": "请输入旧密码",
     "newPasswordRequired": "请输入新密码",
     "confirmPasswordRequired": "请确认新密码",
-    "selectAvatar": "请选择头像"
+    "selectAvatar": "请选择头像",
+    "usernameChanged": "用户名修改成功",
+    "passwordChanged": "密码修改成功",
+    "avatarChanged": "头像修改成功"
   },
   "sidebar": {
     "referral": "推荐",
@@ -358,6 +361,7 @@
     "tacRequestFailed": "获取验证码失败，请重试。",
     "addBankNote": "请确保您的银行账户名与您的注册全名一致。不接受第三方银行账户。",
     "addFailed": "添加银行账户失败，请重试。",
+    "addSuccess": "银行账户添加成功",
     "deleteConfirmTitle": "删除银行账户？",
     "deleteConfirmMessage": "您确定要删除此银行账户吗？此操作无法撤销。",
     "deleteFailed": "删除银行账户失败，请重试。"

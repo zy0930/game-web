@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Header } from "@/components/layout";
 import { Check, Loader2 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
 import { useToast } from "@/providers/toast-provider";
@@ -11,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { useAvatars, useChangeAvatar } from "@/hooks";
 
 export default function ChangeAvatarPage() {
-  const router = useRouter();
   const { t } = useI18n();
   const { showSuccess, showError } = useToast();
   const [selectedAvatar, setSelectedAvatar] = useState<string>("");
@@ -38,9 +35,8 @@ export default function ChangeAvatarPage() {
 
     try {
       await changeAvatarMutation.mutateAsync({ Id: selectedAvatar });
-      // Show toast and navigate back on success
-      showSuccess(t("profile.avatarChanged") || "Avatar changed successfully");
-      router.push("/account/profile");
+      // Show toast on success
+      showSuccess(t("profile.avatarChanged"));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : t("common.error");
       showError(errorMessage);

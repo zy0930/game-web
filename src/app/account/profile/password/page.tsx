@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { Eye, EyeOff, ChevronDown, Loader2 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
@@ -19,7 +17,6 @@ const sendToOptions: { value: SendToOption; labelKey: string }[] = [
 ];
 
 export default function ChangePasswordPage() {
-  const router = useRouter();
   const { t } = useI18n();
   const { showSuccess, showError } = useToast();
 
@@ -118,9 +115,8 @@ export default function ChangePasswordPage() {
       });
 
       if (result.Code === 0) {
-        // Success - show toast and navigate back to profile
-        showSuccess(t("profile.passwordChanged") || "Password changed successfully");
-        router.push("/account/profile");
+        // Success - show toast
+        showSuccess(t("profile.passwordChanged"));
       } else {
         showError(result.Message || t("common.error"));
       }

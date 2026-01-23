@@ -250,7 +250,7 @@ export default function DepositPage() {
                 {withdrawMethods.map((method) => (
                   <Link
                     key={method.id}
-                    href={method.href}
+                    href={`${method.href}?returnUrl=/deposit`}
                     className="flex flex-col items-center group"
                   >
                     <div className="shadow-2xl border-zinc-200 border-[0.5px] w-full h-auto aspect-square rounded-xl flex items-center justify-center bg-white">

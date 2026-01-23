@@ -2,18 +2,16 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { Loader2 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
 import { useName, useChangeName } from "@/hooks";
 
 export default function ChangeUsernamePage() {
-  const router = useRouter();
   const { t } = useI18n();
+  const { showSuccess, showError } = useToast();
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
 
   // Fetch current name
   const { data: nameData, isLoading: isLoadingName } = useName();
@@ -28,19 +26,17 @@ export default function ChangeUsernamePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     if (!username.trim()) {
-      setError(t("auth.usernameRequired"));
+      showError(t("auth.usernameRequired"));
       return;
     }
 
     try {
       await changeNameMutation.mutateAsync({ Name: username.trim() });
-      // Navigate back on success
-      router.push("/account/profile");
+      showSuccess(t("profile.usernameChanged"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      showError(err instanceof Error ? err.message : t("common.error"));
     }
   };
 
@@ -76,7 +72,7 @@ export default function ChangeUsernamePage() {
                 className="h-6 w-auto object-contain"
               />
             }
-            error={error}
+            error={undefined}
           />
 
           {/* Submit Button */}

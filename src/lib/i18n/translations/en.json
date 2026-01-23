@@ -377,7 +377,10 @@
     "oldPasswordRequired": "Old password is required",
     "newPasswordRequired": "New password is required",
     "confirmPasswordRequired": "Please confirm your new password",
-    "selectAvatar": "Please select an avatar"
+    "selectAvatar": "Please select an avatar",
+    "usernameChanged": "Username changed successfully",
+    "passwordChanged": "Password changed successfully",
+    "avatarChanged": "Avatar changed successfully"
   },
   "sidebar": {
     "referral": "REFERRAL",
@@ -409,6 +412,7 @@
     "tacRequestFailed": "Failed to request TAC. Please try again.",
     "addBankNote": "Please ensure your bank account name matches your registered full name. Third-party bank accounts are not accepted.",
     "addFailed": "Failed to add bank account. Please try again.",
+    "addSuccess": "Bank account added successfully",
     "noBanksAdded": "There are no banks added.",
     "bankAccount": "Bank Account",
     "accountInfo": "Account Info",

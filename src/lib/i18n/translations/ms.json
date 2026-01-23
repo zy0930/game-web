@@ -328,7 +328,10 @@
     "oldPasswordRequired": "Kata laluan lama diperlukan",
     "newPasswordRequired": "Kata laluan baru diperlukan",
     "confirmPasswordRequired": "Sila sahkan kata laluan baru anda",
-    "selectAvatar": "Sila pilih avatar"
+    "selectAvatar": "Sila pilih avatar",
+    "usernameChanged": "Nama pengguna berjaya ditukar",
+    "passwordChanged": "Kata laluan berjaya ditukar",
+    "avatarChanged": "Avatar berjaya ditukar"
   },
   "sidebar": {
     "referral": "RUJUKAN",
@@ -358,6 +361,7 @@
     "tacRequestFailed": "Gagal meminta TAC. Sila cuba lagi.",
     "addBankNote": "Sila pastikan nama akaun bank anda sepadan dengan nama penuh berdaftar anda. Akaun bank pihak ketiga tidak diterima.",
     "addFailed": "Gagal menambah akaun bank. Sila cuba lagi.",
+    "addSuccess": "Akaun bank berjaya ditambah",
     "deleteConfirmTitle": "Padam Akaun Bank?",
     "deleteConfirmMessage": "Adakah anda pasti mahu memadam akaun bank ini? Tindakan ini tidak boleh dibatalkan.",
     "deleteFailed": "Gagal memadam akaun bank. Sila cuba lagi."
