@@ -68,7 +68,7 @@ export function KycVerificationModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-sm p-6 relative"
+        className="bg-white rounded-2xl w-full max-w-sm max-[380px]:p-4 p-6 relative"
         onClick={(e) => e.stopPropagation()}
       >
 
