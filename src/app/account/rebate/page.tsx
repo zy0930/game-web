@@ -151,6 +151,7 @@ export default function RebateListPage() {
           fill
           className="object-cover object-top"
           priority
+          unoptimized
         />
       </div>
 

@@ -124,6 +124,7 @@ export default function RedeemHistoryPage() {
                       width={20}
                       height={20}
                       className="object-contain"
+                      unoptimized
                     />
                   </div>
                   <span

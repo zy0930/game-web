@@ -87,6 +87,7 @@ export default function DepositPage() {
                 width={16}
                 height={16}
                 className={cn("object-contain", isRefetching && "animate-spin")}
+                unoptimized
               />
             </button>
           </div>{" "}
@@ -149,6 +150,7 @@ export default function DepositPage() {
                     width={20}
                     height={20}
                     className="object-contain"
+                    unoptimized
                   />
                   <span className="text-black text-xl font-roboto-bold">
                     {formatCurrency(walletData?.Chip ?? 0)}
@@ -209,6 +211,7 @@ export default function DepositPage() {
                         width={45}
                         height={45}
                         className="object-contain"
+                        unoptimized
                       />
                     </div>
                     <span className="text-sm text-[#28323C] mt-2 text-center font-roboto-regular">
@@ -259,6 +262,7 @@ export default function DepositPage() {
                         width={45}
                         height={45}
                         className="object-contain"
+                        unoptimized
                       />
                     </div>
                     <span className="text-sm text-[#28323C] mt-2 text-center font-roboto-regular">

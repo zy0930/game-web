@@ -204,6 +204,7 @@ export default function AccountPage() {
                   width={12}
                   height={12}
                   className="object-contain w-4 h-4"
+                  unoptimized
                 />
               </button>
               <span className="px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#71B6FB1A] text-[#71B6FB] border border-[#71B6FB] flex gap-1">
@@ -213,6 +214,7 @@ export default function AccountPage() {
                   width={12}
                   height={12}
                   className="object-contain w-4 h-4"
+                  unoptimized
                 />
                 {t("common.verified")}
               </span>
@@ -223,6 +225,7 @@ export default function AccountPage() {
                   width={12}
                   height={12}
                   className="object-contain w-4 h-4"
+                  unoptimized
                 />
                 {t("common.pending")}
               </span>
@@ -300,6 +303,7 @@ export default function AccountPage() {
                   alt="Chips"
                   width={20}
                   height={20}
+                  unoptimized
                   className="object-contain"
                 />
                 <span className="text-black text-xl font-roboto-bold">
@@ -320,6 +324,7 @@ export default function AccountPage() {
               fill
               className="object-fill"
               priority
+              unoptimized
             />
           </div>
 
@@ -379,6 +384,7 @@ export default function AccountPage() {
                     width={32}
                     height={32}
                     className="object-contain w-full h-full p-3.5"
+                    unoptimized
                   />
                 </div>
                 <span className="text-xs text-zinc-600 font-roboto-medium">
@@ -399,6 +405,7 @@ export default function AccountPage() {
                       width={20}
                       height={20}
                       className="object-contain"
+                      unoptimized
                     />
                     <span className="text-sm text-zinc-700 font-roboto-medium">
                       {t(item.labelKey)}
@@ -452,6 +459,7 @@ export default function AccountPage() {
                 width={20}
                 height={20}
                 className="object-contain"
+                unoptimized
               />
               <span className="text-sm text-zinc-700 font-roboto-medium">
                 {t("account.logout")}

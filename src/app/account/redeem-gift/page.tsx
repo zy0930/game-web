@@ -70,6 +70,7 @@ export default function RedeemGiftPage() {
           fill
           className="object-cover object-right"
           priority
+          unoptimized
         />
       </div>
 
@@ -86,6 +87,7 @@ export default function RedeemGiftPage() {
               width={24}
               height={24}
               className="object-contain"
+              unoptimized
             />
             <span className="text-base font-roboto-bold text-[#28323C]">
               {formatPoints(userPoints)}
@@ -134,6 +136,7 @@ export default function RedeemGiftPage() {
                       alt="A-Point"
                       width={16}
                       height={16}
+                      unoptimized
                       className="object-contain"
                     />
                     <div className="text-sm font-roboto-regular text-[#28323C]">

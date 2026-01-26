@@ -140,6 +140,7 @@ export default function ScanQrPage() {
             width={280}
             height={280}
             className="w-full h-auto"
+            unoptimized
             priority
           />
           <p className="text-white text-center text-sm mt-6 px-4">

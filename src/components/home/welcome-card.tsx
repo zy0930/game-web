@@ -76,6 +76,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
           fill
           className="object-fill"
           priority
+          unoptimized
         />
       </div>
 
@@ -101,6 +102,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
                 width={12}
                 height={12}
                 className="object-contain w-5 h-5"
+                unoptimized
               />
             )}
           </button>
@@ -180,6 +182,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
                   width={14}
                   height={14}
                   className="object-contain"
+                  unoptimized
                 />
                 <span className="text-black font-roboto-bold text-xs">
                   {formatCurrency(user.chipsBalance)}
@@ -213,6 +216,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
                   width={14}
                   height={14}
                   className="object-contain"
+                  unoptimized
                 />
                 <span className="text-black font-roboto-bold text-xs">
                   {formatPoints(user.aPoints)}
@@ -232,13 +236,14 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
               <Image
                 src="/images/profile/wallet_dark.png"
                 alt="Restore"
-                width={50}
-                height={50}
-                className={`object-contain w-full h-full  ${
+                width={25}
+                height={25}
+                className={`object-contain w-16 h-full  ${
                   restoreMutation.isPending
                     ? "cursor-not-allowed"
                     : "cursor-pointer"
                 }`}
+                unoptimized
               />
               <span className="text-xs text-black font-roboto-bold mt-1">
                 {t("common.restore")}
@@ -249,10 +254,11 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
               <Image
                 src="/images/profile/coin_bag_dark.png"
                 alt="Restore"
-                width={50}
-                height={50}
-                className="object-contain w-full h-full cursor-pointer"
+                width={25}
+                height={25}
+                className="object-contain w-16 h-full cursor-pointer"
                 onClick={() => router.push("/deposit")}
+                unoptimized
               />
               <span className="text-xs text-black font-roboto-bold mt-1">
                 {t("wallet.deposit")}

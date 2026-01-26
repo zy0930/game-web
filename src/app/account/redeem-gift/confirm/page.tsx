@@ -127,6 +127,7 @@ export default function ConfirmRedeemPage() {
                 width={24}
                 height={24}
                 className="object-contain"
+                unoptimized
               />
               <span className="text-base font-roboto-bold text-[#28323C]">
                 {formatPoints(userPoints)}
@@ -175,6 +176,7 @@ export default function ConfirmRedeemPage() {
                     width={16}
                     height={16}
                     className="object-contain"
+                    unoptimized
                   />
                   <span className="text-sm font-roboto-bold text-[#28323C]">
                     {formatPoints(selectedReward.Price)}
