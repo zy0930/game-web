@@ -9,6 +9,7 @@ interface ContactListItemProps {
   avatar: string;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export function ContactListItem({
@@ -16,14 +17,16 @@ export function ContactListItem({
   avatar,
   onClick,
   className,
+  disabled,
 }: ContactListItemProps) {
   const [imgError, setImgError] = useState(false);
 
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={cn(
-        "w-full flex items-center gap-5 py-3 px-4 bg-white cursor-pointer",
+        "w-full flex items-center gap-5 py-3 px-4 bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
     >

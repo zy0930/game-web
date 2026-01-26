@@ -83,6 +83,10 @@ export function getBackDestination(
 
   // === Transfer page ===
   if (pathname === "/transfer") {
+    // If came from transfer list, go back to transfer list
+    if (fromParam === "transfer-list") {
+      return { href: "/account/contact?mode=transfer" };
+    }
     // If there's a contact id, go back to that contact's page
     if (contactId) {
       return { href: `/account/contact/${contactId}` };

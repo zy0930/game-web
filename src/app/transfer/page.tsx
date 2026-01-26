@@ -17,8 +17,8 @@ export default function TransferPage() {
   const { t } = useI18n();
   const { showError } = useToast();
 
-  // Get target ID from query param
-  const targetId = searchParams.get("id") || "";
+  // Get target ID from query param (targetId for API, id for back navigation)
+  const targetId = searchParams.get("targetId") || searchParams.get("id") || "";
 
   const [amount, setAmount] = useState("");
   const [pin, setPin] = useState("");

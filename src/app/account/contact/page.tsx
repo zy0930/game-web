@@ -7,7 +7,9 @@ import { FormInput } from "@/components/ui/form-input";
 import { ContactListItem, AddFriendBanner } from "@/components/contact";
 import { useAuth } from "@/providers/auth-provider";
 import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
 import { useContacts, useContactRequests } from "@/hooks/use-contact";
+import { contactApi } from "@/lib/api";
 
 type PageMode = "contact" | "transfer";
 
@@ -17,11 +19,14 @@ export default function ContactPage() {
   const { isAuthenticated } = useAuth();
   const { t } = useI18n();
 
+  const { showError } = useToast();
+
   // Determine page mode from query param
   const pageMode: PageMode = searchParams.get("mode") === "transfer" ? "transfer" : "contact";
   const isTransferMode = pageMode === "transfer";
 
   const [searchInput, setSearchInput] = useState("");
+  const [isLoadingTransfer, setIsLoadingTransfer] = useState(false);
 
   // Fetch contacts
   const { data: contactsData, isLoading: isLoadingContacts } = useContacts({
@@ -62,10 +67,23 @@ export default function ContactPage() {
   const myRequests = requestsData?.MyRequests ?? [];
   const totalPendingRequests = friendRequests.length + myRequests.length;
 
-  const handleContactClick = (contactId: string, targetId: string) => {
+  const handleContactClick = async (contactId: string) => {
     if (isTransferMode) {
-      // In transfer mode, go to transfer page with target ID
-      router.push(`/transfer?id=${targetId}`);
+      // In transfer mode, first fetch contact detail to get TargetId
+      setIsLoadingTransfer(true);
+      try {
+        const contactDetail = await contactApi.getContact(contactId);
+        if (contactDetail.Code === 0 && contactDetail.TargetId) {
+          // Navigate to transfer page with targetId for API and id for back navigation
+          router.push(`/transfer?targetId=${contactDetail.TargetId}&id=${contactId}&from=transfer-list`);
+        } else {
+          showError(contactDetail.Message || t("contact.loadFailed"));
+        }
+      } catch (error) {
+        showError(error instanceof Error ? error.message : t("contact.loadFailed"));
+      } finally {
+        setIsLoadingTransfer(false);
+      }
     } else {
       // In contact mode, go to contact detail page
       router.push(`/account/contact/${contactId}`);
@@ -130,7 +148,8 @@ export default function ContactPage() {
                     key={contact.Id}
                     username={contact.Alias}
                     avatar={contact.Image}
-                    onClick={() => handleContactClick(contact.Id, contact.Id)}
+                    onClick={() => handleContactClick(contact.Id)}
+                    disabled={isLoadingTransfer}
                   />
                 ))}
               </div>
@@ -142,6 +161,13 @@ export default function ContactPage() {
           )}
         </div>
       </main>
+
+      {/* Loading overlay for transfer mode */}
+      {isLoadingTransfer && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      )}
     </div>
   );
 }

@@ -43,8 +43,9 @@ export default function ContactDetailPage() {
 
   const handleTransfer = () => {
     if (contact?.TargetId) {
-      // Navigate to transfer page with target ID
-      router.push(`/transfer?id=${contact.TargetId}`);
+      // Navigate to transfer page with target ID for the transfer API
+      // and contact ID for back navigation
+      router.push(`/transfer?targetId=${contact.TargetId}&id=${contactId}`);
     }
   };
 

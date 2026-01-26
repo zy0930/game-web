@@ -132,7 +132,7 @@ export default function WithdrawalPage() {
                 ))}
                 {/* Add Bank Button - Always visible */}
                 <button
-                  onClick={() => router.push("/account/bank")}
+                  onClick={() => router.push("/account/bank?returnUrl=/withdrawal")}
                   className="flex flex-col items-center cursor-pointer"
                 >
                   <div className="w-full aspect-square rounded-lg border-2 border-dashed border-zinc-300 shadow-sm flex items-center justify-center bg-white hover:border-primary transition-colors">
