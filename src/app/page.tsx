@@ -295,7 +295,7 @@ export default function HomePage() {
         {/* Game Providers Grid with slide animation */}
         <div className="px-4 mt-4">
           {isLoading ? (
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid max-[380px]:grid-cols-3 grid-cols-4 gap-1">
               {[...Array(8)].map((_, i) => (
                 <div
                   key={i}
@@ -334,7 +334,6 @@ export default function HomePage() {
                   {currentProviders.length > 0 ? (
                     <GameProviderGrid
                       providers={currentProviders}
-                      columns={4}
                       onSelect={handleLaunchGame}
                       loadingId={launchingGameId}
                     />

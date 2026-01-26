@@ -83,7 +83,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
       {/* Content */}
       <div className="relative z-10">
         {/* Welcome Title */}
-        <h2 className="text-[#28323C] font-roboto-regular text-sm mb-3 flex items-baseline gap-1">
+        <h2 className="text-[#28323C] font-roboto-regular text-sm mb-3 flex items-baseline gap-1 max-[380px]:justify-center">
           {t("common.welcome")},
           <span className="text-base font-roboto-bold"> {user.username}</span>
           <button
@@ -109,9 +109,9 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
         </h2>
 
         {/* Main Content Row - all items same height */}
-        <div className="flex items-stretch gap-2">
+        <div className="max-[380px]:grid max-[380px]:grid-cols-2 flex items-stretch gap-2">
           {/* Avatar - matches full height of row */}
-          <div className="w-16 aspect-square rounded-full overflow-hidden shrink-0 border-2 border-[#0DC3B1] self-center">
+          <div className="max-[380px]:mx-auto max-[380px]:col-span-2 w-16 aspect-square rounded-full overflow-hidden shrink-0 border-2 border-[#0DC3B1] self-center">
             {!imgError && user.avatar ? (
               <Image
                 src={user.avatar}

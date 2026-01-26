@@ -67,7 +67,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-hidden">
-      <div className="bg-white rounded-2xl w-full max-w-88 px-6 py-10 relative">
+      <div className="bg-white rounded-2xl w-full max-w-88 max-[360px]:px-4 max-[360px]:py-6 px-6 py-10 relative">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -77,7 +77,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </button>
 
         {/* Logo */}
-        <div className="flex justify-center mb-9">
+        <div className="flex justify-center mb-9 max-[360px]:mb-4">
           <Image
             src="/images/title.png"
             alt="AON1E"

@@ -8,6 +8,7 @@ import { ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { useToast } from "@/providers/toast-provider";
 import { KycVerificationModal } from "@/components/account/kyc-verification-modal";
 import { useProfile } from "@/hooks";
 
@@ -16,9 +17,23 @@ export default function AccountPage() {
   const [isKycModalOpen, setIsKycModalOpen] = useState(false);
   const { t } = useI18n();
   const { logout } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   // Fetch user profile data
-  const { data: profile, isLoading, isError } = useProfile();
+  const { data: profile, isLoading, isError, refetch, isFetching } = useProfile();
+
+  const handleRefresh = async () => {
+    try {
+      const result = await refetch();
+      if (result.data) {
+        showSuccess(t("common.success"));
+      } else if (result.error) {
+        showError(t("common.error"));
+      }
+    } catch {
+      showError(t("common.error"));
+    }
+  };
 
   const quickActions = [
     {
@@ -189,25 +204,30 @@ export default function AccountPage() {
 
           {/* User Info */}
           <div className="z-10 flex-1">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-x-2 gap-y-0.5 mb-1 flex-wrap">
               <h2 className="text-white text-xl font-roboto-bold">
                 {profile.Username}
               </h2>
               <button
                 type="button"
                 className="cursor-pointer self-auto"
-                aria-label="Refresh cash"
+                aria-label="Refresh profile"
+                onClick={handleRefresh}
+                disabled={isFetching}
               >
                 <Image
                   src="/images/icon/refresh_icon.png"
                   alt="Refresh"
                   width={12}
                   height={12}
-                  className="object-contain w-4 h-4"
+                  className={cn(
+                    "object-contain w-4 h-4",
+                    isFetching && "animate-spin"
+                  )}
                   unoptimized
                 />
               </button>
-              <span className="px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#71B6FB1A] text-[#71B6FB] border border-[#71B6FB] flex gap-1">
+              <div className="whitespace-nowrap px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#71B6FB1A] text-[#71B6FB] border border-[#71B6FB] flex gap-1">
                 <Image
                   src="/images/icon/verified_icon.png"
                   alt="verified"
@@ -217,8 +237,8 @@ export default function AccountPage() {
                   unoptimized
                 />
                 {t("common.verified")}
-              </span>
-              <span className="px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#FFC0361A] border border-[#FFC036] text-[#FFC036] flex gap-1">
+              </div>
+              <div className="whitespace-nowrap px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#FFC0361A] border border-[#FFC036] text-[#FFC036] flex gap-1">
                 <Image
                   src="/images/icon/pending_icon.png"
                   alt="pending"
@@ -228,7 +248,7 @@ export default function AccountPage() {
                   unoptimized
                 />
                 {t("common.pending")}
-              </span>
+              </div>
             </div>
             <p className="text-white text-xs">UID: {profile.Id}</p>
           </div>

@@ -18,7 +18,6 @@ interface GameProvider {
 
 interface GameProviderGridProps {
   providers: GameProvider[];
-  columns?: 2 | 3 | 4;
   className?: string;
   onSelect?: (provider: GameProvider) => void;
   loadingId?: string | null;
@@ -26,7 +25,6 @@ interface GameProviderGridProps {
 
 export function GameProviderGrid({
   providers,
-  columns = 4,
   className,
   onSelect,
   loadingId = null,
@@ -37,12 +35,6 @@ export function GameProviderGrid({
     setImgErrors((prev) => new Set(prev).add(id));
   };
 
-  const gridColsClass = {
-    2: "grid-cols-2",
-    3: "grid-cols-3",
-    4: "grid-cols-4",
-  };
-
   const renderCardContent = (provider: GameProvider) => (
     <>
       {/* Background Image */}
@@ -51,7 +43,7 @@ export function GameProviderGrid({
           src={provider.image}
           alt={provider.name}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
+          className="object-cover cursor-pointer"
           onError={() => handleImageError(provider.id)}
           unoptimized
         />
@@ -89,11 +81,6 @@ export function GameProviderGrid({
         </span>
       )}
 
-      {/* Provider Name Overlay - optional, for providers without clear branding in image */}
-      <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <span className="text-white text-xs font-roboto-medium">{provider.name}</span>
-      </div>
-
       {/* Loading Overlay */}
       {loadingId === provider.id && (
         <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white">
@@ -104,7 +91,7 @@ export function GameProviderGrid({
   );
 
   return (
-    <div className={cn("grid gap-1", gridColsClass[columns], className)}>
+    <div className={cn("grid gap-1 max-[380px]:grid-cols-3 grid-cols-4", className)}>
       {providers.map((provider) =>
         onSelect ? (
           <button
