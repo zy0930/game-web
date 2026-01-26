@@ -358,7 +358,7 @@ export default function AccountPage() {
                 ({formatOverviewDate(profile.OverviewDate)})
               </span>
             </div>
-            <div className="grid grid-cols-[1fr_1fr_1fr] items-center divide-x divide-[#5F7182]">
+            <div className="flex items-stretch gap-1">
               <div className="flex-1 text-center">
                 <p className="text-xl font-roboto-bold text-[#28323C]">
                   {profile.RegisteredDownline}
@@ -367,6 +367,7 @@ export default function AccountPage() {
                   {t("account.registered")}
                 </p>
               </div>
+              <div className="w-px bg-[#5F7182]"></div>
               <div className="flex-1 text-center">
                 <p className="text-xl font-roboto-bold text-[#28323C]">
                   {profile.ActiveDownline}
@@ -375,6 +376,7 @@ export default function AccountPage() {
                   {t("account.activePlayer")}
                 </p>
               </div>
+              <div className="w-px bg-[#5F7182]"></div>
               <div className="flex-1 text-center">
                 <p className="text-xl font-roboto-bold text-[#28323C]">
                   {formatCurrency(profile.Turnover)}

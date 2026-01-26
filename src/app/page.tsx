@@ -283,13 +283,12 @@ export default function HomePage() {
 
         {/* Game Categories */}
         <div className="px-4 mt-4">
-          {discoverData?.GameCategories && (
-            <GameCategories
-              categories={discoverData.GameCategories}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            />
-          )}
+          <GameCategories
+            categories={discoverData?.GameCategories || []}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            isLoading={!discoverData?.GameCategories}
+          />
         </div>
 
         {/* Game Providers Grid with slide animation */}
@@ -326,9 +325,15 @@ export default function HomePage() {
                     right: 0,
                   }}
                   transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
+                    type: "tween",
+                    duration: 0.3,
+                    ease: "easeOut",
+                  }}
+                  style={{
+                    willChange: "transform",
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                    transform: "translateZ(0)",
                   }}
                 >
                   {currentProviders.length > 0 ? (
