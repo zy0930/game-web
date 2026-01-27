@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/providers/i18n-provider";
 
 interface FriendRequestItemProps {
   username: string;
@@ -24,16 +25,17 @@ export function FriendRequestItem({
   className,
 }: FriendRequestItemProps) {
   const [imgError, setImgError] = useState(false);
+  const { t } = useI18n();
 
   return (
     <div
       className={cn(
-        "flex items-center justify-between py-3 px-4",
+        "flex items-center justify-between py-4 px-6 bg-white",
         className
       )}
     >
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-200 shrink-0">
+      <div className="flex items-center gap-5 bg-white">
+        <div className="w-11 h-11 rounded-full overflow-hidden bg-white shrink-0">
           {!imgError ? (
             <Image
               src={avatar}
@@ -45,12 +47,14 @@ export function FriendRequestItem({
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-zinc-500 font-roboto-bold text-lg">
+            <div className="w-full h-full flex items-center justify-center text-[#28323C] font-roboto-regular text-sm">
               {username.charAt(0).toUpperCase()}
             </div>
           )}
         </div>
-        <span className="text-zinc-800 font-roboto-medium">{username}</span>
+        <span className="text-[#28323C] font-roboto-regular text-sm">
+          {username}
+        </span>
       </div>
 
       <div className="flex items-center gap-2">
@@ -58,23 +62,23 @@ export function FriendRequestItem({
           <>
             <button
               onClick={onReject}
-              className="px-4 py-1.5 bg-red-500 text-white text-sm font-roboto-medium rounded-md hover:bg-red-600 transition-colors"
+              className="flex items-center gap-3 px-4 py-2.5 text-white text-sm font-roboto-regular rounded-lg cursor-pointer bg-red-500"
             >
-              Reject
+              {t("contact.reject")}
             </button>
             <button
               onClick={onApprove}
-              className="px-4 py-1.5 bg-primary text-white text-sm font-roboto-medium rounded-md hover:bg-primary/90 transition-colors"
+              className="flex items-center gap-3 px-4 py-2.5 text-white text-sm font-roboto-regular rounded-lg cursor-pointer bg-primary"
             >
-              Approve
+              {t("contact.approve")}
             </button>
           </>
         ) : (
           <button
             onClick={onCancel}
-            className="px-4 py-1.5 bg-red-500 text-white text-sm font-roboto-medium rounded-md hover:bg-red-600 transition-colors"
+            className="flex items-center gap-3 px-4 py-2.5 text-white text-sm font-roboto-regular rounded-lg cursor-pointer bg-red-500"
           >
-            Cancel
+            {t("contact.cancel")}
           </button>
         )}
       </div>

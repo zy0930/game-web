@@ -53,7 +53,7 @@ export function BottomNav() {
         key={item.href}
         href={item.href}
         className={cn(
-          "flex flex-col items-center gap-2 text-xs transition-colors",
+          "flex flex-col items-center gap-2 text-[0.5rem] min-[345px]:text-xs transition-colors",
           isActive ? "text-primary" : "text-white"
         )}
       >
@@ -63,7 +63,7 @@ export function BottomNav() {
           width={30}
           height={30}
           unoptimized
-          className="w-[30px] h-[30px] object-contain"
+          className="w-[20px] h-[20px] min-[345px]:w-[30px] min-[345px]:h-[30px] object-contain"
         />
         <span>{t(labelTranslations[item.labelKey] || item.labelKey)}</span>
       </ProtectedLink>
@@ -71,7 +71,7 @@ export function BottomNav() {
   };
 
   return (
-    <nav className="bg-dark px-4 py-[11px] sticky bottom-0 left-0 right-0 overflow-visible">
+    <nav className="bg-dark px-4 py-[11px] sticky bottom-0 z-50 overflow-visible">
       <div className="grid grid-cols-[1fr_1fr_1.2fr_1fr_1fr] items-end overflow-visible">
         {/* Left items */}
         {navItems.slice(0, 2).map(renderNavItem)}
@@ -88,7 +88,7 @@ export function BottomNav() {
             height={80}
             width={80}
             unoptimized
-            className="w-full h-full"
+            className="w-[90%] h-[90%] min-[345px]:w-full min-[345px]:h-full"
           />
         </Link>
 

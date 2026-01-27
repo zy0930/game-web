@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { Clock, Trash2, Mail, MailOpen, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
@@ -134,9 +133,6 @@ export default function InboxPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header variant="subpage" title={t("inbox.title")} backHref="/account" />
-
       {/* Tabs */}
       <div className="bg-white border-b border-zinc-200">
         <div className="flex">
@@ -173,7 +169,7 @@ export default function InboxPage() {
 
       {/* Action Bar */}
       <div className="bg-white px-4 py-3 flex items-center justify-between border-b border-zinc-200">
-        <label className="flex items-center gap-2 cursor-pointer">
+        <label className="flex items-center gap-4 cursor-pointer">
           <input
             type="checkbox"
             checked={selectAll}
@@ -220,7 +216,7 @@ export default function InboxPage() {
                 key={message.id}
                 onClick={() => handleOpenMessage(message)}
                 className={cn(
-                  "px-4 py-3 flex items-start gap-3 cursor-pointer transition-colors",
+                  "px-4 py-3 flex items-start gap-4 cursor-pointer transition-colors",
                   !message.isRead ? "bg-primary/5" : "bg-white"
                 )}
               >
@@ -230,7 +226,7 @@ export default function InboxPage() {
                   checked={message.selected}
                   onChange={() => handleSelectMessage(message.id)}
                   onClick={(e) => e.stopPropagation()}
-                  className="w-5 h-5 rounded border-zinc-300 text-primary focus:ring-primary mt-1 flex-shrink-0"
+                  className="w-5 h-5 rounded border-zinc-300 text-primary focus:ring-primary mt-1 shrink-0 self-center"
                 />
 
                 {/* Message Content */}

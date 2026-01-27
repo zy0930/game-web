@@ -3,7 +3,9 @@
     "submit": "提交",
     "cancel": "取消",
     "confirm": "确认",
+    "ok": "确定",
     "back": "返回",
+    "next": "下一步",
     "save": "保存",
     "delete": "删除",
     "edit": "编辑",
@@ -29,7 +31,11 @@
     "errorLoading": "加载数据失败，请重试。",
     "loginRequired": "请登录以访问此页面",
     "copied": "已复制!",
-    "copyLink": "复制链接"
+    "copyLink": "复制链接",
+    "search": "搜索",
+    "fillAllFields": "请填写所有必填字段",
+    "notFound": "404 页面未找到",
+    "backToHome": "返回首页"
   },
   "referral": {
     "title": "推荐",
@@ -106,8 +112,11 @@
     "otpSendFailed": "发送验证码失败，请重试。",
     "otpSent": "验证码已发送！请查看您的{{method}}。",
     "otpSentSuccess": "验证码发送成功！",
+    "otpAlreadySent": "验证码已发送！",
     "verifyingReferral": "正在验证推荐码...",
-    "resetSuccess": "密码重置成功！请使用新密码登录。"
+    "resetSuccess": "密码重置成功！请使用新密码登录。",
+    "invalidQrCode": "无效的二维码，请上传有效的推荐二维码。",
+    "qrScanFailed": "扫描二维码失败，请尝试其他图片。"
   },
   "language": {
     "title": "语言",
@@ -125,7 +134,11 @@
     "availableBalance": "可用余额",
     "deposit": "存款",
     "withdraw": "取款",
-    "transfer": "转账"
+    "transfer": "转账",
+    "refreshSuccess": "余额刷新成功",
+    "refreshFailed": "刷新余额失败",
+    "restoreSuccess": "钱包恢复成功",
+    "restoreFailed": "恢复钱包失败"
   },
   "deposit": {
     "title": "存款",
@@ -157,11 +170,27 @@
     "chargeRate": "手续费率",
     "confirmDeposit": "确认存款",
     "bankNotice1": "在存款前，请务必查看最新的有效存款银行详情。",
-    "bankNotice2": "使用银行转账存款选项时，请在提交交易前完成转账，以避免交易被拒绝。",
+    "bankNotice2": "使用银行转账存款选项时，请在提交交易前完成转账，以避免交易延迟。",
+    "bankNotice3": "存款人的账户名称必须与注册全名一致。我们不鼓励使用第三方/公司账户进行交易。",
+    "bankNotice4": "请勿在网上转账交易的参考/备注中填写AONE、#或任何与赌博相关的敏感词汇。",
+    "bankNotice5": "请注意，所有存款在提款前都需要完成1倍流水或促销活动规定的特定流水要求。",
+    "bankNotice6": "如果您的存款金额待处理超过5分钟，请联系我们的24/7在线客服。",
     "ewalletNotice1": "在存款前，请务必查看AONE的最新通知。",
-    "ewalletNotice2": "使用电子钱包存款选项时，请按照所有说明操作，以避免交易被拒绝。",
-    "cryptoNotice1": "在进行加密货币存款前，请务必查看AONE的最新通知。",
-    "cryptoNotice2": "使用加密货币存款选项时，请按照所有说明操作，以避免交易被拒绝。"
+    "ewalletNotice2": "使用电子钱包存款选项时，请按照所有即时转账步骤完成存款。",
+    "ewalletNotice3": "存款人的账户名称必须与注册全名一致。我们不鼓励使用第三方/公司账户进行交易。",
+    "ewalletNotice4": "请勿在网上转账交易的参考/备注中填写AONE、#或任何与赌博相关的敏感词汇。",
+    "ewalletNotice5": "请注意，所有存款在提款前都需要完成1倍流水或促销活动规定的特定流水要求。",
+    "ewalletNotice6": "如果您的存款金额已从银行账户扣除但未收到积分，或交易显示待处理/拒绝，请联系我们的24/7在线客服。",
+    "cryptoNotice1": "在存款前，请务必查看AONE的最新通知。",
+    "cryptoNotice2": "使用加密货币存款选项时，请按照所有即时转账步骤完成存款。",
+    "cryptoNotice3": "请注意，所有存款在提款前都需要完成1倍流水或促销活动规定的特定流水要求。",
+    "cryptoNotice4": "如果您的存款金额已从银行账户扣除但未收到积分，或交易显示待处理/拒绝，请联系我们的24/7在线客服。",
+    "instantNotice1": "在存款前，请务必查看AONE的最新通知。",
+    "instantNotice2": "使用即时转账存款选项时，请按照所有即时转账步骤完成存款。",
+    "instantNotice3": "存款人的账户名称必须与注册全名一致。我们不鼓励使用第三方/公司账户进行交易。",
+    "instantNotice4": "请勿在网上转账交易的参考/备注中填写AONE、#或任何与赌博相关的敏感词汇。",
+    "instantNotice5": "请注意，所有存款在提款前都需要完成1倍流水或促销活动规定的特定流水要求。",
+    "instantNotice6": "如果您的存款金额已从银行账户扣除但未收到积分，或交易显示待处理/拒绝，请联系我们的24/7在线客服。"
   },
   "withdrawal": {
     "title": "取款",
@@ -176,7 +205,26 @@
     "notice1": "取款银行名必须与注册全名一致。会员无法提款至第三方银行账户。",
     "notice2": "请确保在提交取款交易前已达到存款金额的1倍流水要求。",
     "notice3": "请确保银行账户名和银行账号正确后再提交取款交易。",
-    "notice4": "部分游戏供应商需要最多30分钟的报告时间"
+    "notice4": "部分游戏供应商需要最多30分钟的报告同步时间，请在此之后提交取款交易，以避免系统自动拒绝。",
+    "notice5": "一旦您成功提交取款交易，请交给我们的团队尽快处理。如果超过10分钟，请联系我们的客服支持。他们将24/7全天候为您服务。"
+  },
+  "transfer": {
+    "title": "转账",
+    "loginRequired": "请登录以访问此页面",
+    "noRecipient": "未选择收款人。请选择一个联系人进行转账。",
+    "loadFailed": "加载转账信息失败",
+    "amountPlaceholder": "最低 MYR 10/ 最高 MYR 30,000",
+    "availableBalance": "可用余额",
+    "pin": "密码",
+    "transferButton": "转账",
+    "confirmMessage": "确认转账",
+    "toFriend": "给您的好友",
+    "cancel": "取消",
+    "confirm": "确认",
+    "successTitle": "转账成功！",
+    "successMessage": "已转账给",
+    "ok": "确定",
+    "failed": "转账失败"
   },
   "account": {
     "title": "账户",
@@ -250,7 +298,10 @@
     "announcement": "欢迎来到 AONE GLOBAL GAMING。马来西亚稳定可信的在线平台"
   },
   "event": {
-    "noEvents": "目前没有活动。"
+    "noEvents": "目前没有活动。",
+    "apply": "申请",
+    "confirmTitle": "确认申请",
+    "confirmMessage": "您确定要申请吗？"
   },
   "games": {
     "slots": "老虎机",
@@ -259,6 +310,14 @@
     "sports": "体育",
     "lottery": "彩票",
     "fishing": "捕鱼"
+  },
+  "rebate": {
+    "game": "游戏",
+    "playerPercent": "玩家 %",
+    "uplineL1Percent": "上线L1 %",
+    "uplineL2Percent": "上线L2 %",
+    "other": "其他",
+    "noData": "暂无返水数据"
   },
   "profile": {
     "changeUsername": "更改用户名",
@@ -276,7 +335,10 @@
     "oldPasswordRequired": "请输入旧密码",
     "newPasswordRequired": "请输入新密码",
     "confirmPasswordRequired": "请确认新密码",
-    "selectAvatar": "请选择头像"
+    "selectAvatar": "请选择头像",
+    "usernameChanged": "用户名修改成功",
+    "passwordChanged": "密码修改成功",
+    "avatarChanged": "头像修改成功"
   },
   "sidebar": {
     "referral": "推荐",
@@ -305,16 +367,124 @@
     "tacSent": "验证码已发送至您注册的手机号码",
     "tacRequestFailed": "获取验证码失败，请重试。",
     "addBankNote": "请确保您的银行账户名与您的注册全名一致。不接受第三方银行账户。",
-    "addFailed": "添加银行账户失败，请重试。"
+    "addFailed": "添加银行账户失败，请重试。",
+    "addSuccess": "银行账户添加成功",
+    "deleteConfirmTitle": "删除银行账户？",
+    "deleteConfirmMessage": "您确定要删除此银行账户吗？此操作无法撤销。",
+    "deleteFailed": "删除银行账户失败，请重试。"
+  },
+  "pin": {
+    "setFirstMessage": "添加银行账户前请先设置您的PIN码。",
+    "phoneNumber": "手机号码",
+    "sendTo": "发送至",
+    "otpCode": "验证码",
+    "requestOtp": "获取验证码",
+    "enterTac": "输入验证码",
+    "requestTac": "获取验证码",
+    "tacSent": "验证码已发送至您注册的手机号码",
+    "tacRequestFailed": "获取验证码失败，请重试。",
+    "enterPin": "输入PIN码",
+    "confirmPin": "确认PIN码",
+    "mismatch": "PIN码不匹配",
+    "requirements": "PIN码必须为6位数字",
+    "resetFailed": "重置PIN码失败，请重试。"
+  },
+  "redeemCode": {
+    "placeholder": "兑换码",
+    "enterCode": "请输入兑换码",
+    "success": "兑换成功！",
+    "invalid": "无效的兑换码",
+    "failed": "兑换失败，请重试。"
+  },
+  "redeemGift": {
+    "title": "兑换礼品",
+    "pointBalance": "A积分余额：",
+    "redeemHistory": "兑换记录",
+    "claim": "兑换",
+    "noRewards": "暂无可兑换礼品",
+    "insufficientTitle": "A积分不足",
+    "insufficientMessage": "A积分不足以兑换此礼品。",
+    "claimFailed": "兑换失败",
+    "noHistory": "暂无兑换记录。",
+    "giftRedeem": "礼品兑换",
+    "product": "产品",
+    "aPoint": "A积分",
+    "infoShipping": "收货信息",
+    "recipientName": "收件人姓名",
+    "phoneNumber": "电话号码",
+    "address": "地址",
+    "state": "省/州",
+    "postcode": "邮编",
+    "selectCountry": "请选择国家",
+    "noRewardSelected": "未选择礼品",
+    "items": "数量",
+    "weight": "重量",
+    "shippingMethod": "配送方式",
+    "shippingFee": "运费",
+    "total": "总计",
+    "pointBalanceAfter": "A积分余额",
+    "redeem": "兑换"
   },
   "scanner": {
     "title": "扫描二维码",
     "scanReferralQr": "将二维码放置在框内以扫描您的推荐码",
+    "scanUidQr": "将二维码放置在框内以扫描用户ID",
     "invalidQr": "无效的二维码",
     "invalidQrMessage": "扫描的二维码不包含有效的推荐码。请使用有效的推荐二维码重试。",
+    "invalidUidQrMessage": "扫描的二维码不包含有效的用户ID。请使用有效的二维码重试。",
+    "qrScanFailed": "扫描二维码失败。请重试。",
     "tryAgain": "重试",
     "cameraError": "无法访问相机",
     "cameraAccessDenied": "需要相机权限",
     "cameraAccessInfo": "请在浏览器设置中允许相机访问以扫描二维码。"
+  },
+  "contact": {
+    "myContact": "我的联系人",
+    "transfer": "转账",
+    "addNewFriend": "添加新好友",
+    "searchUid": "搜索UID",
+    "searchUidEnter": "搜索UID（按回车）",
+    "noContactsFound": "未找到联系人",
+    "noUsersFound": "未找到用户",
+    "friendRequest": "好友请求",
+    "myRequest": "我的请求",
+    "noFriendRequests": "没有好友请求",
+    "noPendingRequests": "没有待处理的请求",
+    "friendRequestSent": "好友请求已发送！",
+    "confirmReject": "您确定要拒绝这个好友请求吗？",
+    "confirmCancel": "您确定要取消这个好友请求吗？",
+    "reject": "拒绝",
+    "rejectUpper": "拒绝",
+    "yes": "是",
+    "no": "否",
+    "add": "添加",
+    "requested": "已请求",
+    "approve": "同意",
+    "cancel": "取消",
+    "cancelUpper": "取消",
+    "friendDetail": "好友详情",
+    "loginRequired": "请登录以访问此页面",
+    "loadFailed": "加载联系人详情失败",
+    "transferButton": "转账",
+    "deleteButton": "删除",
+    "deleteTitle": "删除此好友？",
+    "deleteMessage": "此操作无法撤销。",
+    "loadRequestsFailed": "加载联系人请求失败",
+    "alias": "备注名",
+    "changeAlias": "修改备注名",
+    "aliasRequired": "备注名不能为空",
+    "aliasUpdated": "备注名更新成功",
+    "aliasUpdateFailed": "更新备注名失败"
+  },
+  "toast": {
+    "success": "成功",
+    "warning": "警告",
+    "error": "错误"
+  },
+  "appBanner": {
+    "title": "AONE 应用",
+    "subtitle": "立即下载应用",
+    "downloadButton": "立即下载",
+    "closeAria": "关闭下载横幅"
   }
 }

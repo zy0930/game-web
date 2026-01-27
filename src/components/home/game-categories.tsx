@@ -10,6 +10,25 @@ interface GameCategoriesProps {
   activeCategory: string;
   onCategoryChange: (categoryId: string) => void;
   className?: string;
+  isLoading?: boolean;
+}
+
+function GameCategoriesSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "flex overflow-x-auto scrollbar-hide h-18 gap-1",
+        className
+      )}
+    >
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div
+          key={index}
+          className="flex-1 min-w-0 h-full bg-zinc-200 animate-pulse rounded-lg"
+        />
+      ))}
+    </div>
+  );
 }
 
 /**
@@ -57,8 +76,13 @@ export function GameCategories({
   activeCategory,
   onCategoryChange,
   className,
+  isLoading = false,
 }: GameCategoriesProps) {
   const { locale } = useI18n();
+
+  if (isLoading) {
+    return <GameCategoriesSkeleton className={className} />;
+  }
 
   if (!categories || categories.length === 0) {
     return null;

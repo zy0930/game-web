@@ -5,6 +5,7 @@ import type {
   LaunchGameResponse,
   RefreshGameResponse,
   QuitGameResponse,
+  GetRebatesResponse,
 } from "../types";
 
 export const discoverApi = {
@@ -57,6 +58,16 @@ export const discoverApi = {
   async quitGame(): Promise<QuitGameResponse> {
     return apiClient.get<QuitGameResponse>("/api/mapidiscover/QuitGame", {
       params: { Platform: API_CONFIG.platform },
+      authenticated: true,
+    });
+  },
+
+  /**
+   * Get rebates list
+   * GET /api/mapidiscover/getrebates
+   */
+  async getRebates(): Promise<GetRebatesResponse> {
+    return apiClient.get<GetRebatesResponse>("/api/mapidiscover/getrebates", {
       authenticated: true,
     });
   },

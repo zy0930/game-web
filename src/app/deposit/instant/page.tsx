@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { FormInput } from "@/components/ui/form-input";
 import { ChevronDown, Loader2, X } from "lucide-react";
@@ -10,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { usePaygates, useSubmitDepositPg } from "@/hooks/use-deposit";
 import type { Paygate, PaygateNetwork, DepositPromo } from "@/lib/api/types";
+import { FaCheck } from "react-icons/fa";
 
 // Quick amount options
 const quickAmounts = [50, 100, 500, 1000];
@@ -19,35 +19,34 @@ export default function InstantDepositPage() {
   const { data: paygatesData, isLoading } = usePaygates();
   const submitDeposit = useSubmitDepositPg();
 
-  const [selectedMethod, setSelectedMethod] = useState<Paygate | null>(null);
-  const [selectedBank, setSelectedBank] = useState<PaygateNetwork | null>(null);
+  const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
+  const [selectedBankId, setSelectedBankId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
-  const [selectedPromotion, setSelectedPromotion] = useState<DepositPromo | null>(null);
+  const [selectedPromotion, setSelectedPromotion] =
+    useState<DepositPromo | null>(null);
   const [promoCode, setPromoCode] = useState("");
   const [showPromotionDropdown, setShowPromotionDropdown] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const promotionDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Set initial selections when data loads
-  useEffect(() => {
-    if (paygatesData?.Rows?.length && !selectedMethod) {
-      const firstMethod = paygatesData.Rows[0];
-      setSelectedMethod(firstMethod);
-      if (firstMethod.Networks?.length) {
-        setSelectedBank(firstMethod.Networks[0]);
-      }
-    }
-  }, [paygatesData, selectedMethod]);
+  // Derive selected method: user selection takes priority, otherwise use first from API
+  const selectedMethod =
+    paygatesData?.Rows?.find((m) => m.Id === selectedMethodId) ||
+    paygatesData?.Rows?.[0] ||
+    null;
 
-  // Update bank selection when method changes
-  useEffect(() => {
-    if (selectedMethod?.Networks?.length) {
-      setSelectedBank(selectedMethod.Networks[0]);
-    } else {
-      setSelectedBank(null);
-    }
-  }, [selectedMethod]);
+  // Derive selected bank: user selection if valid for current method, otherwise first network
+  const selectedBank =
+    selectedMethod?.Networks?.find((n) => n.Id === selectedBankId) ||
+    selectedMethod?.Networks?.[0] ||
+    null;
+
+  // Handle method selection - also reset bank
+  const handleMethodSelect = (method: Paygate) => {
+    setSelectedMethodId(method.Id);
+    setSelectedBankId(null); // Reset to let it default to first network
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -108,7 +107,6 @@ export default function InstantDepositPage() {
     return (
       <RequireAuth>
         <div className="min-h-screen flex flex-col">
-          <Header variant="subpage" title={t("deposit.instantDeposit")} backHref="/deposit" />
           <div className="flex-1 flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
@@ -120,26 +118,25 @@ export default function InstantDepositPage() {
   return (
     <RequireAuth>
       <div className="min-h-screen flex flex-col">
-        {/* Header */}
-        <Header variant="subpage" title={t("deposit.instantDeposit")} backHref="/deposit" />
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto px-4 py-4">
           {/* Method Selection */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("deposit.method")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 flex gap-1">
+              {t("deposit.method")}
+              <span className="text-primary">*</span>
             </label>
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+            <div className="grid grid-cols-5 max-[380px]:grid-cols-4 gap-3 items-start overflow-x-auto scrollbar-hide pb-1">
               {paymentMethods.map((method) => (
                 <button
                   key={method.Id}
-                  onClick={() => setSelectedMethod(method)}
-                  className="flex flex-col items-center flex-shrink-0"
+                  onClick={() => handleMethodSelect(method)}
+                  className="flex flex-col items-center cursor-pointer"
                 >
                   <div
                     className={cn(
-                      "w-16 h-16 rounded-xl border-2 transition-all relative flex items-center justify-center bg-white",
+                      "w-full aspect-square rounded-lg border-2 shadow-sm relative flex items-center justify-center bg-white",
                       selectedMethod?.Id === method.Id
                         ? "border-primary"
                         : "border-zinc-200 hover:border-zinc-300"
@@ -149,8 +146,8 @@ export default function InstantDepositPage() {
                       <Image
                         src={method.Image}
                         alt={method.Name}
-                        width={48}
-                        height={48}
+                        width={35}
+                        height={35}
                         className="object-contain rounded-lg"
                         unoptimized
                       />
@@ -160,17 +157,19 @@ export default function InstantDepositPage() {
                       </span>
                     )}
                     {selectedMethod?.Id === method.Id && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                      <div className="absolute bottom-0 right-0 pl-1.5 py-1 pr-0.5 bg-primary rounded-tl-lg rounded-br-md flex items-center justify-center">
+                        <FaCheck className="w-2.5 h-2.5" />
                       </div>
                     )}
                   </div>
-                  <span className={cn(
-                    "text-xs mt-1.5 max-w-[64px] truncate text-center",
-                    selectedMethod?.Id === method.Id ? "text-primary font-roboto-medium" : "text-zinc-500"
-                  )}>
+                  <span
+                    className={cn(
+                      "text-xs text-center mt-1 font-roboto-regular",
+                      selectedMethod?.Id === method.Id
+                        ? "text-primary"
+                        : "text-[#28323C]"
+                    )}
+                  >
                     {method.Name}
                   </span>
                 </button>
@@ -181,19 +180,20 @@ export default function InstantDepositPage() {
           {/* Payment Type / Bank Selection */}
           {networks.length > 0 && (
             <div className="mb-4">
-              <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-                {t("deposit.paymentType")}<span className="text-red-500">*</span>
+              <label className="text-sm font-roboto-medium text-[#28323C] mb-2 flex gap-1">
+                {t("deposit.paymentType")}
+                <span className="text-primary">*</span>
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 max-[380px]:grid-cols-4 gap-3 items-start">
                 {networks.map((bank) => (
                   <button
                     key={bank.Id}
-                    onClick={() => setSelectedBank(bank)}
-                    className="flex flex-col items-center"
+                    onClick={() => setSelectedBankId(bank.Id)}
+                    className="flex flex-col items-center cursor-pointer"
                   >
                     <div
                       className={cn(
-                        "w-full aspect-square rounded-xl border-2 transition-all relative flex items-center justify-center bg-white p-2",
+                        "w-full aspect-square rounded-lg border-2 shadow-sm relative flex items-center justify-center bg-white",
                         selectedBank?.Id === bank.Id
                           ? "border-primary"
                           : "border-zinc-200 hover:border-zinc-300"
@@ -203,9 +203,9 @@ export default function InstantDepositPage() {
                         <Image
                           src={bank.Image}
                           alt={bank.Name}
-                          width={40}
-                          height={40}
-                          className="object-contain"
+                          width={35}
+                          height={35}
+                          className="object-contain rounded-lg"
                           unoptimized
                         />
                       ) : (
@@ -214,17 +214,19 @@ export default function InstantDepositPage() {
                         </span>
                       )}
                       {selectedBank?.Id === bank.Id && (
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
+                        <div className="absolute bottom-0 right-0 pl-1.5 py-1 pr-0.5 bg-primary rounded-tl-lg rounded-br-md flex items-center justify-center">
+                          <FaCheck className="w-2.5 h-2.5" />
                         </div>
                       )}
                     </div>
-                    <span className={cn(
-                      "text-[10px] mt-1 text-center leading-tight line-clamp-2",
-                      selectedBank?.Id === bank.Id ? "text-primary font-roboto-medium" : "text-zinc-500"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-xs text-center mt-1 font-roboto-regular",
+                        selectedBank?.Id === bank.Id
+                          ? "text-primary"
+                          : "text-[#28323C]"
+                      )}
+                    >
                       {bank.Name}
                     </span>
                   </button>
@@ -235,16 +237,20 @@ export default function InstantDepositPage() {
 
           {/* Enter Amount */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("deposit.enterAmount")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-[#28323C] mb-2 flex gap-1">
+              {t("deposit.enterAmount")}
+              <span className="text-primary">*</span>
             </label>
             <FormInput
               type="text"
               value={amount}
-              onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
-              placeholder={selectedMethod
-                ? `Min. MYR ${selectedMethod.Min.toLocaleString()}/ Max. MYR ${selectedMethod.Max.toLocaleString()}`
-                : t("deposit.enterAmount")
+              onChange={(e) =>
+                setAmount(e.target.value.replace(/[^0-9.]/g, ""))
+              }
+              placeholder={
+                selectedMethod
+                  ? `Min. MYR ${selectedMethod.Min.toLocaleString()}/ Max. MYR ${selectedMethod.Max.toLocaleString()}`
+                  : t("deposit.enterAmount")
               }
               prefix={
                 <Image
@@ -265,10 +271,10 @@ export default function InstantDepositPage() {
                   key={value}
                   onClick={() => handleQuickAmount(value)}
                   className={cn(
-                    "flex-1 py-2.5 rounded-lg border text-sm font-roboto-medium transition-colors",
+                    "flex-1 py-4 rounded-2xl text-sm border font-roboto-medium transition-colors cursor-pointer",
                     amount === value.toString()
                       ? "border-primary bg-primary/5 text-primary"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300"
+                      : "border-[#959595] bg-white text-zinc-600"
                   )}
                 >
                   {value.toLocaleString()}
@@ -278,7 +284,7 @@ export default function InstantDepositPage() {
           </div>
 
           {/* Promotion Dropdown */}
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
               {t("deposit.promotion")}
             </label>
@@ -302,10 +308,12 @@ export default function InstantDepositPage() {
                     unoptimized
                     className="h-6 w-auto object-contain"
                   />
-                  <span className={cn(
-                    "text-sm font-roboto-regular",
-                    selectedPromotion ? "text-zinc-900" : "text-[#959595]"
-                  )}>
+                  <span
+                    className={cn(
+                      "text-sm font-roboto-regular",
+                      selectedPromotion ? "text-zinc-900" : "text-[#959595]"
+                    )}
+                  >
                     {selectedPromotion?.Name || t("deposit.selectPromotion")}
                   </span>
                 </span>
@@ -401,53 +409,92 @@ export default function InstantDepositPage() {
           </div>
 
           {/* Important Notice */}
-          <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-            <h3 className="font-roboto-medium text-zinc-700 mb-3">{t("deposit.importantNotice")}</h3>
-            <div className="space-y-2 text-sm text-zinc-600">
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.option")}:</span>
-                <span className="font-roboto-medium">{selectedMethod?.Name || "-"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.mode")}:</span>
-                <span className="font-roboto-medium">{t("deposit.online")}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.minMaxLimit")}:</span>
-                <span className="font-roboto-medium">
-                  MYR {selectedMethod?.Min.toLocaleString() || "0"} / {selectedMethod?.Max.toLocaleString() || "0"}
+          <div className="bg-white border border-[#959595] rounded-2xl p-4">
+            <h3 className="font-roboto-bold text-zinc-800 mb-3">
+              {t("deposit.importantNotice")}
+            </h3>
+            {/* Basic Info */}
+            <div className="space-y-1 text-sm text-[#5F7182] mb-4">
+              <div>
+                <span>{t("deposit.option")}: </span>
+                <span>
+                  {selectedMethod?.Name || "-"}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.dailyLimitBalance")}:</span>
-                <span className="font-roboto-medium">{t("deposit.unlimited")}</span>
+              <div>
+                <span>{t("deposit.mode")}: </span>
+                <span>
+                  {t("deposit.online")}
+                </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.totalAllowed")}:</span>
-                <span className="font-roboto-medium">{t("deposit.unlimited")}</span>
+              <div>
+                <span>
+                  {t("deposit.minMaxLimit")}:{" "}
+                </span>
+                <span>
+                  MYR {selectedMethod?.Min.toLocaleString() || "0"} /{" "}
+                  {selectedMethod?.Max.toLocaleString() || "0"}
+                </span>
               </div>
-              {selectedMethod?.ConversionRate !== undefined && selectedMethod?.ConversionRate !== 0 && selectedMethod?.ConversionRate !== 1 && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">{t("deposit.conversionRate")}:</span>
-                  <span className="font-roboto-medium">{selectedMethod?.ConversionRate}</span>
-                </div>
-              )}
-              {selectedMethod?.ChargeRate !== undefined && selectedMethod?.ChargeRate !== 0 && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">{t("deposit.chargeRate")}:</span>
-                  <span className="font-roboto-medium">{selectedMethod?.ChargeRate}%</span>
-                </div>
-              )}
+              <div>
+                <span>
+                  {t("deposit.dailyLimitBalance")}:{" "}
+                </span>
+                <span>
+                  {t("deposit.unlimited")}
+                </span>
+              </div>
+              <div>
+                <span>
+                  {t("deposit.totalAllowed")}:{" "}
+                </span>
+                <span>
+                  {t("deposit.unlimited")}
+                </span>
+              </div>
+              {selectedMethod?.ConversionRate !== undefined &&
+                selectedMethod?.ConversionRate !== 0 &&
+                selectedMethod?.ConversionRate !== 1 && (
+                  <div>
+                    <span>
+                      {t("deposit.conversionRate")}:{" "}
+                    </span>
+                    <span>
+                      {selectedMethod?.ConversionRate}
+                    </span>
+                  </div>
+                )}
+              {selectedMethod?.ChargeRate !== undefined &&
+                selectedMethod?.ChargeRate !== 0 && (
+                  <div>
+                    <span>
+                      {t("deposit.chargeRate")}:{" "}
+                    </span>
+                    <span>
+                      {selectedMethod?.ChargeRate}%
+                    </span>
+                  </div>
+                )}
+            </div>
+
+            {/* Numbered Instructions */}
+            <div className="space-y-3 text-sm text-[#5F7182]">
+              <p>1.{t("deposit.instantNotice1")}</p>
+              <p>2.{t("deposit.instantNotice2")}</p>
+              <p>3.{t("deposit.instantNotice3")}</p>
+              <p>4.{t("deposit.instantNotice4")}</p>
+              <p>5.{t("deposit.instantNotice5")}</p>
+              <p>6.{t("deposit.instantNotice6")}</p>
             </div>
           </div>
         </main>
 
         {/* Submit Button - Sticky at bottom */}
-        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-zinc-200">
+        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-primary">
           <button
             onClick={handleSubmit}
             disabled={!selectedMethod || !selectedBank || !amount}
-            className="w-full py-4 bg-primary text-white font-roboto-bold text-base rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer w-full py-4 bg-primary text-white font-roboto-bold text-base rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t("common.submit").toUpperCase()}
           </button>
@@ -464,7 +511,7 @@ export default function InstantDepositPage() {
                 </h3>
                 <button
                   onClick={() => setShowConfirmModal(false)}
-                  className="p-1 rounded-full hover:bg-zinc-100 transition-colors"
+                  className="p-1 cursor-pointer"
                 >
                   <X className="w-5 h-5 text-zinc-500" />
                 </button>
@@ -474,26 +521,42 @@ export default function InstantDepositPage() {
               <div className="p-4 space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-500">{t("deposit.method")}:</span>
-                  <span className="font-roboto-medium text-zinc-800">{selectedMethod?.Name}</span>
+                  <span className="font-roboto-medium text-zinc-800">
+                    {selectedMethod?.Name}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-zinc-500">{t("deposit.paymentType")}:</span>
-                  <span className="font-roboto-medium text-zinc-800">{selectedBank?.Name}</span>
+                  <span className="text-zinc-500">
+                    {t("deposit.paymentType")}:
+                  </span>
+                  <span className="font-roboto-medium text-zinc-800">
+                    {selectedBank?.Name}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-500">{t("common.amount")}:</span>
-                  <span className="font-roboto-bold text-primary">MYR {parseFloat(amount).toLocaleString()}</span>
+                  <span className="font-roboto-bold text-primary">
+                    MYR {parseFloat(amount).toLocaleString()}
+                  </span>
                 </div>
                 {selectedPromotion && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-zinc-500">{t("deposit.promotion")}:</span>
-                    <span className="font-roboto-medium text-zinc-800">{selectedPromotion.Name}</span>
+                    <span className="text-zinc-500">
+                      {t("deposit.promotion")}:
+                    </span>
+                    <span className="font-roboto-medium text-zinc-800">
+                      {selectedPromotion.Name}
+                    </span>
                   </div>
                 )}
                 {promoCode && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-zinc-500">{t("deposit.promoCode")}:</span>
-                    <span className="font-roboto-medium text-zinc-800">{promoCode}</span>
+                    <span className="text-zinc-500">
+                      {t("deposit.promoCode")}:
+                    </span>
+                    <span className="font-roboto-medium text-zinc-800">
+                      {promoCode}
+                    </span>
                   </div>
                 )}
 
@@ -509,14 +572,14 @@ export default function InstantDepositPage() {
                 <button
                   onClick={() => setShowConfirmModal(false)}
                   disabled={submitDeposit.isPending}
-                  className="flex-1 py-3 border border-zinc-300 text-zinc-700 font-roboto-medium rounded-lg hover:bg-zinc-50 transition-colors disabled:opacity-50"
+                  className="cursor-pointer flex-1 py-3 border border-zinc-300 text-zinc-700 font-roboto-medium rounded-lg hover:bg-zinc-50 transition-colors disabled:opacity-50"
                 >
                   {t("common.cancel")}
                 </button>
                 <button
                   onClick={handleConfirmDeposit}
                   disabled={submitDeposit.isPending}
-                  className="flex-1 py-3 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="cursor-pointer flex-1 py-3 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {submitDeposit.isPending ? (
                     <>

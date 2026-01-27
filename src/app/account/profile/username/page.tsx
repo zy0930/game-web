@@ -1,46 +1,38 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { Loader2 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
 import { useName, useChangeName } from "@/hooks";
 
 export default function ChangeUsernamePage() {
-  const router = useRouter();
   const { t } = useI18n();
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
+  const { showSuccess, showError } = useToast();
+  const [username, setUsername] = useState<string | null>(null);
 
   // Fetch current name
   const { data: nameData, isLoading: isLoadingName } = useName();
   const changeNameMutation = useChangeName();
 
-  // Pre-populate username when data loads
-  useEffect(() => {
-    if (nameData?.Name) {
-      setUsername(nameData.Name);
-    }
-  }, [nameData]);
+  // Derive current value: user input takes priority, otherwise use API data
+  const currentUsername = username ?? nameData?.Name ?? "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
-    if (!username.trim()) {
-      setError(t("auth.usernameRequired"));
+    if (!currentUsername.trim()) {
+      showError(t("auth.usernameRequired"));
       return;
     }
 
     try {
-      await changeNameMutation.mutateAsync({ Name: username.trim() });
-      // Navigate back on success
-      router.push("/account/profile");
+      await changeNameMutation.mutateAsync({ Name: currentUsername.trim() });
+      showSuccess(t("profile.usernameChanged"));
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      showError(err instanceof Error ? err.message : t("common.error"));
     }
   };
 
@@ -48,11 +40,6 @@ export default function ChangeUsernamePage() {
   if (isLoadingName) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header
-          variant="subpage"
-          title={t("profile.changeUsername")}
-          backHref="/account/profile"
-        />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
@@ -62,20 +49,13 @@ export default function ChangeUsernamePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header
-        variant="subpage"
-        title={t("profile.changeUsername")}
-        backHref="/account/profile"
-      />
-
       {/* Form */}
       <main className="flex-1 px-4 py-4">
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Username Input */}
           <FormInput
             type="text"
-            value={username}
+            value={currentUsername}
             onChange={(e) => setUsername(e.target.value)}
             placeholder={t("auth.username")}
             prefix={
@@ -88,7 +68,7 @@ export default function ChangeUsernamePage() {
                 className="h-6 w-auto object-contain"
               />
             }
-            error={error}
+            error={undefined}
           />
 
           {/* Submit Button */}

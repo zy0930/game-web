@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { FormInput } from "@/components/ui/form-input";
 import { ChevronDown, X, Loader2 } from "lucide-react";
@@ -10,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { useEWalletPaygates, useSubmitDepositPg } from "@/hooks/use-deposit";
 import type { Paygate, PaygateNetwork, DepositPromo } from "@/lib/api/types";
+import { FaCheck } from "react-icons/fa";
 
 // Quick amount options
 const quickAmounts = [50, 100, 500, 1000];
@@ -19,8 +19,8 @@ export default function EWalletPage() {
   const { data: paygatesData, isLoading } = useEWalletPaygates();
   const submitDeposit = useSubmitDepositPg();
 
-  const [selectedMethod, setSelectedMethod] = useState<Paygate | null>(null);
-  const [selectedPaymentType, setSelectedPaymentType] = useState<PaygateNetwork | null>(null);
+  const [selectedMethodId, setSelectedMethodId] = useState<string | null>(null);
+  const [selectedPaymentTypeId, setSelectedPaymentTypeId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [selectedPromotion, setSelectedPromotion] = useState<DepositPromo | null>(null);
   const [promoCode, setPromoCode] = useState("");
@@ -29,25 +29,23 @@ export default function EWalletPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const promotionDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Set initial selections when data loads
-  useEffect(() => {
-    if (paygatesData?.Rows?.length && !selectedMethod) {
-      const firstMethod = paygatesData.Rows[0];
-      setSelectedMethod(firstMethod);
-      if (firstMethod.Networks?.length) {
-        setSelectedPaymentType(firstMethod.Networks[0]);
-      }
-    }
-  }, [paygatesData, selectedMethod]);
+  // Derive selected method: user selection takes priority, otherwise use first from API
+  const selectedMethod =
+    paygatesData?.Rows?.find((m) => m.Id === selectedMethodId) ||
+    paygatesData?.Rows?.[0] ||
+    null;
 
-  // Update payment type selection when method changes
-  useEffect(() => {
-    if (selectedMethod?.Networks?.length) {
-      setSelectedPaymentType(selectedMethod.Networks[0]);
-    } else {
-      setSelectedPaymentType(null);
-    }
-  }, [selectedMethod]);
+  // Derive selected payment type: user selection if valid for current method, otherwise first network
+  const selectedPaymentType =
+    selectedMethod?.Networks?.find((n) => n.Id === selectedPaymentTypeId) ||
+    selectedMethod?.Networks?.[0] ||
+    null;
+
+  // Handle method selection - also reset payment type
+  const handleMethodSelect = (method: Paygate) => {
+    setSelectedMethodId(method.Id);
+    setSelectedPaymentTypeId(null); // Reset to let it default to first network
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -108,7 +106,6 @@ export default function EWalletPage() {
     return (
       <RequireAuth>
         <div className="min-h-screen flex flex-col">
-          <Header variant="subpage" title={t("deposit.eWallet")} backHref="/deposit" />
           <div className="flex-1 flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
@@ -120,26 +117,25 @@ export default function EWalletPage() {
   return (
     <RequireAuth>
       <div className="min-h-screen flex flex-col">
-        {/* Header */}
-        <Header variant="subpage" title={t("deposit.eWallet")} backHref="/deposit" />
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto px-4 py-4">
           {/* Method Selection */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("deposit.method")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 flex gap-1">
+              {t("deposit.method")}
+              <span className="text-primary">*</span>
             </label>
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+            <div className="grid grid-cols-5 max-[380px]:grid-cols-4 gap-3 items-start overflow-x-auto scrollbar-hide pb-1">
               {paymentMethods.map((method) => (
                 <button
                   key={method.Id}
-                  onClick={() => setSelectedMethod(method)}
-                  className="flex flex-col items-center flex-shrink-0"
+                  onClick={() => handleMethodSelect(method)}
+                  className="flex flex-col items-center cursor-pointer"
                 >
                   <div
                     className={cn(
-                      "w-16 h-16 rounded-xl border-2 transition-all relative flex items-center justify-center bg-white",
+                      "w-full aspect-square rounded-lg border-2 shadow-sm relative flex items-center justify-center bg-white",
                       selectedMethod?.Id === method.Id
                         ? "border-primary"
                         : "border-zinc-200 hover:border-zinc-300"
@@ -149,8 +145,8 @@ export default function EWalletPage() {
                       <Image
                         src={method.Image}
                         alt={method.Name}
-                        width={48}
-                        height={48}
+                        width={35}
+                        height={35}
                         className="object-contain rounded-lg"
                         unoptimized
                       />
@@ -160,17 +156,19 @@ export default function EWalletPage() {
                       </span>
                     )}
                     {selectedMethod?.Id === method.Id && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                      <div className="absolute bottom-0 right-0 pl-1.5 py-1 pr-0.5 bg-primary rounded-tl-lg rounded-br-md flex items-center justify-center">
+                        <FaCheck className="w-2.5 h-2.5" />
                       </div>
                     )}
                   </div>
-                  <span className={cn(
-                    "text-xs mt-1.5 max-w-[64px] truncate text-center",
-                    selectedMethod?.Id === method.Id ? "text-primary font-roboto-medium" : "text-zinc-500"
-                  )}>
+                  <span
+                    className={cn(
+                      "text-xs text-center mt-1 font-roboto-regular",
+                      selectedMethod?.Id === method.Id
+                        ? "text-primary"
+                        : "text-[#28323C]"
+                    )}
+                  >
                     {method.Name}
                   </span>
                 </button>
@@ -181,19 +179,20 @@ export default function EWalletPage() {
           {/* Payment Type Selection */}
           {networks.length > 0 && (
             <div className="mb-4">
-              <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-                {t("deposit.paymentType")}<span className="text-red-500">*</span>
+              <label className="text-sm font-roboto-medium text-[#28323C] mb-2 flex gap-1">
+                {t("deposit.paymentType")}
+                <span className="text-primary">*</span>
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 max-[380px]:grid-cols-4 gap-3 items-start">
                 {networks.map((network) => (
                   <button
                     key={network.Id}
-                    onClick={() => setSelectedPaymentType(network)}
-                    className="flex flex-col items-center"
+                    onClick={() => setSelectedPaymentTypeId(network.Id)}
+                    className="flex flex-col items-center cursor-pointer"
                   >
                     <div
                       className={cn(
-                        "w-full aspect-square rounded-xl border-2 transition-all relative flex items-center justify-center bg-white p-2",
+                        "w-full aspect-square rounded-lg border-2 shadow-sm relative flex items-center justify-center bg-white",
                         selectedPaymentType?.Id === network.Id
                           ? "border-primary"
                           : "border-zinc-200 hover:border-zinc-300"
@@ -203,9 +202,9 @@ export default function EWalletPage() {
                         <Image
                           src={network.Image}
                           alt={network.Name}
-                          width={40}
-                          height={40}
-                          className="object-contain"
+                          width={35}
+                          height={35}
+                          className="object-contain rounded-lg"
                           unoptimized
                         />
                       ) : (
@@ -214,17 +213,19 @@ export default function EWalletPage() {
                         </span>
                       )}
                       {selectedPaymentType?.Id === network.Id && (
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
+                        <div className="absolute bottom-0 right-0 pl-1.5 py-1 pr-0.5 bg-primary rounded-tl-lg rounded-br-md flex items-center justify-center">
+                          <FaCheck className="w-2.5 h-2.5" />
                         </div>
                       )}
                     </div>
-                    <span className={cn(
-                      "text-[10px] mt-1 text-center leading-tight line-clamp-2",
-                      selectedPaymentType?.Id === network.Id ? "text-primary font-roboto-medium" : "text-zinc-500"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-xs text-center mt-1 font-roboto-regular",
+                        selectedPaymentType?.Id === network.Id
+                          ? "text-primary"
+                          : "text-[#28323C]"
+                      )}
+                    >
                       {network.Name}
                     </span>
                   </button>
@@ -235,8 +236,9 @@ export default function EWalletPage() {
 
           {/* Enter Amount */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("deposit.enterAmount")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-[#28323C] mb-2 flex gap-1">
+              {t("deposit.enterAmount")}
+              <span className="text-primary">*</span>
             </label>
             <FormInput
               type="text"
@@ -265,10 +267,10 @@ export default function EWalletPage() {
                   key={value}
                   onClick={() => handleQuickAmount(value)}
                   className={cn(
-                    "flex-1 py-2.5 rounded-lg border text-sm font-roboto-medium transition-colors",
+                    "flex-1 py-4 rounded-2xl text-sm border font-roboto-medium transition-colors cursor-pointer",
                     amount === value.toString()
                       ? "border-primary bg-primary/5 text-primary"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300"
+                      : "border-[#959595] bg-white text-zinc-600"
                   )}
                 >
                   {value.toLocaleString()}
@@ -278,7 +280,7 @@ export default function EWalletPage() {
           </div>
 
           {/* Promotion Dropdown */}
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
               {t("deposit.promotion")}
             </label>
@@ -302,11 +304,13 @@ export default function EWalletPage() {
                     unoptimized
                     className="h-6 w-auto object-contain"
                   />
-                  <span className={cn(
-                    "text-sm font-roboto-regular",
-                    selectedPromotion ? "text-zinc-900" : "text-[#959595]"
-                  )}>
-                    {selectedPromotion?.Name || `- ${t("deposit.noPromotion")} -`}
+                  <span
+                    className={cn(
+                      "text-sm font-roboto-regular",
+                      selectedPromotion ? "text-zinc-900" : "text-[#959595]"
+                    )}
+                  >
+                    {selectedPromotion?.Name || t("deposit.selectPromotion")}
                   </span>
                 </span>
                 <ChevronDown
@@ -401,49 +405,59 @@ export default function EWalletPage() {
           </div>
 
           {/* Important Notice */}
-          <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-            <h3 className="font-roboto-medium text-zinc-700 mb-3">{t("deposit.importantNotice")}</h3>
-            <div className="space-y-2 text-sm text-zinc-600">
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.option")}:</span>
-                <span className="font-roboto-medium">{selectedPaymentType?.Name || "-"} {t("deposit.eWallet")}</span>
+          <div className="bg-white border border-[#959595] rounded-2xl p-4">
+            <h3 className="font-roboto-bold text-zinc-800 mb-3">
+              {t("deposit.importantNotice")}
+            </h3>
+            {/* Basic Info */}
+            <div className="space-y-1 text-sm text-[#5F7182] mb-4">
+              <div>
+                <span>{t("deposit.option")}: </span>
+                <span>{selectedPaymentType?.Name || "-"} {t("deposit.eWallet")}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.mode")}:</span>
-                <span className="font-roboto-medium">{t("deposit.online")}</span>
+              <div>
+                <span>{t("deposit.mode")}: </span>
+                <span>{t("deposit.online")}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.minMaxLimit")}:</span>
-                <span className="font-roboto-medium">
-                  MYR {selectedMethod?.Min.toLocaleString() || "0"} / {selectedMethod?.Max.toLocaleString() || "0"}
+              <div>
+                <span>{t("deposit.minMaxLimit")}: </span>
+                <span>
+                  MYR {selectedMethod?.Min?.toLocaleString() || "0"} / {selectedMethod?.Max?.toLocaleString() || "0"}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.dailyLimitBalance")}:</span>
-                <span className="font-roboto-medium">{t("deposit.unlimited")}</span>
+              <div>
+                <span>{t("deposit.dailyLimitBalance")}: </span>
+                <span>{t("deposit.unlimited")}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-zinc-500">{t("deposit.totalAllowed")}:</span>
-                <span className="font-roboto-medium">{t("deposit.unlimited")}</span>
+              <div>
+                <span>{t("deposit.totalAllowed")}: </span>
+                <span>{t("deposit.unlimited")}</span>
               </div>
-              {selectedMethod?.ConversionRate !== undefined && selectedMethod?.ConversionRate !== 0 && selectedMethod?.ConversionRate !== 1 && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">{t("deposit.conversionRate")}:</span>
-                  <span className="font-roboto-medium">{selectedMethod?.ConversionRate}</span>
-                </div>
-              )}
-              {selectedMethod?.ChargeRate !== undefined && selectedMethod?.ChargeRate !== 0 && (
-                <div className="flex justify-between">
-                  <span className="text-zinc-500">{t("deposit.chargeRate")}:</span>
-                  <span className="font-roboto-medium">{selectedMethod?.ChargeRate}%</span>
-                </div>
-              )}
+              {selectedMethod?.ConversionRate !== undefined &&
+                selectedMethod?.ConversionRate !== 0 &&
+                selectedMethod?.ConversionRate !== 1 && (
+                  <div>
+                    <span>{t("deposit.conversionRate")}: </span>
+                    <span>{selectedMethod?.ConversionRate}</span>
+                  </div>
+                )}
+              {selectedMethod?.ChargeRate !== undefined &&
+                selectedMethod?.ChargeRate !== 0 && (
+                  <div>
+                    <span>{t("deposit.chargeRate")}: </span>
+                    <span>{selectedMethod?.ChargeRate}%</span>
+                  </div>
+                )}
             </div>
 
-            {/* E-Wallet specific notices */}
-            <div className="mt-4 pt-3 border-t border-zinc-200 space-y-2 text-sm text-zinc-500">
-              <p>1. {t("deposit.ewalletNotice1")}</p>
-              <p>2. {t("deposit.ewalletNotice2")}</p>
+            {/* Numbered Instructions */}
+            <div className="space-y-3 text-sm text-[#5F7182]">
+              <p>1.{t("deposit.ewalletNotice1")}</p>
+              <p>2.{t("deposit.ewalletNotice2")}</p>
+              <p>3.{t("deposit.ewalletNotice3")}</p>
+              <p>4.{t("deposit.ewalletNotice4")}</p>
+              <p>5.{t("deposit.ewalletNotice5")}</p>
+              <p>6.{t("deposit.ewalletNotice6")}</p>
             </div>
           </div>
         </main>

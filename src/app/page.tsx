@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { BottomNav, Header, AppDownloadBanner } from "@/components/layout";
 import {
   BannerSlider,
   WelcomeCard,
@@ -16,6 +15,7 @@ import { Marquee } from "@/components/ui/marquee";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useLoadingOverlay } from "@/providers/loading-overlay-provider";
+import { useLoginModal } from "@/providers/login-modal-provider";
 import { useDiscover, useLaunchGame } from "@/hooks/use-discover";
 import { ApiError } from "@/lib/api";
 import type { Game } from "@/lib/api/types";
@@ -78,7 +78,7 @@ export default function HomePage() {
   const { t, locale } = useI18n();
   const { isAuthenticated, user } = useAuth();
   const { showLoading, hideLoading } = useLoadingOverlay();
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const { openLoginModal } = useLoginModal();
 
   // Fetch discover data from API
   const { data: discoverData, isLoading, error } = useDiscover();
@@ -99,23 +99,15 @@ export default function HomePage() {
     }
   }, [activeCategory, discoverData?.GameCategories]);
 
-  useEffect(() => {
-    if (typeof navigator === "undefined") return;
-
-    const ua = navigator.userAgent;
-    const isIOS = /iPad|iPhone|iPod/.test(ua);
-    const isSafari = /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
-    const isWKWebView = isIOS && /AppleWebKit/.test(ua) && !/Safari/.test(ua);
-    const isAndroid = /Android/.test(ua);
-    const isGenericMobile = /Mobile|Mobi/.test(ua);
-
-    setIsMobileDevice(
-      isIOS || isWKWebView || (isIOS && isSafari) || isAndroid || isGenericMobile
-    );
-  }, []);
   const launchGameMutation = useLaunchGame();
 
   const handleLaunchGame = async (game: { id: string; name: string }) => {
+    // Check if user is authenticated before launching game
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
     try {
       setLaunchingGameId(game.id);
       showLoading("Launching game...");
@@ -141,9 +133,7 @@ export default function HomePage() {
       hideLoading();
       const errorMessage =
         err instanceof ApiError
-          ? err.code === 401
-            ? "Please sign in to play this game."
-            : err.message || "Failed to launch game."
+          ? err.message || "Failed to launch game."
           : "Failed to launch game. Please try again.";
 
       alert(errorMessage);
@@ -236,12 +226,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* App Download Banner */}
-      {isMobileDevice && <AppDownloadBanner />}
-
-      {/* Header */}
-      <Header variant="logo" />
-
       {/* Main Content */}
       <main className="flex-1 overflow-auto pb-7">
         {/* Banner Slider - Full width, no padding, no dots, no border radius */}
@@ -280,19 +264,18 @@ export default function HomePage() {
 
         {/* Game Categories */}
         <div className="px-4 mt-4">
-          {discoverData?.GameCategories && (
-            <GameCategories
-              categories={discoverData.GameCategories}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            />
-          )}
+          <GameCategories
+            categories={discoverData?.GameCategories || []}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            isLoading={!discoverData?.GameCategories}
+          />
         </div>
 
         {/* Game Providers Grid with slide animation */}
         <div className="px-4 mt-4">
           {isLoading ? (
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid max-[380px]:grid-cols-3 grid-cols-4 gap-1">
               {[...Array(8)].map((_, i) => (
                 <div
                   key={i}
@@ -323,15 +306,20 @@ export default function HomePage() {
                     right: 0,
                   }}
                   transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
+                    type: "tween",
+                    duration: 0.3,
+                    ease: "easeOut",
+                  }}
+                  style={{
+                    willChange: "transform",
+                    backfaceVisibility: "hidden",
+                    WebkitBackfaceVisibility: "hidden",
+                    transform: "translateZ(0)",
                   }}
                 >
                   {currentProviders.length > 0 ? (
                     <GameProviderGrid
                       providers={currentProviders}
-                      columns={4}
                       onSelect={handleLaunchGame}
                       loadingId={launchingGameId}
                     />
@@ -346,9 +334,6 @@ export default function HomePage() {
           )}
         </div>
       </main>
-
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
   );
 }

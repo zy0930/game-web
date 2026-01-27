@@ -1,5 +1,17 @@
 import { API_CONFIG, AUTH_STORAGE_KEY } from "./config";
 
+// Clear auth data from localStorage and redirect to home
+function handleUnauthorized(): void {
+  if (typeof window === "undefined") return;
+
+  // Clear all auth-related data from localStorage
+  localStorage.removeItem("token");
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+
+  // Redirect to homepage
+  window.location.href = "/";
+}
+
 // Generic API response wrapper
 export interface ApiResponse<T = unknown> {
   Code: number;
@@ -12,7 +24,8 @@ export class ApiError extends Error {
   constructor(
     public code: number,
     message: string,
-    public status?: number
+    public status?: number,
+    public data?: Record<string, unknown>
   ) {
     super(message);
     this.name = "ApiError";
@@ -111,8 +124,8 @@ export const apiClient = {
 
     if (!response.ok) {
       if (response.status === 401) {
-        // Token expired or invalid - don't redirect, just throw error
-        // Let the calling code decide how to handle (e.g., fall back to unauthenticated endpoint)
+        // Token expired or invalid - clear auth data and redirect to home
+        handleUnauthorized();
         throw new ApiError(401, "Authentication required.", response.status);
       }
       throw new ApiError(response.status, `Request failed: ${response.statusText}`, response.status);
@@ -148,6 +161,8 @@ export const apiClient = {
 
     if (!response.ok) {
       if (response.status === 401) {
+        // Token expired or invalid - clear auth data and redirect to home
+        handleUnauthorized();
         throw new ApiError(401, "Authentication required.", response.status);
       }
       throw new ApiError(response.status, `Request failed: ${response.statusText}`, response.status);
@@ -156,7 +171,7 @@ export const apiClient = {
     const data = await response.json();
 
     if (data.Code && data.Code !== 0) {
-      throw new ApiError(data.Code, data.Message || "An error occurred");
+      throw new ApiError(data.Code, data.Message || "An error occurred", undefined, data);
     }
 
     return data;
@@ -236,6 +251,8 @@ export const apiClient = {
 
     if (!response.ok) {
       if (response.status === 401) {
+        // Token expired or invalid - clear auth data and redirect to home
+        handleUnauthorized();
         throw new ApiError(401, "Authentication required.", response.status);
       }
       throw new ApiError(response.status, `Request failed: ${response.statusText}`, response.status);

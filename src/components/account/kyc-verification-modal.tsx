@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { X, Phone, KeyRound, ChevronDown } from "lucide-react";
+import { X, KeyRound, ChevronDown } from "lucide-react";
+import Image from "next/image";
 import { FormInput } from "@/components/ui/form-input";
+import { useToast } from "@/providers/toast-provider";
 
 interface KycVerificationModalProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ export function KycVerificationModal({
   isOpen,
   onClose,
 }: KycVerificationModalProps) {
+  const { showError } = useToast();
   const [sendTo, setSendTo] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,23 +63,22 @@ export function KycVerificationModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-hidden">
-      <div className="bg-white rounded-2xl w-full max-w-sm p-6 relative">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 transition-colors"
-        >
-          <X className="w-6 h-6" />
-        </button>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 overflow-hidden"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl w-full max-w-sm max-[380px]:p-4 p-6 relative"
+        onClick={(e) => e.stopPropagation()}
+      >
 
         {/* Title */}
-        <h2 className="text-xl font-roboto-semibold text-zinc-800 mb-6">
+        <div className="text-base font-roboto-bold text-[#28323C] mb-6">
           KYC Verification
-        </h2>
+        </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           {/* Phone Number */}
           <FormInput
             {...register("phoneNumber", {
@@ -84,14 +86,30 @@ export function KycVerificationModal({
             })}
             type="tel"
             placeholder="Phone Number"
-            prefix={<Phone className="h-6 w-auto" />}
+            prefix={
+              <Image
+                src="/images/icon/phone_icon.png"
+                alt="AON1E phone"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
+            }
             error={errors.phoneNumber?.message}
           />
 
           {/* Send to Dropdown */}
           <div className="form-input-wrapper relative flex items-center w-full rounded-lg border border-[#959595] bg-white transition-all duration-200">
             <div className="flex items-center justify-center pl-4 text-zinc-400">
-              <KeyRound className="w-5 h-5" />
+              <Image
+                src="/images/icon/otp_icon.png"
+                alt="AON1E otp"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
+              />
             </div>
             <select
               value={sendTo}
@@ -115,30 +133,32 @@ export function KycVerificationModal({
               {...register("otpCode")}
               type="text"
               placeholder="OTP Code"
-              prefix={<KeyRound className="w-auto h-6" />}
+              prefix={
+                <Image
+                  src="/images/icon/otp_icon.png"
+                  alt="AON1E otp"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
+              }
               wrapperClassName="flex-1"
             />
             <button
               type="button"
               onClick={handleRequestOTP}
-              className="px-6 py-3 bg-primary text-white font-roboto-semibold rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
+              className="cursor-pointer px-6 py-2 bg-primary text-sm text-white font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
             >
               Request OTP
             </button>
           </div>
 
-          {/* Error Message */}
-          {errors.root && (
-            <p className="text-sm text-red-500 text-center">
-              {errors.root.message}
-            </p>
-          )}
-
           {/* Confirm Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-primary text-white font-roboto-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer mt-3 w-full py-3 bg-primary text-white font-roboto-semibold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "PROCESSING..." : "CONFIRM"}
           </button>

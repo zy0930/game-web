@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Header } from "@/components/layout";
 import { FormInput } from "@/components/ui/form-input";
 import { Eye, EyeOff, ChevronDown, Loader2 } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
 import { cn } from "@/lib/utils";
 import { useChangePasswordGetTac, useChangePassword } from "@/hooks";
 
@@ -18,8 +17,8 @@ const sendToOptions: { value: SendToOption; labelKey: string }[] = [
 ];
 
 export default function ChangePasswordPage() {
-  const router = useRouter();
   const { t } = useI18n();
+  const { showSuccess, showError } = useToast();
 
   // Form state
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -38,7 +37,6 @@ export default function ChangePasswordPage() {
   const [otpSent, setOtpSent] = useState(false);
 
   // Error state
-  const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // API hooks
@@ -55,7 +53,6 @@ export default function ChangePasswordPage() {
   }, [countdown]);
 
   const handleRequestOtp = async () => {
-    setError("");
     setFieldErrors({});
 
     try {
@@ -63,17 +60,18 @@ export default function ChangePasswordPage() {
       if (result.Code === 0) {
         setOtpSent(true);
         setCountdown(result.ExpiresIn || 60);
+        showSuccess(t("auth.otpSentSuccess"));
       } else {
-        setError(result.Message || t("common.error"));
+        showError(result.Message || t("common.error"));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      const errorMessage = err instanceof Error ? err.message : t("common.error");
+      showError(errorMessage);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setFieldErrors({});
 
     // Validation
@@ -96,7 +94,7 @@ export default function ChangePasswordPage() {
     }
 
     if (!otpSent) {
-      setError(t("auth.requestOtpFirst"));
+      showError(t("auth.requestOtpFirst"));
       return;
     }
 
@@ -117,13 +115,14 @@ export default function ChangePasswordPage() {
       });
 
       if (result.Code === 0) {
-        // Success - navigate back to profile
-        router.push("/account/profile");
+        // Success - show toast
+        showSuccess(t("profile.passwordChanged"));
       } else {
-        setError(result.Message || t("common.error"));
+        showError(result.Message || t("common.error"));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("common.error"));
+      const errorMessage = err instanceof Error ? err.message : t("common.error");
+      showError(errorMessage);
     }
   };
 
@@ -133,13 +132,6 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header
-        variant="subpage"
-        title={t("profile.changePassword")}
-        backHref="/account/profile"
-      />
-
       {/* Form */}
       <main className="flex-1 px-4 py-4">
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -250,11 +242,6 @@ export default function ChangePasswordPage() {
               )}
             </button>
           </div>
-          {otpSent && countdown > 0 && (
-            <p className="text-xs text-green-600 ml-1">
-              {t("auth.otpSentSuccess")}
-            </p>
-          )}
 
           {/* Old Password Input */}
           <FormInput
@@ -339,11 +326,6 @@ export default function ChangePasswordPage() {
             }
             error={fieldErrors.confirmPassword}
           />
-
-          {/* Error Message */}
-          {error && (
-            <p className="text-sm text-red-500 text-center">{error}</p>
-          )}
 
           {/* Submit Button */}
           <button

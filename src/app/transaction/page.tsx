@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Header, BottomNav } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { Dropdown } from "@/components/ui/dropdown";
 import { Copy, Check } from "lucide-react";
@@ -119,8 +118,6 @@ export default function TransactionPage() {
   return (
     <RequireAuth>
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header variant="logo" />
 
       {/* Filters */}
       <div className="px-4 py-3 flex gap-3">
@@ -230,8 +227,6 @@ export default function TransactionPage() {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
     </RequireAuth>
   );

@@ -8,6 +8,7 @@ import type { DiscoverResponse } from "@/lib/api/types";
 export const discoverKeys = {
   all: ["discover"] as const,
   data: () => [...discoverKeys.all, "data"] as const,
+  rebates: () => [...discoverKeys.all, "rebates"] as const,
 };
 
 /**
@@ -29,7 +30,7 @@ export function useDiscover() {
           return response;
         } catch (error) {
           // If auth fails, fall back to unauthenticated endpoint
-          console.warn("Authenticated discover failed, falling back to public endpoint");
+          console.warn("Authenticated discover failed, falling back to public endpoint: ", error);
         }
       }
 
@@ -77,5 +78,39 @@ export function useRestore() {
       // Update the discover cache with fresh data
       queryClient.setQueryData(discoverKeys.data(), data);
     },
+  });
+}
+
+/**
+ * Hook to refresh cash balance by calling the discover API
+ * Used by the refresh button in the welcome card
+ */
+export function useRefreshCash() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      // Call discover API to refresh balance data
+      const discoverData = await discoverApi.getDiscover();
+      return discoverData;
+    },
+    onSuccess: (data) => {
+      // Update the discover cache with fresh data
+      queryClient.setQueryData(discoverKeys.data(), data);
+    },
+  });
+}
+
+/**
+ * Hook to fetch rebates list
+ */
+export function useRebates(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: discoverKeys.rebates(),
+    queryFn: async () => {
+      return discoverApi.getRebates();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: options?.enabled ?? true,
   });
 }

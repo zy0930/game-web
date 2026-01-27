@@ -6,7 +6,6 @@ import Image from "next/image";
 import QrScanner from "qr-scanner";
 import { X } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
-import { Header } from "@/components/layout";
 
 export default function ScanQrPage() {
   const router = useRouter();
@@ -121,8 +120,6 @@ export default function ScanQrPage() {
 
   return (
     <div className="min-h-screen flex flex-col relative bg-black">
-      {/* Header */}
-      <Header variant="subpage" title={t("scanner.title")} onBack={handleClose} />
 
       {/* Main Content */}
       <main className="flex-1 relative flex flex-col items-center justify-center overflow-hidden">
@@ -143,6 +140,7 @@ export default function ScanQrPage() {
             width={280}
             height={280}
             className="w-full h-auto"
+            unoptimized
             priority
           />
           <p className="text-white text-center text-sm mt-6 px-4">

@@ -1,67 +1,117 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
-import { Pencil } from "lucide-react";
-import { Header } from "@/components/layout";
-
-// Mock data - in real app this would come from API
-const mockContactDetails: Record<string, { username: string; alias: string; avatar: string }> = {
-  "1": { username: "Aunsk02", alias: "Leong Fei Fan", avatar: "/aone/Avatar/Avatar1.webp" },
-  "2": { username: "Ampaen12", alias: "Amy Chen", avatar: "/aone/Avatar/Avatar2.webp" },
-  "3": { username: "Aulde38", alias: "Alex Wong", avatar: "/aone/Avatar/Avatar3.webp" },
-  "4": { username: "Umksbjt34", alias: "Uma Kumar", avatar: "/aone/Avatar/Avatar4.webp" },
-  "5": { username: "Upma90", alias: "Upendra Patel", avatar: "/aone/Avatar/Avatar5.webp" },
-};
+import { Loader2 } from "lucide-react";
+import { useAuth } from "@/providers/auth-provider";
+import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
+import { useContactDetail, useDeleteContact } from "@/hooks/use-contact";
 
 export default function ContactDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const [imgError, setImgError] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const { t } = useI18n();
+  const { showSuccess, showError } = useToast();
 
   const contactId = params.id as string;
-  const contact = mockContactDetails[contactId] || {
-    username: "Unknown",
-    alias: "Unknown User",
-    avatar: "/aone/Avatar/Avatar1.webp",
-  };
 
-  const [alias, setAlias] = useState(contact.alias);
+  const [imgError, setImgError] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  // Fetch contact detail
+  const {
+    data: contact,
+    isLoading,
+    isError,
+  } = useContactDetail(contactId, {
+    enabled: isAuthenticated && !!contactId,
+  });
+
+  // Delete mutation
+  const deleteContact = useDeleteContact();
+
+  // Handle contact detail API error - redirect to account page
+  useEffect(() => {
+    if (isError) {
+      showError(t("contact.loadFailed"));
+      router.push("/account");
+    }
+  }, [isError, showError, t, router]);
 
   const handleTransfer = () => {
-    // Navigate to transfer page with contact pre-selected
-    router.push(`/transfer?to=${contact.username}`);
+    if (contact?.TargetId) {
+      // Navigate to transfer page with target ID for the transfer API
+      // and contact ID for back navigation
+      router.push(`/transfer?targetId=${contact.TargetId}&id=${contactId}`);
+    }
   };
 
-  const handleDelete = () => {
-    // TODO: API call to delete contact
-    console.log("Deleting contact:", contactId);
-    router.push("/account/contact");
+  const handleDelete = async () => {
+    try {
+      await deleteContact.mutateAsync({ Id: contactId });
+      showSuccess(t("contact.deleteSuccess") || "Contact deleted successfully");
+      router.push("/account/contact");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t("contact.deleteFailed") || "Failed to delete contact";
+      showError(errorMessage);
+      setShowDeleteConfirm(false);
+    }
   };
 
-  const handleSaveAlias = () => {
-    // TODO: API call to update alias
-    console.log("Saving alias:", alias);
-    setIsEditing(false);
+  const handleEditAlias = () => {
+    router.push(`/account/contact/${contactId}/alias`);
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center px-4">
+          <p className="text-sm text-zinc-500 text-center">
+            {t("contact.loginRequired")}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while redirecting on error, or if contact data not loaded yet
+  if (isError || !contact) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  const displayAlias = contact.Alias || contact.Name;
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header variant="subpage" title="Friend Detail" backHref="/account/contact" />
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto p-6">
+      <main className="flex-1 overflow-auto px-6 pt-12">
         {/* Avatar */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-24 h-24 rounded-full overflow-hidden bg-zinc-200 mb-4">
-            {!imgError ? (
+          <div className="w-20 h-20 rounded-full overflow-hidden bg-zinc-200 mb-4">
+            {!imgError && contact.Image ? (
               <Image
-                src={contact.avatar}
-                alt={contact.alias}
+                src={contact.Image}
+                alt={displayAlias}
                 unoptimized
                 width={96}
                 height={96}
@@ -70,82 +120,88 @@ export default function ContactDetailPage() {
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-zinc-500 font-roboto-bold text-2xl">
-                {contact.alias.charAt(0).toUpperCase()}
+                {displayAlias.charAt(0).toUpperCase()}
               </div>
             )}
           </div>
 
           {/* Alias with Edit */}
           <div className="flex items-center gap-2 mb-1">
-            {isEditing ? (
-              <input
-                type="text"
-                value={alias}
-                onChange={(e) => setAlias(e.target.value)}
-                onBlur={handleSaveAlias}
-                onKeyDown={(e) => e.key === "Enter" && handleSaveAlias()}
-                autoFocus
-                className="text-xl font-roboto-semibold text-zinc-800 text-center border-b-2 border-primary focus:outline-none bg-transparent"
+            <span className="text-xl font-roboto-bold text-[#28323C]">
+              {displayAlias}
+            </span>
+            <button
+              onClick={handleEditAlias}
+              className="text-zinc-400 hover:text-zinc-600 cursor-pointer"
+            >
+              <Image
+                src="/images/icon/username_icon.png"
+                alt="Edit alias"
+                width={24}
+                height={24}
+                unoptimized
+                className="h-6 w-auto object-contain"
               />
-            ) : (
-              <>
-                <span className="text-xl font-roboto-semibold text-zinc-800">{alias}</span>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="text-zinc-400 hover:text-zinc-600"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-              </>
-            )}
+            </button>
           </div>
 
           {/* UID */}
-          <span className="text-sm text-zinc-500">UID: {contact.username}</span>
+          <span className="text-sm text-[#28323C]">
+            UID: {contact.Username}
+          </span>
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <button
             onClick={handleTransfer}
-            className="w-full py-4 bg-primary text-white font-roboto-bold text-base rounded-lg hover:bg-primary/90 transition-colors"
+            className="cursor-pointer w-full py-4 bg-primary text-white font-roboto-bold text-base rounded-lg hover:bg-primary/90 transition-colors"
           >
-            TRANSFER
+            {t("contact.transferButton")}
           </button>
 
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="w-full py-4 bg-red-500 text-white font-roboto-bold text-base rounded-lg hover:bg-red-600 transition-colors"
+            className="cursor-pointer w-full py-4 bg-red-500 text-white font-roboto-bold text-base rounded-lg hover:bg-red-600 transition-colors"
           >
-            DELETE
+            {t("contact.deleteButton")}
           </button>
         </div>
       </main>
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => setShowDeleteConfirm(false)}
+        >
           <div
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setShowDeleteConfirm(false)}
-          />
-          <div className="relative bg-white rounded-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-roboto-semibold text-zinc-800 mb-2">Delete Contact</h3>
-            <p className="text-zinc-600 mb-6">
-              Are you sure you want to delete {alias} from your contacts?
+            className="bg-white rounded-2xl p-6 w-full max-w-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-center text-lg font-roboto-bold text-[#28323C] mb-2">
+              {t("contact.deleteTitle")}
+            </h3>
+            <p className="text-center text-[#5F7182] text-sm mb-6">
+              {t("contact.deleteMessage")}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 py-3 border border-zinc-300 text-zinc-700 font-roboto-medium rounded-lg hover:bg-zinc-50 transition-colors"
+                disabled={deleteContact.isPending}
+                className="flex-1 py-3 bg-[#28323C] text-white font-roboto-bold text-sm rounded-lg cursor-pointer disabled:opacity-50"
               >
-                Cancel
+                {t("contact.cancelUpper")}
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 py-3 bg-red-500 text-white font-roboto-medium rounded-lg hover:bg-red-600 transition-colors"
+                disabled={deleteContact.isPending}
+                className="flex-1 py-3 bg-red-500 text-white font-roboto-bold text-sm rounded-lg cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                Delete
+                {deleteContact.isPending && (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                )}
+                {t("contact.deleteButton")}
               </button>
             </div>
           </div>

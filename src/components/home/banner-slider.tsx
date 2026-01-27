@@ -30,8 +30,22 @@ export function BannerSlider({
   const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
   const dragStartX = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Track container width
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
+  }, []);
 
   const goToNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % banners.length);
@@ -62,7 +76,7 @@ export function BannerSlider({
     if (!isDragging) return;
     setIsDragging(false);
 
-    const threshold = containerRef.current ? containerRef.current.offsetWidth * 0.2 : 80;
+    const threshold = containerWidth > 0 ? containerWidth * 0.2 : 80;
 
     if (dragOffset > threshold) {
       goToPrev();
@@ -123,8 +137,8 @@ export function BannerSlider({
   // Calculate transform with drag offset
   const getTransform = () => {
     const baseTranslate = -currentIndex * 100;
-    if (isDragging && containerRef.current) {
-      const offsetPercent = (dragOffset / containerRef.current.offsetWidth) * 100;
+    if (isDragging && containerWidth > 0) {
+      const offsetPercent = (dragOffset / containerWidth) * 100;
       return `translateX(calc(${baseTranslate}% + ${offsetPercent}%))`;
     }
     return `translateX(${baseTranslate}%)`;
@@ -136,7 +150,7 @@ export function BannerSlider({
       <div
         ref={containerRef}
         className={cn(
-          "relative overflow-hidden aspect-[16/7] touch-pan-y",
+          "relative overflow-hidden aspect-16/7 touch-pan-y",
           rounded && "rounded-lg",
           isDragging ? "cursor-grabbing" : "cursor-grab"
         )}
@@ -156,7 +170,7 @@ export function BannerSlider({
           style={{ transform: getTransform() }}
         >
           {banners.map((banner) => (
-            <div key={banner.id} className="w-full h-full flex-shrink-0 relative">
+            <div key={banner.id} className="w-full h-full shrink-0 relative">
               {!imgErrors.has(banner.id) ? (
                 <Image
                   src={banner.image}
@@ -169,8 +183,7 @@ export function BannerSlider({
                   draggable={false}
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-r from-primary/20 to-primary/40 flex items-center justify-center">
-                  <span className="text-zinc-500 text-sm">{banner.alt}</span>
+                <div className="w-full h-full bg-zinc-200 flex items-center justify-center">
                 </div>
               )}
             </div>

@@ -9,6 +9,7 @@ import Image from "next/image";
 import { loginSchema, type LoginFormData } from "@/schemas/auth";
 import { useAuth } from "@/providers/auth-provider";
 import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
 import { FormInput } from "@/components/ui/form-input";
 
 interface LoginModalProps {
@@ -19,6 +20,7 @@ interface LoginModalProps {
 export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const { login } = useAuth();
   const { t } = useI18n();
+  const { showError } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -27,7 +29,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
     reset,
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -46,7 +47,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
       reset();
       onClose();
     } else {
-      setError("root", { message: result.error || t("auth.loginFailed") });
+      showError(result.error || t("auth.loginFailed"));
     }
   };
 
@@ -66,7 +67,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-hidden">
-      <div className="bg-white rounded-2xl w-full max-w-88 px-6 py-10 relative">
+      <div className="bg-white rounded-2xl w-full max-w-88 max-[360px]:px-4 max-[360px]:py-6 px-6 py-10 relative">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -76,7 +77,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </button>
 
         {/* Logo */}
-        <div className="flex justify-center mb-9">
+        <div className="flex justify-center mb-9 max-[360px]:mb-4">
           <Image
             src="/images/title.png"
             alt="AON1E"
@@ -157,13 +158,6 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               {t("auth.forgotPassword")}
             </Link>
           </div>
-
-          {/* Error Message */}
-          {errors.root && (
-            <p className="text-sm text-red-500 text-center">
-              {errors.root.message}
-            </p>
-          )}
 
           {/* Login Button */}
           <button

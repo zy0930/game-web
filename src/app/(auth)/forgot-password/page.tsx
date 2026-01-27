@@ -9,13 +9,17 @@ import {
   Eye,
   Loader2,
 } from "lucide-react";
-import { authApi } from "@/lib/api";
-import { Header } from "@/components/layout";
+import { authApi, ApiError } from "@/lib/api";
+import type { MessageSelectionOption } from "@/lib/api/types";
 import { FormInput } from "@/components/ui/form-input";
 import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
 import Image from "next/image";
 
-type SendToOption = "SMS" | "WhatsApp";
+interface SendToOption {
+  value: string;
+  label: string;
+}
 
 interface ForgotPasswordFormData {
   username: string;
@@ -27,8 +31,10 @@ interface ForgotPasswordFormData {
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const { t } = useI18n();
+  const { showSuccess, showError } = useToast();
   const [showPassword, setShowPassword] = useState(false);
-  const [sendTo, setSendTo] = useState<SendToOption | "">("");
+  const [sendTo, setSendTo] = useState<string>("");
+  const [sendToOptions, setSendToOptions] = useState<SendToOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRequestingOtp, setIsRequestingOtp] = useState(false);
   const [otpCountdown, setOtpCountdown] = useState(0);
@@ -54,10 +60,45 @@ export default function ForgotPasswordPage() {
 
   const usernameValue = watch("username");
   const phoneValue = watch("phoneNumber");
-  const sendToOptions: Array<{ value: SendToOption; label: string }> = [
+
+  // Default send-to options fallback
+  const defaultSendToOptions: SendToOption[] = [
     { value: "SMS", label: t("auth.sms") },
     { value: "WhatsApp", label: t("auth.whatsapp") },
   ];
+
+  // Fetch message selection options on mount
+  useEffect(() => {
+    const fetchMessageOptions = async () => {
+      try {
+        const response = await authApi.getMessageSelection();
+        if (response.Code === 200 && response.Data && response.Data.length > 0) {
+          // Filter out "Select" option and map to our format
+          const options = response.Data
+            .filter((opt: MessageSelectionOption) => opt.Value !== "Select")
+            .map((opt: MessageSelectionOption) => ({
+              value: opt.Value,
+              label: opt.Text,
+            }));
+          if (options.length > 0) {
+            setSendToOptions(options);
+          } else {
+            setSendToOptions(defaultSendToOptions);
+          }
+        } else {
+          // API returned non-200 or empty data, use defaults
+          setSendToOptions(defaultSendToOptions);
+        }
+      } catch (error) {
+        console.error("Failed to fetch message options:", error);
+        // Fallback to default options if API fails
+        setSendToOptions(defaultSendToOptions);
+      }
+    };
+
+    fetchMessageOptions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // OTP countdown timer
   useEffect(() => {
@@ -100,13 +141,9 @@ export default function ForgotPasswordPage() {
 
     // Validate send to option
     if (!sendTo) {
-      setError("root", {
-        message: t("auth.selectOtpMethod"),
-      });
+      showError(t("auth.selectOtpMethod"));
       return;
     }
-
-    clearErrors("root");
     setIsRequestingOtp(true);
 
     try {
@@ -117,22 +154,41 @@ export default function ForgotPasswordPage() {
       });
 
       if (result.Code === 0) {
+        clearErrors("otpCode");
         setOtpSent(true);
         setOtpCountdown(result.ExpiresIn || 300);
+        showSuccess(t("auth.otpSentSuccess"));
+      } else if (result.ExpiresIn && result.ExpiresIn > 0) {
+        // TAC already sent, show countdown timer
+        clearErrors("otpCode");
+        setOtpSent(true);
+        setOtpCountdown(result.ExpiresIn);
+        showError(t("auth.otpAlreadySent"));
       } else {
-        setError("root", { message: result.Message || t("auth.otpSendFailed") });
+        showError(result.Message || t("auth.otpSendFailed"));
       }
-    } catch {
-      setError("root", { message: t("auth.otpSendFailed") });
+    } catch (error) {
+      // Check if error contains ExpiresIn (TAC already sent)
+      if (error instanceof ApiError && error.data?.ExpiresIn) {
+        const expiresIn = error.data.ExpiresIn as number;
+        if (expiresIn > 0) {
+          clearErrors("otpCode");
+          setOtpSent(true);
+          setOtpCountdown(expiresIn);
+          showError(t("auth.otpAlreadySent"));
+          return;
+        }
+      }
+      showError(error instanceof ApiError ? error.message : t("auth.otpSendFailed"));
     } finally {
       setIsRequestingOtp(false);
     }
-  }, [usernameValue, phoneValue, sendTo, setError, clearErrors, t]);
+  }, [usernameValue, phoneValue, sendTo, setError, clearErrors, t, showSuccess, showError]);
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     // Validate OTP was requested and code is entered
     if (!otpSent) {
-      setError("root", { message: t("auth.requestOtpFirst") });
+      showError(t("auth.requestOtpFirst"));
       return;
     }
 
@@ -153,17 +209,13 @@ export default function ForgotPasswordPage() {
 
       if (result.Code === 0) {
         // Password reset successful - redirect to login
-        alert(t("auth.resetSuccess"));
+        showSuccess(t("auth.resetSuccess"));
         router.push("/login");
       } else {
-        setError("root", {
-          message: result.Message || t("auth.resetFailed"),
-        });
+        showError(result.Message || t("auth.resetFailed"));
       }
     } catch {
-      setError("root", {
-        message: t("auth.resetFailed"),
-      });
+      showError(t("auth.resetFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -179,8 +231,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header variant="subpage" title={t("auth.forgotPassword")} />
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
@@ -255,9 +305,7 @@ export default function ForgotPasswordPage() {
                   }`}
                 >
                   {sendTo
-                    ? sendTo === "WhatsApp"
-                      ? t("auth.whatsapp")
-                      : t("auth.sms")
+                    ? sendToOptions.find((opt) => opt.value === sendTo)?.label || sendTo
                     : t("auth.sendTo")}
                 </span>
               </span>
@@ -324,7 +372,7 @@ export default function ForgotPasswordPage() {
               type="button"
               onClick={handleRequestOTP}
               disabled={!canRequestOtp || isRequestingOtp}
-              className="px-4 py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
+              className="h-fit cursor-pointer px-4 py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm"
             >
               {isRequestingOtp ? (
                 <Loader2 className="w-auto h-6 animate-spin" />
@@ -337,11 +385,6 @@ export default function ForgotPasswordPage() {
               )}
             </button>
           </div>
-          {otpSent && otpCountdown > 0 && (
-            <p className="text-xs text-green-600 ml-1">
-              {t("auth.otpSentSuccess")}
-            </p>
-          )}
 
           {/* New Password */}
           <FormInput
@@ -380,18 +423,11 @@ export default function ForgotPasswordPage() {
             error={errors.newPassword?.message}
           />
 
-          {/* Error Message */}
-          {errors.root && (
-            <p className="text-sm text-red-500 text-center">
-              {errors.root.message}
-            </p>
-          )}
-
           {/* Confirm Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="mt-6 text-base w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="cursor-pointer mt-6 text-base w-full py-3.5 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Header, BottomNav } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { ChevronRight, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { useToast } from "@/providers/toast-provider";
 import { KycVerificationModal } from "@/components/account/kyc-verification-modal";
 import { useProfile } from "@/hooks";
 
@@ -17,9 +17,23 @@ export default function AccountPage() {
   const [isKycModalOpen, setIsKycModalOpen] = useState(false);
   const { t } = useI18n();
   const { logout } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   // Fetch user profile data
-  const { data: profile, isLoading, isError } = useProfile();
+  const { data: profile, isLoading, isError, refetch, isFetching } = useProfile();
+
+  const handleRefresh = async () => {
+    try {
+      const result = await refetch();
+      if (result.data) {
+        showSuccess(t("common.success"));
+      } else if (result.error) {
+        showError(t("common.error"));
+      }
+    } catch {
+      showError(t("common.error"));
+    }
+  };
 
   const quickActions = [
     {
@@ -134,11 +148,9 @@ export default function AccountPage() {
     return (
       <RequireAuth>
         <div className="min-h-screen flex flex-col">
-          <Header variant="logo" />
           <div className="flex-1 flex items-center justify-center">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
-          <BottomNav />
         </div>
       </RequireAuth>
     );
@@ -149,7 +161,6 @@ export default function AccountPage() {
     return (
       <RequireAuth>
         <div className="min-h-screen flex flex-col">
-          <Header variant="logo" />
           <div className="flex-1 flex items-center justify-center px-4">
             <div className="text-center">
               <p className="text-zinc-600 mb-4">{t("common.error")}</p>
@@ -161,7 +172,6 @@ export default function AccountPage() {
               </button>
             </div>
           </div>
-          <BottomNav />
         </div>
       </RequireAuth>
     );
@@ -169,9 +179,7 @@ export default function AccountPage() {
 
   return (
     <RequireAuth>
-      <div className="min-h-screen flex flex-col bg-zinc-100">
-        {/* Header */}
-        <Header variant="logo" />
+      <div className="min-h-screen flex flex-col">
 
         {/* Profile Section */}
         <div className="flex items-center gap-4 pt-5 pb-10 px-9 relative h-40">
@@ -196,43 +204,51 @@ export default function AccountPage() {
 
           {/* User Info */}
           <div className="z-10 flex-1">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-x-2 gap-y-0.5 mb-1 flex-wrap">
               <h2 className="text-white text-xl font-roboto-bold">
                 {profile.Username}
               </h2>
               <button
                 type="button"
                 className="cursor-pointer self-auto"
-                aria-label="Refresh cash"
+                aria-label="Refresh profile"
+                onClick={handleRefresh}
+                disabled={isFetching}
               >
                 <Image
                   src="/images/icon/refresh_icon.png"
                   alt="Refresh"
                   width={12}
                   height={12}
-                  className="object-contain w-4 h-4"
+                  className={cn(
+                    "object-contain w-4 h-4",
+                    isFetching && "animate-spin"
+                  )}
+                  unoptimized
                 />
               </button>
-              <span className="px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#71B6FB1A] text-[#71B6FB] border border-[#71B6FB] flex gap-1">
+              <div className="whitespace-nowrap px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#71B6FB1A] text-[#71B6FB] border border-[#71B6FB] flex gap-1">
                 <Image
                   src="/images/icon/verified_icon.png"
                   alt="verified"
                   width={12}
                   height={12}
                   className="object-contain w-4 h-4"
+                  unoptimized
                 />
                 {t("common.verified")}
-              </span>
-              <span className="px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#FFC0361A] border border-[#FFC036] text-[#FFC036] flex gap-1">
+              </div>
+              <div className="whitespace-nowrap px-2 py-1 rounded-full text-xs font-roboto-medium bg-[#FFC0361A] border border-[#FFC036] text-[#FFC036] flex gap-1">
                 <Image
                   src="/images/icon/pending_icon.png"
                   alt="pending"
                   width={12}
                   height={12}
                   className="object-contain w-4 h-4"
+                  unoptimized
                 />
                 {t("common.pending")}
-              </span>
+              </div>
             </div>
             <p className="text-white text-xs">UID: {profile.Id}</p>
           </div>
@@ -307,6 +323,7 @@ export default function AccountPage() {
                   alt="Chips"
                   width={20}
                   height={20}
+                  unoptimized
                   className="object-contain"
                 />
                 <span className="text-black text-xl font-roboto-bold">
@@ -327,11 +344,12 @@ export default function AccountPage() {
               fill
               className="object-fill"
               priority
+              unoptimized
             />
           </div>
 
           {/* Content */}
-          <div className="relative z-10 p-4">
+          <div className="relative z-10 p-4 max-[380px]:p-1">
             <div className="flex items-center gap-1 mb-3">
               <span className="text-sm font-roboto-bold text-[#28323C]">
                 {t("account.overview")}
@@ -340,7 +358,7 @@ export default function AccountPage() {
                 ({formatOverviewDate(profile.OverviewDate)})
               </span>
             </div>
-            <div className="grid grid-cols-[1fr_1fr_1fr] items-center divide-x divide-[#5F7182]">
+            <div className="flex items-stretch gap-1">
               <div className="flex-1 text-center">
                 <p className="text-xl font-roboto-bold text-[#28323C]">
                   {profile.RegisteredDownline}
@@ -349,6 +367,7 @@ export default function AccountPage() {
                   {t("account.registered")}
                 </p>
               </div>
+              <div className="w-px bg-[#5F7182]"></div>
               <div className="flex-1 text-center">
                 <p className="text-xl font-roboto-bold text-[#28323C]">
                   {profile.ActiveDownline}
@@ -357,6 +376,7 @@ export default function AccountPage() {
                   {t("account.activePlayer")}
                 </p>
               </div>
+              <div className="w-px bg-[#5F7182]"></div>
               <div className="flex-1 text-center">
                 <p className="text-xl font-roboto-bold text-[#28323C]">
                   {formatCurrency(profile.Turnover)}
@@ -371,7 +391,7 @@ export default function AccountPage() {
 
         {/* Menu Items */}
         <div className="mx-4 mt-4 flex-1 bg-white p-4 rounded-2xl shadow-lg px-2.5 flex flex-col gap-4">
-          <div className="grid grid-cols-4 gap-5 px-3 pt-2">
+          <div className="grid grid-cols-4 gap-5 max-[380px]:gap-3 px-3 pt-2 max-[380px]:px-1.5">
             {quickActions.map((action) => (
               <Link
                 key={action.id}
@@ -385,7 +405,8 @@ export default function AccountPage() {
                     alt={t(action.labelKey)}
                     width={32}
                     height={32}
-                    className="object-contain w-full h-full p-3.5"
+                    className="object-contain w-full h-full max-[380px]:p-1 p-3.5"
+                    unoptimized
                   />
                 </div>
                 <span className="text-xs text-zinc-600 font-roboto-medium">
@@ -396,16 +417,17 @@ export default function AccountPage() {
           </div>
           <div className="h-0.5 w-full bg-[#D4F1F0]"></div>
           <div className="bg-white overflow-hidden">
-            {menuItems.map((item, index) => {
+            {menuItems.map((item) => {
               const content = (
                 <>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 cursor-pointer">
                     <Image
                       src={item.icon}
                       alt=""
                       width={20}
                       height={20}
                       className="object-contain"
+                      unoptimized
                     />
                     <span className="text-sm text-zinc-700 font-roboto-medium">
                       {t(item.labelKey)}
@@ -416,12 +438,12 @@ export default function AccountPage() {
                       </span>
                     )}
                   </div>
-                  <ChevronRight className="w-5 h-5 text-zinc-400" />
+                  <ChevronRight className="w-5 h-5 text-zinc-400 cursor-pointer" />
                 </>
               );
 
               const className = cn(
-                "flex items-center justify-between px-4 py-3.5 w-full"
+                "flex items-center justify-between px-4 max-[380px]:px-2 py-3.5 w-full cursor-pointer"
               );
 
               return item.isLink ? (
@@ -450,7 +472,7 @@ export default function AccountPage() {
         <div className="bg-white rounded-2xl overflow-hidden mt-4 mb-8 mx-4 shadow-lg">
           <button
             onClick={handleLogout}
-            className="flex items-center justify-between pl-3 pr-6 py-3.5 w-full cursor-pointer"
+            className="flex items-center justify-between max-[380px]:pl-1 max-[380px]:pr-5 pl-3 pr-6 py-3.5 w-full cursor-pointer"
           >
             <div className="flex items-center gap-3 px-4">
               <Image
@@ -459,6 +481,7 @@ export default function AccountPage() {
                 width={20}
                 height={20}
                 className="object-contain"
+                unoptimized
               />
               <span className="text-sm text-zinc-700 font-roboto-medium">
                 {t("account.logout")}
@@ -467,9 +490,6 @@ export default function AccountPage() {
             <ChevronRight className="w-5 h-5 text-zinc-400" />
           </button>
         </div>
-
-        {/* Bottom Navigation */}
-        <BottomNav />
 
         {/* KYC Verification Modal */}
         <KycVerificationModal

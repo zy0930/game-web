@@ -105,7 +105,7 @@ export default function GamePage() {
   return (
     <RequireAuth>
       <div className="h-screen flex flex-col bg-black">
-        {/* Header */}
+        {/* Header with custom back handler */}
         <Header
           variant="subpage"
           title={gameName}
@@ -139,10 +139,10 @@ export default function GamePage() {
 
           {/* Exit prompt toast */}
           {showExitPrompt && (
-            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-dark/90 text-white px-4 py-3 rounded-lg shadow-lg animate-fade-in">
-              <p className="text-sm font-roboto-medium text-center whitespace-nowrap">
-                Click back again to return home
-              </p>
+            <div className="absolute bottom-20 left-4 right-4 flex justify-center text-sm font-roboto-medium text-center">
+              <div className="bg-dark/90 text-white px-4 py-3 rounded-lg shadow-lg">
+                  Click back again to return home
+              </div>
             </div>
           )}
         </div>

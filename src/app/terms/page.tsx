@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
@@ -61,11 +60,9 @@ export default function TermsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header variant="subpage" title={t("terms.title")} backHref="/account" />
 
       {/* Logo Section */}
-      <div className="bg-white py-16 flex justify-center">
+      <div className="py-16 flex justify-center">
         <Image
           src="/images/title.png"
           alt="AONE"
@@ -77,7 +74,7 @@ export default function TermsPage() {
       </div>
 
       {/* Intro Text */}
-      <div className="bg-white px-4 pb-6">
+      <div className="px-4 pb-6">
         <p className="text-sm text-zinc-600 text-center leading-relaxed">
           {t("terms.intro")}
         </p>
@@ -96,7 +93,7 @@ export default function TermsPage() {
               <button
                 onClick={() => toggleSection(section.id)}
                 className={cn(
-                  "w-full flex items-center justify-between px-4 py-4 transition-colors bg-white",
+                  "cursor-pointer w-full flex items-center justify-between px-4 py-4 transition-colors bg-white",
                   isOpen
                     ? "bg-[#D4F1F0] text-zinc-800 rounded-t-xl"
                     : "text-zinc-700 hover:bg-zinc-50 rounded-xl"

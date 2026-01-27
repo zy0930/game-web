@@ -3,7 +3,9 @@
     "submit": "SUBMIT",
     "cancel": "Cancel",
     "confirm": "Confirm",
+    "ok": "OK",
     "back": "Back",
+    "next": "NEXT",
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
@@ -29,7 +31,11 @@
     "errorLoading": "Failed to load data. Please try again.",
     "loginRequired": "Please login to access this page",
     "copied": "Copied!",
-    "copyLink": "Copy Link"
+    "copyLink": "Copy Link",
+    "search": "Search",
+    "fillAllFields": "Please fill in all required fields",
+    "notFound": "404 Page not found",
+    "backToHome": "Back to Home"
   },
   "referral": {
     "title": "Referral",
@@ -106,8 +112,11 @@
     "otpSendFailed": "Failed to send OTP. Please try again.",
     "otpSent": "OTP sent! Please check your {{method}}.",
     "otpSentSuccess": "OTP sent successfully!",
+    "otpAlreadySent": "OTP has already been sent!",
     "verifyingReferral": "Verifying referral code...",
-    "resetSuccess": "Password reset successfully! Please login with your new password."
+    "resetSuccess": "Password reset successfully! Please login with your new password.",
+    "invalidQrCode": "Invalid QR code. Please upload a valid referral QR code.",
+    "qrScanFailed": "Failed to scan QR code. Please try another image."
   },
   "language": {
     "title": "Language",
@@ -125,7 +134,11 @@
     "availableBalance": "Available Balance",
     "deposit": "Deposit",
     "withdraw": "Withdraw",
-    "transfer": "Transfer"
+    "transfer": "Transfer",
+    "refreshSuccess": "Balance refreshed successfully",
+    "refreshFailed": "Failed to refresh balance",
+    "restoreSuccess": "Wallet restored successfully",
+    "restoreFailed": "Failed to restore wallet"
   },
   "deposit": {
     "title": "Deposit",
@@ -157,11 +170,27 @@
     "chargeRate": "Charge Rate",
     "confirmDeposit": "Confirm Deposit",
     "bankNotice1": "Always check for the latest active deposit bank details before making a deposit.",
-    "bankNotice2": "For using deposit option - Bank Transfer, Please make the transfer before submit the transaction to avoid the transaction to be rejected.",
+    "bankNotice2": "For using deposit option - Bank Transfer, Please make the transfer before submit the transaction to avoid the transaction is delay.",
+    "bankNotice3": "Depositor's ACCOUNT NAME must match with registered full name. We do not encourage transaction made using 3rd party/company account.",
+    "bankNotice4": "Please DO NOT fill AONE, # or any sensitive words related to gambling as reference/remark in your online transfer transaction.",
+    "bankNotice5": "Please take note that 1x turnover or promotion's specific turnover is required for all deposits made before any withdrawal can be processed.",
+    "bankNotice6": "Kindly check with our 24/7 LIVECHAT if your deposit amount is pending for more than 5 minutes.",
     "ewalletNotice1": "Always check for the latest active notice from AONE before making a deposit.",
-    "ewalletNotice2": "For using deposit option - E-Wallet Deposit. Please follow all the instruction to avoid the transaction to be rejected.",
-    "cryptoNotice1": "Always check for the latest active notice from AONE before making a crypto deposit.",
-    "cryptoNotice2": "For using deposit option - Crypto Deposit. Please follow all the instruction to avoid the transaction to be rejected."
+    "ewalletNotice2": "For using deposit option - Ewallet Deposit, Please follow all the instant transfer step to completed deposit.",
+    "ewalletNotice3": "Depositor's ACCOUNT NAME must match with registered full name. We do not encourage transaction made using 3rd party/company account.",
+    "ewalletNotice4": "Please DO NOT fill AONE, # or any sensitive words related to gambling as reference/remark in your online transfer transaction.",
+    "ewalletNotice5": "Please take note that 1x turnover or promotion's specific turnover is required for all deposits made before any withdrawal can be processed.",
+    "ewalletNotice6": "Kindly check with our 24/7 LIVECHAT if your deposit amount has been deducted from bank account but not receive the credit or the transaction is showing pending/reject.",
+    "cryptoNotice1": "Always check for the latest active notice from AONE before making a deposit.",
+    "cryptoNotice2": "For using deposit option - Crypto Deposit, Please follow all the instant transfer step to completed deposit.",
+    "cryptoNotice3": "Please take note that 1x turnover or promotion's specific turnover is required for all deposits made before any withdrawal can be processed.",
+    "cryptoNotice4": "Kindly check with our 24/7 LIVECHAT if your deposit amount has been deducted from bank account but not receive the credit or the transaction is showing pending/reject.",
+    "instantNotice1": "Always check for the latest active notice from AONE before making a deposit.",
+    "instantNotice2": "For using deposit option - Instant Transfer, Please follow all the instant transfer step to completed deposit.",
+    "instantNotice3": "Depositor's ACCOUNT NAME must match with registered full name. We do not encourage transaction made using 3rd party/company account.",
+    "instantNotice4": "Please DO NOT fill AONE, # or any sensitive words related to gambling as reference/remark in your online transfer transaction.",
+    "instantNotice5": "Please take note that 1x turnover or promotion's specific turnover is required for all deposits made before any withdrawal can be processed.",
+    "instantNotice6": "Kindly check with our 24/7 LIVECHAT if your deposit amount has been deducted from bank account but not receive the credit or the transaction is showing pending/reject."
   },
   "withdrawal": {
     "title": "Withdrawal",
@@ -173,10 +202,30 @@
     "minMaxLimit": "Min/Max Limit",
     "dailyLimit": "Daily Limit Balance",
     "dailyCount": "Daily Count Balance",
+    "noBankAccounts": "You have not added any bank accounts yet. Please add a bank account to withdraw.",
     "notice1": "Withdrawal bank name must match to registered full name. Member unable to withdrawal to 3rd party bank account.",
     "notice2": "Please make sure already achieve the 1x turnover of deposit amount before submit the withdrawal transaction.",
     "notice3": "Please make sure the bank account name & bank account number is correct before submitted the withdrawal transaction.",
-    "notice4": "Some game provider requires up to 30 minutes of report"
+    "notice4": "Some game provider requires up to 30 minutes of report sync time, kindly submit the withdrawal transaction after that, to avoid system auto reject.",
+    "notice5": "Once you have successfully submitted your withdrawal transaction, just leave it to our team to process your transactions as speedy as possible. If more than 10 minutes, let us know by contacting our Customer Service support. They will assist you 24/7 anytime."
+  },
+  "transfer": {
+    "title": "Transfer",
+    "loginRequired": "Please login to access this page",
+    "noRecipient": "No recipient selected. Please select a contact to transfer to.",
+    "loadFailed": "Failed to load transfer information",
+    "amountPlaceholder": "Min. MYR 10/ Max. MYR 30,000",
+    "availableBalance": "Available Balance",
+    "pin": "PIN",
+    "transferButton": "TRANSFER",
+    "confirmMessage": "Confirm transfer",
+    "toFriend": "to your friend",
+    "cancel": "CANCEL",
+    "confirm": "CONFIRM",
+    "successTitle": "Transfer Successful!",
+    "successMessage": "has been transferred to",
+    "ok": "OK",
+    "failed": "Transfer failed"
   },
   "account": {
     "title": "Account",
@@ -206,6 +255,22 @@
     "system": "System",
     "personal": "Personal",
     "noMessages": "No messages"
+  },
+  "report": {
+    "gameRecord": "Game Record",
+    "turnoverReport": "Turnover Report",
+    "totalTurnover": "Total Turnover",
+    "totalProfit": "Total Profit",
+    "totalRollover": "Total Rollover",
+    "totalWinLose": "Total Win Lose",
+    "date": "Date",
+    "game": "Game",
+    "stake": "Stake",
+    "turnover": "Turnover",
+    "profit": "Profit",
+    "rollover": "Rollover",
+    "winLose": "Win Lose",
+    "noHistory": "There are no history at the moment."
   },
   "about": {
     "title": "About AONE",
@@ -250,7 +315,10 @@
     "announcement": "Welcome to AONE GLOBAL GAMING. Malaysia stable and trusted online platform"
   },
   "event": {
-    "noEvents": "There are no events at the moment."
+    "noEvents": "There are no events at the moment.",
+    "apply": "APPLY",
+    "confirmTitle": "Confirm Application",
+    "confirmMessage": "Are you sure that you want to apply?"
   },
   "games": {
     "slots": "SLOTS",
@@ -259,6 +327,52 @@
     "sports": "SPORTS",
     "lottery": "LOTTERY",
     "fishing": "FISHING"
+  },
+  "rebate": {
+    "game": "Game",
+    "playerPercent": "Player %",
+    "uplineL1Percent": "Upline L1 %",
+    "uplineL2Percent": "Upline L2 %",
+    "other": "OTHER",
+    "noData": "No rebate data available"
+  },
+  "contact": {
+    "myContact": "My Contact",
+    "transfer": "Transfer",
+    "addNewFriend": "Add New Friend",
+    "searchUid": "Search UID",
+    "searchUidEnter": "Search UID (press Enter)",
+    "noContactsFound": "No contacts found",
+    "noUsersFound": "No users found",
+    "friendRequest": "Friend Request",
+    "myRequest": "My Request",
+    "noFriendRequests": "No friend requests",
+    "noPendingRequests": "No pending requests",
+    "friendRequestSent": "Friend request sent!",
+    "confirmReject": "Are you sure you want to reject this friend request?",
+    "confirmCancel": "Are you sure you want to cancel this friend request?",
+    "reject": "Reject",
+    "rejectUpper": "REJECT",
+    "yes": "YES",
+    "no": "NO",
+    "add": "Add",
+    "requested": "Requested",
+    "approve": "Approve",
+    "cancel": "Cancel",
+    "cancelUpper": "CANCEL",
+    "friendDetail": "Friend Detail",
+    "loginRequired": "Please login to access this page",
+    "loadFailed": "Failed to load contact details",
+    "transferButton": "TRANSFER",
+    "deleteButton": "DELETE",
+    "deleteTitle": "Delete this friend?",
+    "deleteMessage": "This action cannot be undone.",
+    "loadRequestsFailed": "Failed to load contact requests",
+    "alias": "Alias",
+    "changeAlias": "Change Alias",
+    "aliasRequired": "Alias is required",
+    "aliasUpdated": "Alias updated successfully",
+    "aliasUpdateFailed": "Failed to update alias"
   },
   "profile": {
     "changeUsername": "Change Username",
@@ -276,7 +390,10 @@
     "oldPasswordRequired": "Old password is required",
     "newPasswordRequired": "New password is required",
     "confirmPasswordRequired": "Please confirm your new password",
-    "selectAvatar": "Please select an avatar"
+    "selectAvatar": "Please select an avatar",
+    "usernameChanged": "Username changed successfully",
+    "passwordChanged": "Password changed successfully",
+    "avatarChanged": "Avatar changed successfully"
   },
   "sidebar": {
     "referral": "REFERRAL",
@@ -297,6 +414,8 @@
   "bank": {
     "bankName": "Bank Name",
     "selectBank": "Select a bank",
+    "accountName": "Account Name",
+    "enterAccountName": "Enter your account name",
     "accountNumber": "Account Number",
     "enterAccountNumber": "Enter your account number",
     "tacCode": "TAC Code",
@@ -305,16 +424,91 @@
     "tacSent": "TAC has been sent to your registered phone number",
     "tacRequestFailed": "Failed to request TAC. Please try again.",
     "addBankNote": "Please ensure your bank account name matches your registered full name. Third-party bank accounts are not accepted.",
-    "addFailed": "Failed to add bank account. Please try again."
+    "addFailed": "Failed to add bank account. Please try again.",
+    "addSuccess": "Bank account added successfully",
+    "noBanksAdded": "There are no banks added.",
+    "bankAccount": "Bank Account",
+    "accountInfo": "Account Info",
+    "bankHolderName": "Bank Holder Name",
+    "accountNo": "Account No.",
+    "deleteConfirmTitle": "Delete Bank Account?",
+    "deleteConfirmMessage": "Are you sure you want to delete this bank account? This action cannot be undone.",
+    "deleteFailed": "Failed to delete bank account. Please try again."
+  },
+  "pin": {
+    "setFirstMessage": "Please set your PIN number first before adding a bank account.",
+    "phoneNumber": "Phone Number",
+    "sendTo": "Send to",
+    "otpCode": "OTP Code",
+    "requestOtp": "Request OTP",
+    "enterTac": "Enter TAC Code",
+    "requestTac": "Request TAC",
+    "tacSent": "TAC has been sent to your registered phone number",
+    "tacRequestFailed": "Failed to request TAC. Please try again.",
+    "enterPin": "Enter PIN",
+    "confirmPin": "Confirm PIN",
+    "mismatch": "PIN numbers do not match",
+    "requirements": "PIN must be 6 digits",
+    "resetFailed": "Failed to reset PIN. Please try again."
+  },
+  "redeemCode": {
+    "placeholder": "Redeem Code",
+    "enterCode": "Please enter a redeem code",
+    "success": "Code redeemed successfully!",
+    "invalid": "Invalid redeem code",
+    "failed": "Failed to redeem code. Please try again."
+  },
+  "redeemGift": {
+    "title": "Redeem Gift",
+    "pointBalance": "A-Point Balance:",
+    "redeemHistory": "Redeem History",
+    "claim": "Claim",
+    "noRewards": "No rewards available",
+    "insufficientTitle": "Insufficient A-Point",
+    "insufficientMessage": "A-Point is not sufficient to claim this gift.",
+    "claimFailed": "Failed to claim reward",
+    "noHistory": "There are no history at the moment.",
+    "giftRedeem": "Gift Redeem",
+    "product": "Product",
+    "aPoint": "A-Point",
+    "infoShipping": "Info Shipping",
+    "recipientName": "Recipient Name",
+    "phoneNumber": "Phone Number",
+    "address": "Address",
+    "state": "State",
+    "postcode": "Postcode",
+    "selectCountry": "Please Select Country",
+    "noRewardSelected": "No reward selected",
+    "items": "Items",
+    "weight": "Weight",
+    "shippingMethod": "Shipping Method",
+    "shippingFee": "Shipping Fee",
+    "total": "Total",
+    "pointBalanceAfter": "A-Point Balance",
+    "redeem": "REDEEM"
   },
   "scanner": {
     "title": "Scan QR Code",
     "scanReferralQr": "Position the QR code within the frame to scan your referral code",
+    "scanUidQr": "Position the QR code within the frame to scan user ID",
     "invalidQr": "Invalid QR Code",
     "invalidQrMessage": "The scanned QR code does not contain a valid referral code. Please try again with a valid referral QR code.",
+    "invalidUidQrMessage": "The scanned QR code does not contain a valid user ID. Please try again with a valid QR code.",
+    "qrScanFailed": "Failed to scan QR code. Please try again.",
     "tryAgain": "Try Again",
     "cameraError": "Unable to access camera",
     "cameraAccessDenied": "Camera Access Required",
     "cameraAccessInfo": "Please allow camera access in your browser settings to scan QR codes."
+  },
+  "toast": {
+    "success": "Success",
+    "warning": "Warning",
+    "error": "Error"
+  },
+  "appBanner": {
+    "title": "AONE APP",
+    "subtitle": "Download App Now",
+    "downloadButton": "DOWNLOAD NOW",
+    "closeAria": "Close download banner"
   }
 }

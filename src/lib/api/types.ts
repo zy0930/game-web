@@ -182,37 +182,53 @@ export interface BankAccount {
 }
 
 // ===========================================
-// About Us Types
-// ===========================================
-
-export interface AboutUsResponse {
-  Content: string;
-}
-
-// ===========================================
 // Game Records Types
 // ===========================================
 
-export interface GameSelection {
-  Id: string;
-  Name: string;
-  Image: string;
+export interface GameRecordSelection {
+  Text: string;
+  Game: string;
 }
 
-export interface GameSelectionsResponse {
+export interface GameRecordSelectionsResponse {
   Code: number;
   Message: string;
-  Data: GameSelection[];
+  Rows: GameRecordSelection[];
 }
 
 export interface GameRecord {
+  Id: string;
   GameName: string;
-  Amount: number;
-  WinAmount: number;
+  Stake: number;
+  Turnover: number;
+  Profit: number;
   CreatedDate: string;
 }
 
-export interface GameRecordsResponse extends PaginatedResponse<GameRecord> {}
+export interface GameRecordsResponse {
+  Code: number;
+  Message: string;
+  PageNumber: number;
+  TotalStake: number;
+  TotalTurnover: number;
+  TotalProfit: number;
+  Rows: GameRecord[];
+}
+
+// ===========================================
+// Message Selection Types
+// ===========================================
+
+export interface MessageSelectionOption {
+  Value: string;
+  Text: string;
+}
+
+export interface MessageSelectionResponse {
+  Code: number;
+  Message: string;
+  Data: MessageSelectionOption[];
+}
 
 // ===========================================
 // Register Types
@@ -225,12 +241,14 @@ export interface GetUplineRequest {
 export interface GetUplineResponse {
   Code: number;
   Message: string;
+  Id: string;
+  Username: string;
   ReferralCode: string;
 }
 
 export interface RegisterGetTacRequest {
   Phone: string;
-  Option: "SMS" | "WhatsApp";
+  Option: string;
 }
 
 export interface RegisterGetTacResponse {
@@ -262,7 +280,7 @@ export interface RegisterResponse {
 export interface ForgotPasswordGetTacRequest {
   Username: string;
   Phone: string;
-  Option: "SMS" | "WhatsApp";
+  Option: string;
 }
 
 export interface ForgotPasswordGetTacResponse {
@@ -315,12 +333,28 @@ export interface LoginErrorResponse {
 export interface WithdrawAccount {
   Id: string;
   BankName: string;
-  AccountNumber: string;
+  BankImage: string;
+  Name: string;
+  No: string;
+  Currency: string;
+  Rate: number;
 }
 
 export interface WithdrawAccountsResponse {
   Code: number;
   Message: string;
+  Cash: number;
+  Currency: string;
+  Rollover: number;
+  TargetRollover: number;
+  DailyWithdrawFreq: number;
+  DailyWithdrawFreqBalance: number;
+  ProcessingFeePercentage: number;
+  DailyWithdrawLimit: number;
+  MinMYR: number;
+  MaxMYR: number;
+  MinUSD: number;
+  MaxUSD: number;
   Rows: WithdrawAccount[];
 }
 
@@ -339,19 +373,83 @@ export interface SubmitWithdrawResponse {
 // Bank Account Types
 // ===========================================
 
+export interface UserBank {
+  Id: string;
+  Name: string;
+  Image: string;
+  Currency: string;
+}
+
+export interface GetUserBanksResponse {
+  Code: number;
+  Message: string;
+  Rows?: UserBank[];
+  FullName?: string;
+}
+
+export interface UserBankAccount {
+  Id: string;
+  BankName: string;
+  BankImage: string;
+  Name: string;
+  No: string;
+}
+
+export interface GetUserBankAccountsResponse {
+  Code: number;
+  Message: string;
+  Rows: UserBankAccount[];
+}
+
 export interface GetTacResponse {
   Code: number;
   Message: string;
+  UserId?: string;
+  Phone?: string;
+  Tac?: string;
   ExpiresIn: number;
 }
 
 export interface AddBankAccountRequest {
-  BankName: string;
-  AccountNumber: string;
+  Name: string;
+  No: string;
   Tac: string;
+  UserBankId: string;
 }
 
 export interface AddBankAccountResponse {
+  Code: number;
+  Message: string;
+}
+
+// ===========================================
+// Reset PIN Types
+// ===========================================
+
+export interface ResetPinGetTacResponse {
+  Code: number;
+  Message: string;
+  UserId: string;
+  Phone: string;
+  Tac: string;
+  ExpiresIn: number;
+}
+
+export interface ResetPinRequest {
+  Pin: string;
+  Tac: string;
+}
+
+export interface ResetPinResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface DeleteBankAccountRequest {
+  Id: string;
+}
+
+export interface DeleteBankAccountResponse {
   Code: number;
   Message: string;
 }
@@ -385,50 +483,138 @@ export interface AnnouncementResponse {
 
 export interface Contact {
   Id: string;
-  Name: string;
-  Phone: string;
-  Status: string;
+  Alias: string;
+  Letter: string;
+  Image: string;
 }
 
-export interface ContactsResponse {
+export interface GetContactsResponse {
   Code: number;
   Message: string;
-  Data: Contact[];
+  Contacts: Contact[];
 }
 
-export interface ContactRequest {
+export interface FriendRequest {
   Id: string;
   Name: string;
-  Phone: string;
+  Username: string;
+  Image: string;
 }
 
-export interface ContactRequestsResponse {
+export interface GetContactRequestsResponse {
   Code: number;
   Message: string;
-  Data: ContactRequest[];
+  FrRequests: FriendRequest[];
+  MyRequests: FriendRequest[];
+}
+
+export interface ContactDetail {
+  Id: string;
+  TargetId: string;
+  Username: string;
+  Name: string;
+  Alias: string;
+  Image: string;
+}
+
+export interface GetContactDetailResponse {
+  Code: number;
+  Message: string;
+  Id: string;
+  TargetId: string;
+  Username: string;
+  Name: string;
+  Alias: string;
+  Image: string;
+}
+
+export interface DeleteContactRequest {
+  Id: string;
+}
+
+export interface DeleteContactResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface UpdateContactAliasRequest {
+  Id: string;
+  Alias: string;
+}
+
+export interface UpdateContactAliasResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface SearchContactResult {
+  Id: string;
+  Name: string;
+  Username: string;
+  Image: string;
 }
 
 export interface SearchContactResponse {
   Code: number;
   Message: string;
-  Data: ContactRequest[];
+  Text: string;
+  Contacts: SearchContactResult[];
+}
+
+export interface AddContactRequest {
+  Id: string;
+}
+
+export interface AddContactResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface ApproveContactRequest {
+  Id: string;
+}
+
+export interface ApproveContactResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface RejectContactRequest {
+  Id: string;
+}
+
+export interface RejectContactResponse {
+  Code: number;
+  Message: string;
+}
+
+export interface CancelContactRequest {
+  Id: string;
+}
+
+export interface CancelContactResponse {
+  Code: number;
+  Message: string;
 }
 
 // ===========================================
 // Transfer Types
 // ===========================================
 
-export interface TransferInfoResponse {
+export interface GetTransferInfoResponse {
   Code: number;
   Message: string;
+  Id: string;
   Name: string;
-  Phone: string;
-  MaximumTransfer: number;
+  Username: string;
+  Image: string;
+  Currency: string;
+  AvailableCash: number;
 }
 
 export interface PostTransferRequest {
   Id: string;
-  Amount: string;
+  Amount: number;
   Pin: string;
 }
 
@@ -444,21 +630,35 @@ export interface PostTransferResponse {
 export interface Reward {
   Id: string;
   Name: string;
-  Description: string;
   Image: string;
+  Price: number;
 }
 
-export interface RewardsResponse {
+export interface GetRewardsResponse {
   Code: number;
   Message: string;
-  Data: Reward[];
+  Point: number;
+  RewardPendingCount: number;
+  Rewards: Reward[];
+}
+
+export interface MyReward {
+  Id: string;
+  Name: string;
+  Image: string;
+  Price: number;
+  Status: string;
+  CreatedDate: string;
+}
+
+export interface GetMyRewardsResponse {
+  Code: number;
+  Message: string;
+  Rewards: MyReward[];
 }
 
 export interface ClaimRewardRequest {
   Id: string;
-  ReceiverName: string;
-  ReceiverPhone: string;
-  ReceiverAddress: string;
 }
 
 export interface ClaimRewardResponse {
@@ -482,9 +682,10 @@ export interface TurnoverGameSelectionsResponse {
 }
 
 export interface TurnoverRecord {
+  Id: string;
   GameName: string;
-  Amount: number;
-  WinAmount: number;
+  Rollover: number;
+  WinLose: number;
   CreatedDate: string;
 }
 
@@ -492,7 +693,8 @@ export interface TurnoverReportResponse {
   Code: number;
   Message: string;
   PageNumber: number;
-  TotalAmount: number;
+  TotalRollover: number;
+  TotalWinLose: number;
   Rows: TurnoverRecord[];
 }
 
@@ -698,4 +900,24 @@ export interface SubmitDepositRequest {
 export interface SubmitDepositResponse {
   Code: number;
   Message: string;
+}
+
+// ===========================================
+// Rebate Types
+// ===========================================
+
+export interface RebateGame {
+  Id: string;
+  Name: string;
+  Code: string;
+  PlayerCommRate: number;
+  PlayerL1CommRate: number;
+  PlayerL2CommRate: number;
+  AgentCommRate: number;
+}
+
+export interface GetRebatesResponse {
+  Code: number;
+  Message: string;
+  Games: RebateGame[];
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Header } from "@/components/layout";
 import { ChevronRight } from "lucide-react";
 import { useI18n } from "@/providers/i18n-provider";
 import Image from "next/image";
@@ -32,13 +31,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <Header
-        variant="subpage"
-        title={t("account.profile")}
-        backHref="/account"
-      />
-
       {/* Menu Items */}
       <main className="flex-1 px-4 py-4">
         <div className="space-y-3">

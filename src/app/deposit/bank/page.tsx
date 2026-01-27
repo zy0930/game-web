@@ -2,27 +2,35 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Header } from "@/components/layout";
 import { RequireAuth } from "@/components/auth";
 import { FormInput } from "@/components/ui/form-input";
-import { ChevronDown, Copy, X, Loader2, Image as ImageIcon } from "lucide-react";
+import {
+  ChevronDown,
+  Copy,
+  X,
+  Loader2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
+import { useToast } from "@/providers/toast-provider";
 import { useDepositAccounts, useSubmitDeposit } from "@/hooks/use-deposit";
 import type { DepositBankAccount, DepositPromo } from "@/lib/api/types";
+import { FaCheck } from "react-icons/fa";
 
 // Quick amount options
 const quickAmounts = [50, 100, 500, 1000];
 
 export default function BankTransferPage() {
   const { t } = useI18n();
+  const { showSuccess, showError } = useToast();
   const { data: accountsData, isLoading } = useDepositAccounts();
   const submitDeposit = useSubmitDeposit();
 
-  const [selectedBank, setSelectedBank] = useState<DepositBankAccount | null>(null);
+  const [selectedBankId, setSelectedBankId] = useState<string | null>(null);
   const [amount, setAmount] = useState("");
   const [receipt, setReceipt] = useState<File | null>(null);
-  const [selectedPromotion, setSelectedPromotion] = useState<DepositPromo | null>(null);
+  const [selectedPromotion, setSelectedPromotion] =
+    useState<DepositPromo | null>(null);
   const [promoCode, setPromoCode] = useState("");
   const [showPromotionDropdown, setShowPromotionDropdown] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -31,12 +39,11 @@ export default function BankTransferPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const promotionDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Set initial selection when data loads
-  useEffect(() => {
-    if (accountsData?.Rows?.length && !selectedBank) {
-      setSelectedBank(accountsData.Rows[0]);
-    }
-  }, [accountsData, selectedBank]);
+  // Derive selected bank: user selection takes priority, otherwise use first from API
+  const selectedBank =
+    accountsData?.Rows?.find((b) => b.Id === selectedBankId) ||
+    accountsData?.Rows?.[0] ||
+    null;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -105,13 +112,15 @@ export default function BankTransferPage() {
         setReceipt(null);
         setSelectedPromotion(null);
         setPromoCode("");
-        // Show success message or redirect
-        alert(result.Message || t("common.success"));
+        // Show success toast
+        showSuccess(result.Message || t("common.success"));
       } else {
         setSubmitError(result.Message || t("common.error"));
+        showError(result.Message || t("common.error"));
       }
     } catch {
       setSubmitError(t("common.error"));
+      showError(t("common.error"));
     }
   };
 
@@ -124,7 +133,6 @@ export default function BankTransferPage() {
     return (
       <RequireAuth>
         <div className="min-h-screen flex flex-col">
-          <Header variant="subpage" title={t("deposit.bankTransfer")} backHref="/deposit" />
           <div className="flex-1 flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
@@ -136,26 +144,25 @@ export default function BankTransferPage() {
   return (
     <RequireAuth>
       <div className="min-h-screen flex flex-col">
-        {/* Header */}
-        <Header variant="subpage" title={t("deposit.bankTransfer")} backHref="/deposit" />
 
         {/* Main Content */}
         <main className="flex-1 overflow-auto px-4 py-4">
           {/* Bank Account Selection */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("deposit.bankAccount")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 flex gap-1">
+              {t("deposit.bankAccount")}
+              <span className="text-primary">*</span>
             </label>
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+            <div className="grid grid-cols-5 max-[380px]:grid-cols-4 gap-3 items-start overflow-x-auto scrollbar-hide pb-1">
               {bankAccounts.map((bank) => (
                 <button
                   key={bank.Id}
-                  onClick={() => setSelectedBank(bank)}
-                  className="flex flex-col items-center flex-shrink-0"
+                  onClick={() => setSelectedBankId(bank.Id)}
+                  className="flex flex-col items-center cursor-pointer"
                 >
                   <div
                     className={cn(
-                      "w-16 h-16 rounded-xl border-2 transition-all relative flex items-center justify-center bg-white",
+                      "w-full aspect-square rounded-lg border-2 shadow-sm relative flex items-center justify-center bg-white",
                       selectedBank?.Id === bank.Id
                         ? "border-primary"
                         : "border-zinc-200 hover:border-zinc-300"
@@ -165,8 +172,8 @@ export default function BankTransferPage() {
                       <Image
                         src={bank.BankImage}
                         alt={bank.BankName}
-                        width={48}
-                        height={48}
+                        width={35}
+                        height={35}
                         className="object-contain rounded-lg"
                         unoptimized
                       />
@@ -176,17 +183,19 @@ export default function BankTransferPage() {
                       </span>
                     )}
                     {selectedBank?.Id === bank.Id && (
-                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center border-2 border-white">
-                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
+                      <div className="absolute bottom-0 right-0 pl-1.5 py-1 pr-0.5 bg-primary rounded-tl-lg rounded-br-md flex items-center justify-center">
+                        <FaCheck className="w-2.5 h-2.5" />
                       </div>
                     )}
                   </div>
-                  <span className={cn(
-                    "text-xs mt-1.5 max-w-[64px] truncate text-center",
-                    selectedBank?.Id === bank.Id ? "text-primary font-roboto-medium" : "text-zinc-500"
-                  )}>
+                  <span
+                    className={cn(
+                      "text-xs text-center mt-1 font-roboto-regular",
+                      selectedBank?.Id === bank.Id
+                        ? "text-primary"
+                        : "text-[#28323C]"
+                    )}
+                  >
                     {bank.BankName}
                   </span>
                 </button>
@@ -196,32 +205,44 @@ export default function BankTransferPage() {
 
           {/* Account Details Card */}
           {selectedBank && (
-            <div className="bg-white rounded-xl border border-zinc-200 p-4 mb-4">
-              {/* Name Row */}
-              <div className="flex items-center justify-between py-2 border-b border-zinc-100">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-zinc-500 w-24">{t("deposit.accountName")}</span>
-                  <span className="text-sm text-zinc-700 font-roboto-medium">: {selectedBank.Name}</span>
-                </div>
+            <div className="bg-white rounded-3xl border border-[#959595] px-7 py-5 mb-4">
+              <div className="grid grid-cols-[auto_1fr_auto] gap-x-2 gap-y-4">
+                {/* Name Row */}
+                <span className="text-sm text-[#5F7182] whitespace-nowrap">
+                  {t("deposit.accountName")} :
+                </span>
+                <span className="text-sm text-[#5F7182] font-roboto-medium">
+                  {selectedBank.Name}
+                </span>
                 <button
                   onClick={() => handleCopy(selectedBank.Name, "name")}
-                  className="p-2 text-zinc-400 hover:text-primary transition-colors"
+                  className="text-zinc-400 hover:text-primary transition-colors cursor-pointer self-start p-1"
                 >
-                  <Copy className={cn("w-4 h-4", copiedField === "name" && "text-primary")} />
+                  <Copy
+                    className={cn(
+                      "w-4 h-4 text-[#5F7182] items-start",
+                      copiedField === "name" && "text-primary"
+                    )}
+                  />
                 </button>
-              </div>
 
-              {/* Account No Row */}
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-zinc-500 w-24">{t("deposit.accountNo")}</span>
-                  <span className="text-sm text-zinc-700 font-roboto-medium">: {selectedBank.No}</span>
-                </div>
+                {/* Account No Row */}
+                <span className="text-sm text-[#5F7182] whitespace-nowrap">
+                  {t("deposit.accountNo")} :
+                </span>
+                <span className="text-sm text-[#5F7182] font-roboto-medium">
+                  {selectedBank.No}
+                </span>
                 <button
                   onClick={() => handleCopy(selectedBank.No, "accountNo")}
-                  className="p-2 text-zinc-400 hover:text-primary transition-colors"
+                  className="text-zinc-400 hover:text-primary transition-colors cursor-pointer self-start p-1"
                 >
-                  <Copy className={cn("w-4 h-4", copiedField === "accountNo" && "text-primary")} />
+                  <Copy
+                    className={cn(
+                      "w-4 h-4 text-[#5F7182] items-start",
+                      copiedField === "accountNo" && "text-primary"
+                    )}
+                  />
                 </button>
               </div>
             </div>
@@ -229,13 +250,16 @@ export default function BankTransferPage() {
 
           {/* Enter Amount */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("deposit.enterAmount")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-[#28323C] mb-2 flex gap-1">
+              {t("deposit.enterAmount")}
+              <span className="text-primary">*</span>
             </label>
             <FormInput
               type="text"
               value={amount}
-              onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
+              onChange={(e) =>
+                setAmount(e.target.value.replace(/[^0-9.]/g, ""))
+              }
               placeholder={`Min. MYR ${minAmount.toLocaleString()}/ Max. MYR ${maxAmount.toLocaleString()}`}
               prefix={
                 <Image
@@ -256,10 +280,10 @@ export default function BankTransferPage() {
                   key={value}
                   onClick={() => handleQuickAmount(value)}
                   className={cn(
-                    "flex-1 py-2.5 rounded-lg border text-sm font-roboto-medium transition-colors",
+                    "flex-1 py-4 rounded-2xl text-sm border font-roboto-medium transition-colors cursor-pointer",
                     amount === value.toString()
                       ? "border-primary bg-primary/5 text-primary"
-                      : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-300"
+                      : "border-[#959595] bg-white text-zinc-600"
                   )}
                 >
                   {value.toLocaleString()}
@@ -270,19 +294,27 @@ export default function BankTransferPage() {
 
           {/* Upload Receipt */}
           <div className="mb-4">
-            <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
-              {t("deposit.uploadReceipt")}<span className="text-red-500">*</span>
+            <label className="text-sm font-roboto-medium text-[#28323C] mb-2 flex gap-1">
+              {t("deposit.uploadReceipt")}
+              <span className="text-primary">*</span>
             </label>
             <div className="flex gap-2">
               <div className="flex-1 flex items-center gap-3 px-4 py-3.5 bg-white border border-[#959595] rounded-lg">
-                <ImageIcon className="w-5 h-5 text-zinc-400" />
+                <Image
+                  src="/images/icon/receipt_icon.png"
+                  alt="Username"
+                  width={24}
+                  height={24}
+                  unoptimized
+                  className="h-6 w-auto object-contain"
+                />
                 <span className="text-[#959595] text-sm truncate">
                   {receipt ? receipt.name : "Receipt"}
                 </span>
               </div>
               <button
                 onClick={handleUploadClick}
-                className="px-4 py-3.5 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
+                className="cursor-pointer px-4 py-3.5 bg-primary text-white text-sm font-roboto-medium rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
               >
                 {t("deposit.uploadReceipt")}
               </button>
@@ -297,7 +329,7 @@ export default function BankTransferPage() {
           </div>
 
           {/* Promotion Dropdown */}
-          <div className="mb-4">
+          <div className="mb-2">
             <label className="text-sm font-roboto-medium text-zinc-700 mb-2 block">
               {t("deposit.promotion")}
             </label>
@@ -321,11 +353,14 @@ export default function BankTransferPage() {
                     unoptimized
                     className="h-6 w-auto object-contain"
                   />
-                  <span className={cn(
-                    "text-sm font-roboto-regular",
-                    selectedPromotion ? "text-zinc-900" : "text-[#959595]"
-                  )}>
-                    {selectedPromotion?.Name || `- ${t("deposit.noPromotion")} -`}
+                  <span
+                    className={cn(
+                      "text-sm font-roboto-regular",
+                      selectedPromotion ? "text-zinc-900" : "text-[#959595]"
+                    )}
+                  >
+                    {selectedPromotion?.Name ||
+                      `- ${t("deposit.noPromotion")} -`}
                   </span>
                 </span>
                 <ChevronDown
@@ -420,25 +455,29 @@ export default function BankTransferPage() {
           </div>
 
           {/* Important Notice */}
-          <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4 mb-4">
-            <h3 className="font-roboto-medium text-zinc-700 mb-3">{t("deposit.importantNotice")}</h3>
-            <div className="space-y-3 text-sm text-zinc-500">
-              <p>
-                1. {t("deposit.bankNotice1")}
-              </p>
-              <p>
-                2. {t("deposit.bankNotice2")}
-              </p>
+          <div className="bg-white border border-[#959595] rounded-2xl p-4">
+            <h3 className="font-roboto-bold text-zinc-800 mb-3">
+              {t("deposit.importantNotice")}
+            </h3>
+
+            {/* Numbered Instructions */}
+            <div className="space-y-3 text-sm text-[#5F7182]">
+              <p>1.{t("deposit.bankNotice1")}</p>
+              <p>2.{t("deposit.bankNotice2")}</p>
+              <p>3.{t("deposit.bankNotice3")}</p>
+              <p>4.{t("deposit.bankNotice4")}</p>
+              <p>5.{t("deposit.bankNotice5")}</p>
+              <p>6.{t("deposit.bankNotice6")}</p>
             </div>
           </div>
         </main>
 
         {/* Submit Button - Sticky at bottom */}
-        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-zinc-200">
+        <div className="sticky bottom-0 left-0 right-0 p-4 bg-white border-t border-primary">
           <button
             onClick={handleSubmit}
             disabled={!selectedBank || !amount || !receipt}
-            className="w-full py-4 bg-primary text-white font-roboto-bold text-base rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer w-full py-4 bg-primary text-white font-roboto-bold text-base rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t("common.submit").toUpperCase()}
           </button>
@@ -464,27 +503,45 @@ export default function BankTransferPage() {
               {/* Modal Content */}
               <div className="p-4 space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-zinc-500">{t("deposit.bankAccount")}:</span>
-                  <span className="font-roboto-medium text-zinc-800">{selectedBank?.BankName}</span>
+                  <span className="text-zinc-500">
+                    {t("deposit.bankAccount")}:
+                  </span>
+                  <span className="font-roboto-medium text-zinc-800">
+                    {selectedBank?.BankName}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-500">{t("common.amount")}:</span>
-                  <span className="font-roboto-bold text-primary">MYR {parseFloat(amount).toLocaleString()}</span>
+                  <span className="font-roboto-bold text-primary">
+                    MYR {parseFloat(amount).toLocaleString()}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-zinc-500">{t("deposit.uploadReceipt")}:</span>
-                  <span className="font-roboto-medium text-zinc-800 truncate max-w-[150px]">{receipt?.name}</span>
+                  <span className="text-zinc-500">
+                    {t("deposit.uploadReceipt")}:
+                  </span>
+                  <span className="font-roboto-medium text-zinc-800 truncate max-w-[150px]">
+                    {receipt?.name}
+                  </span>
                 </div>
                 {selectedPromotion && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-zinc-500">{t("deposit.promotion")}:</span>
-                    <span className="font-roboto-medium text-zinc-800">{selectedPromotion.Name}</span>
+                    <span className="text-zinc-500">
+                      {t("deposit.promotion")}:
+                    </span>
+                    <span className="font-roboto-medium text-zinc-800">
+                      {selectedPromotion.Name}
+                    </span>
                   </div>
                 )}
                 {promoCode && (
                   <div className="flex justify-between text-sm">
-                    <span className="text-zinc-500">{t("deposit.promoCode")}:</span>
-                    <span className="font-roboto-medium text-zinc-800">{promoCode}</span>
+                    <span className="text-zinc-500">
+                      {t("deposit.promoCode")}:
+                    </span>
+                    <span className="font-roboto-medium text-zinc-800">
+                      {promoCode}
+                    </span>
                   </div>
                 )}
 
@@ -496,18 +553,18 @@ export default function BankTransferPage() {
               </div>
 
               {/* Modal Actions */}
-              <div className="flex gap-3 p-4 border-t border-zinc-200">
+              <div className="flex gap-3 p-4 border-t border-zinc-200 cursor-pointer">
                 <button
                   onClick={() => setShowConfirmModal(false)}
                   disabled={submitDeposit.isPending}
-                  className="flex-1 py-3 border border-zinc-300 text-zinc-700 font-roboto-medium rounded-lg hover:bg-zinc-50 transition-colors disabled:opacity-50"
+                  className="cursor-pointer flex-1 py-3 border border-zinc-300 text-zinc-700 font-roboto-medium rounded-lg hover:bg-zinc-50 transition-colors disabled:opacity-50"
                 >
                   {t("common.cancel")}
                 </button>
                 <button
                   onClick={handleConfirmDeposit}
                   disabled={submitDeposit.isPending}
-                  className="flex-1 py-3 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="cursor-pointer flex-1 py-3 bg-primary text-white font-roboto-bold rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {submitDeposit.isPending ? (
                     <>

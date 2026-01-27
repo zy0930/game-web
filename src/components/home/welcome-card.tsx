@@ -6,7 +6,8 @@ import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
-import { useRestore } from "@/hooks";
+import { useToast } from "@/providers/toast-provider";
+import { useRestore, useRefreshCash } from "@/hooks";
 
 interface UserData {
   username: string;
@@ -26,13 +27,29 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
   const router = useRouter();
   const [imgError, setImgError] = useState(false);
   const { t } = useI18n();
+  const { showSuccess, showError } = useToast();
   const restoreMutation = useRestore();
+  const refreshCashMutation = useRefreshCash();
+
+  const handleRefreshCash = async () => {
+    try {
+      await refreshCashMutation.mutateAsync();
+      showSuccess(t("wallet.refreshSuccess"));
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : t("wallet.refreshFailed");
+      showError(errorMessage);
+    }
+  };
 
   const handleRestore = async () => {
     try {
       await restoreMutation.mutateAsync();
+      showSuccess(t("wallet.restoreSuccess"));
     } catch (error) {
-      console.error("Restore failed:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : t("wallet.restoreFailed");
+      showError(errorMessage);
     }
   };
 
@@ -59,34 +76,42 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
           fill
           className="object-fill"
           priority
+          unoptimized
         />
       </div>
 
       {/* Content */}
       <div className="relative z-10">
         {/* Welcome Title */}
-        <h2 className="text-[#28323C] font-roboto-regular text-sm mb-3 flex items-baseline gap-1">
+        <h2 className="text-[#28323C] font-roboto-regular text-sm mb-3 flex items-baseline gap-1 max-[380px]:justify-center">
           {t("common.welcome")},
           <span className="text-base font-roboto-bold"> {user.username}</span>
           <button
             type="button"
-            className="cursor-pointer ml-1 self-center"
+            onClick={handleRefreshCash}
+            disabled={refreshCashMutation.isPending}
+            className="cursor-pointer ml-1 self-center disabled:opacity-50"
             aria-label="Refresh cash"
           >
-            <Image
-              src="/images/icon/refresh_icon.png"
-              alt="Refresh"
-              width={12}
-              height={12}
-              className="object-contain w-5 h-5"
-            />
+            {refreshCashMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin text-primary" />
+            ) : (
+              <Image
+                src="/images/icon/refresh_icon.png"
+                alt="Refresh"
+                width={12}
+                height={12}
+                className="object-contain w-5 h-5"
+                unoptimized
+              />
+            )}
           </button>
         </h2>
 
         {/* Main Content Row - all items same height */}
-        <div className="flex items-stretch gap-2">
+        <div className="max-[380px]:grid max-[380px]:grid-cols-2 flex items-stretch gap-2">
           {/* Avatar - matches full height of row */}
-          <div className="w-16 aspect-square rounded-full overflow-hidden shrink-0 border-2 border-[#0DC3B1] self-center">
+          <div className="max-[380px]:mx-auto max-[380px]:col-span-2 w-16 aspect-square rounded-full overflow-hidden shrink-0 border-2 border-[#0DC3B1] self-center">
             {!imgError && user.avatar ? (
               <Image
                 src={user.avatar}
@@ -157,6 +182,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
                   width={14}
                   height={14}
                   className="object-contain"
+                  unoptimized
                 />
                 <span className="text-black font-roboto-bold text-xs">
                   {formatCurrency(user.chipsBalance)}
@@ -190,6 +216,7 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
                   width={14}
                   height={14}
                   className="object-contain"
+                  unoptimized
                 />
                 <span className="text-black font-roboto-bold text-xs">
                   {formatPoints(user.aPoints)}
@@ -200,43 +227,43 @@ export function WelcomeCard({ user, className }: WelcomeCardProps) {
 
           {/* Action Buttons */}
           <div className="flex gap-0.5">
-          <button
-            type="button"
-            onClick={handleRestore}
-            disabled={restoreMutation.isPending}
-            className="flex flex-col items-center justify-center disabled:opacity-50"
-          >
-            {restoreMutation.isPending ? (
-              <div className="w-[50px] h-[50px] flex items-center justify-center">
-                <Loader2 className="w-6 h-6 animate-spin text-primary" />
-              </div>
-            ) : (
+            <button
+              type="button"
+              onClick={handleRestore}
+              disabled={restoreMutation.isPending}
+              className="flex flex-col items-center justify-center"
+            >
               <Image
                 src="/images/profile/wallet_dark.png"
                 alt="Restore"
-                width={50}
-                height={50}
-                className="object-contain w-full h-full cursor-pointer"
+                width={25}
+                height={25}
+                className={`object-contain w-16 h-full  ${
+                  restoreMutation.isPending
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
+                }`}
+                unoptimized
               />
-            )}
-            <span className="text-xs text-black font-roboto-bold mt-1">
-              {t("common.restore")}
-            </span>
-          </button>
+              <span className="text-xs text-black font-roboto-bold mt-1">
+                {t("common.restore")}
+              </span>
+            </button>
 
-          <div className="flex flex-col items-center justify-center">
-            <Image
-              src="/images/profile/coin_bag_dark.png"
-              alt="Restore"
-              width={50}
-              height={50}
-              className="object-contain w-full h-full cursor-pointer"
-              onClick={() => router.push("/deposit")}
-            />
-            <span className="text-xs text-black font-roboto-bold mt-1">
-              {t("wallet.deposit")}
-            </span>
-          </div>
+            <div className="flex flex-col items-center justify-center">
+              <Image
+                src="/images/profile/coin_bag_dark.png"
+                alt="Restore"
+                width={25}
+                height={25}
+                className="object-contain w-16 h-full cursor-pointer"
+                onClick={() => router.push("/deposit")}
+                unoptimized
+              />
+              <span className="text-xs text-black font-roboto-bold mt-1">
+                {t("wallet.deposit")}
+              </span>
+            </div>
           </div>
         </div>
       </div>

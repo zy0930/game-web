@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/providers/i18n-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { useLoginModal } from "@/providers/login-modal-provider";
+import { SpinWheelAnimation } from "../animation/spin-wheel-animation";
+import { CheckInAnimation } from "../animation/check-in-animation";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -98,8 +101,8 @@ const localeFlagIcons: Record<string, string> = {
 };
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const router = useRouter();
   const [currentTime, setCurrentTime] = useState<string>("");
-  const [mounted, setMounted] = useState(false);
   const { t, locale } = useI18n();
   const { logout, isAuthenticated } = useAuth();
   const { openLoginModal } = useLoginModal();
@@ -112,10 +115,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
     return true;
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     const updateTime = () => {
@@ -151,19 +150,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     };
   }, [isOpen]);
 
-  if (!mounted) return null;
-
-  const container = document.getElementById("mobile-container");
-  if (!container) return null;
+  // Only render after time is set (ensures we're on client)
+  if (!currentTime) return null;
 
   return createPortal(
     <div
       className={cn(
-        "absolute inset-0 z-50 overflow-hidden",
+        "fixed inset-0 z-50",
         !isOpen && "pointer-events-none"
       )}
     >
-      {/* Backdrop */}
+      {/* Backdrop - covers full screen */}
       <div
         className={cn(
           "absolute inset-0 bg-black/50 transition-opacity duration-300",
@@ -172,13 +169,16 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         onClick={onClose}
       />
 
-      {/* Sidebar Panel */}
-      <div
-        className={cn(
-          "absolute top-0 right-0 h-dvh w-[80%] max-w-[360px] bg-[#F5F5F5] transform transition-transform duration-300 ease-out flex flex-col",
-          isOpen ? "translate-x-0" : "translate-x-full"
-        )}
-      >
+      {/* Centered Container - matches mobile container max-width */}
+      <div className="absolute inset-0 flex justify-center overflow-hidden pointer-events-none">
+        <div className="relative w-full max-w-[430px] h-full overflow-hidden">
+          {/* Sidebar Panel - slides from right edge of the 430px container */}
+          <div
+            className={cn(
+              "absolute top-0 right-0 h-full w-[80%] max-w-[360px] bg-[#F5F5F5] transform transition-transform duration-300 ease-out flex flex-col pointer-events-auto",
+              isOpen ? "translate-x-0" : "translate-x-full"
+            )}
+          >
         {/* Scrollable Content */}
         <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
           {/* Header Section - Dark gradient background */}
@@ -208,22 +208,28 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Feature Buttons - Check In & Spin Wheel (placeholder for now) */}
           <div className="px-4 pb-4">
-            <div className="flex gap-2">
+            <div className="max-[380px]:grid max-[380px]:grid-cols-1 flex gap-2">
               <Link
                 href="/check-in"
                 onClick={onClose}
-                className="h-16 flex-1 gap-2 px-3 pt-1 bg-white rounded-lg hover:bg-zinc-50 transition-colors shadow-sm"
+                className="max-[380px]:h-20 h-16 flex-1 gap-2 px-3 pt-1 bg-white rounded-lg hover:bg-zinc-50 transition-colors shadow-sm relative overflow-hidden"
               >
-                <span className="text-xs font-roboto-bold text-[#28323C]">
+                <div className="absolute max-[380px]:left-24 left-15 bottom-0.5 translate-x-0 w-full h-auto">
+                  <CheckInAnimation />
+                </div>
+                <span className="text-xs font-roboto-bold text-[#28323C] z-10">
                   {t("sidebar.checkIn")}
                 </span>
               </Link>
               <Link
                 href="/spin-wheel"
                 onClick={onClose}
-                className="flex-1 gap-2 px-3 pt-1 bg-white rounded-lg hover:bg-zinc-50 transition-colors shadow-sm"
+                className="max-[380px]:h-20 h-16 flex-1 gap-2 px-3 pt-1 bg-white rounded-lg hover:bg-zinc-50 transition-colors shadow-sm relative overflow-hidden"
               >
-                <span className="text-xs font-roboto-bold text-[#28323C]">
+                <div className="absolute max-[380px]:left-24 left-16 bottom-2.5 translate-x-0 w-full h-auto">
+                  <SpinWheelAnimation />
+                </div>
+                <span className="text-xs font-roboto-bold text-[#28323C] z-10">
                   {t("sidebar.spinWheel")}
                 </span>
               </Link>
@@ -246,7 +252,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                         onClose();
                       }
                     }}
-                    className={cn("flex items-center gap-5 px-4 py-3")}
+                    className={cn("flex items-center gap-5 max-[380px]:px-0 px-4 py-3")}
                   >
                     <Image
                       src={item.icon}
@@ -266,7 +272,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     )}
                   </Link>
                   {index !== mainMenuItems.length - 1 && (
-                    <div className="bg-[#d4f1f0] h-px mx-3"></div>
+                    <div className="bg-[#d4f1f0] h-px mx-3 max-[380px]:mx-0"></div>
                   )}
                 </div>
               ))}
@@ -275,12 +281,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {/* Secondary Menu */}
           <div className="px-4 pb-3">
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm px-3">
+            <div className="bg-white rounded-lg overflow-hidden shadow-sm px-3 max-[380px]:px-0">
               {secondaryMenuItems.map((item, index) => {
                 // Use dynamic flag icon for language item based on current locale
-                const iconSrc = item.id === "language"
-                  ? (localeFlagIcons[locale] || localeFlagIcons.en)
-                  : item.icon;
+                const iconSrc =
+                  item.id === "language"
+                    ? localeFlagIcons[locale] || localeFlagIcons.en
+                    : item.icon;
 
                 return (
                   <div key={item.id}>
@@ -302,7 +309,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                       </span>
                     </Link>
                     {index !== secondaryMenuItems.length - 1 && (
-                      <div className="bg-[#d4f1f0] h-px mx-3"></div>
+                      <div className="bg-[#d4f1f0] h-px mx-3 max-[380px]:mx-0"></div>
                     )}
                   </div>
                 );
@@ -310,31 +317,33 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
           </div>
 
-          {/* Logout Button */}
-          <div className="px-4 pb-3">
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm px-4">
-              <button
-                onClick={async () => {
-                  onClose();
-                  await logout();
-                  openLoginModal();
-                }}
-                className="w-full flex items-center gap-4 px-4 py-3"
-              >
-                <Image
-                  src="/images/sidebar/sidebar_logout_icon.png"
-                  alt="logout"
-                  width={24}
-                  height={24}
-                  unoptimized
-                  className="w-6 h-6 object-contain"
-                />
-                <span className="text-xs font-roboto-bold text-[#28323C]">
-                  {t("sidebar.logout")}
-                </span>
-              </button>
+          {/* Logout Button - Only show when authenticated */}
+          {isAuthenticated && (
+            <div className="px-4 pb-3">
+              <div className="bg-white rounded-lg overflow-hidden shadow-sm px-4 max-[380px]:px-0">
+                <button
+                  onClick={async () => {
+                    onClose();
+                    await logout();
+                    router.push("/home");
+                  }}
+                  className="w-full flex items-center gap-4 px-4 py-3 cursor-pointer"
+                >
+                  <Image
+                    src="/images/sidebar/sidebar_logout_icon.png"
+                    alt="logout"
+                    width={24}
+                    height={24}
+                    unoptimized
+                    className="w-6 h-6 object-contain"
+                  />
+                  <span className="text-xs font-roboto-bold text-[#28323C]">
+                    {t("sidebar.logout")}
+                  </span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Spacer to push footer to bottom */}
           <div className="flex-1" />
@@ -342,13 +351,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Footer - Dark background */}
           <div className="px-6 py-4 text-center text-[#5F7182] font-roboto-regular text-xs">
             <p>{t("sidebar.copyright")}</p>
-            <p>
-              {t("sidebar.allRightsReserved")}
-            </p>
+            <p>{t("sidebar.allRightsReserved")}</p>
+          </div>
+        </div>
           </div>
         </div>
       </div>
     </div>,
-    container
+    document.body
   );
 }
